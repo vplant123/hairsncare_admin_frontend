@@ -1,0 +1,330 @@
+.add-doctor-container {
+    /* max-width: 600px; */
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.add-doctor-container h2 {
+    margin-bottom: 20px;
+}
+
+.add-doctor-container form {
+    display: flex;
+    flex-direction: column;
+}
+.view-test-btt{
+  border: none;
+    background: #235623;
+    padding: 8px 16px;
+    border-radius: 5px;
+    color: wheat;
+}
+.view-test-btt :hover{
+  cursor: pointer;
+  background: #128a12 !important;
+}
+.add-doctor-container label {
+    margin-bottom: 5px;
+}
+
+
+.add-doctor-container input,
+.add-doctor-container textarea {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.add-doctor-container button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add-doctor-container button:hover {
+    background-color: #0056b3;
+}
+/* ////////////////////////////////////////////////////// */
+
+.all-patient-list-container {
+  
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.all-patient-list-container h2 {
+    margin-bottom: 20px;
+}
+
+.patient-list {
+    list-style: none;
+    padding: 0;
+}
+
+.patient-item1 {
+
+    border-radius: 5px;
+    background: linear-gradient(0deg, #f2e0e0, #fff0f0);
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+ 
+}
+
+.patient-item1 button {
+  height: 2rem;
+
+}
+
+.block-button {
+    padding: 10px 20px;
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.edit1{
+    background-color: #0056b3;
+    margin-left: 1rem;
+}
+.block-button:hover {
+    background-color: #cfb0b3;
+}
+.patient-list-1{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.patient-list-2{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.patient-item2{
+    flex: 0 0 auto;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-self: center;
+    background: linear-gradient(#fff7f7, #d3b0b0);
+    padding: 1rem;
+}
+.patient-item3{
+    flex: 0 0 auto;
+    width: 23%;
+    display: flex;
+    justify-content: space-between;
+    align-self: center;
+    background: linear-gradient(#fff7f7, #b0d3c5);
+    padding: 1rem;
+}
+.block-button1{
+    background-color:#5697dd;
+    padding: 1rem;
+    border: none;
+    color: white;
+    font-weight: 500;
+    border-radius: 9px;
+}
+.block-button2{
+    background-color:#5697dd;
+    padding: 1rem;
+    border: none;
+    color: white;
+    font-weight: 500;
+    border-radius: 9px;
+}
+.block-button1,.block-button2:hover{
+    cursor: pointer;
+    background-color: #0056b3;
+}
+.test-result-h1{
+  margin-bottom: 2rem;
+}
+.tabimage{
+  background: linear-gradient(43deg, #b9b3df, #957ac8);
+}
+.tab2{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 4rem;
+  margin-bottom: 2rem;
+}
+.tab2:hover{
+  cursor:pointer
+}
+.add-product-container {
+    /* max-width: 500px; */
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .add-product-container h2 {
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  .dr-select{
+    text-align: end;
+   display: flex;
+   flex-direction: column;
+   
+  }
+  .dr-select select{
+    display: inline;
+    width: 7.5rem;
+    max-width: 100%;
+    margin-left: 1rem;
+    padding: .2rem;
+    margin-top: .3rem;
+  }
+  .dr-select button{
+    margin-top: .5rem;
+    border: none;
+    background: #0b980b;
+    color: white;
+    padding: .5rem 1rem;
+    border-radius: 3px;
+  }
+  .dr-select button:hover{
+    cursor: pointer;
+    background: #0c600c;
+  }
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 16px;
+  }
+  
+  .form-group textarea {
+    resize: vertical;
+  }
+  
+  button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  .edit-delete-product-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto;
+  }
+  
+  .product-item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .product-item img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-right: 20px;
+  }
+  
+  .edit-mode input,
+  .edit-mode textarea {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+  }
+  
+  .edit-mode button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+  
+  .edit-mode button:hover {
+    background-color: #0056b3;
+  }
+  
+  .action-buttons button {
+    margin-right: 10px;
+  }
+    
+
+
+
+  .prescribe-container input{
+    width: 200px;
+  }
+.instruct-save{
+  border: none;
+  padding: 1rem;
+  background-color: green;
+  margin-top: 1rem;
+  color: white;
+}
+.our-ex{
+
+  flex-wrap:wrap;
+}
+ .our-ex2{
+  
+  width:48%;
+}
+.gk-p{
+  display: flex;
+
+  justify-content: space-between;
+}
+/* /////////////////////////////////////////////// */
+
+.manager-order-tabel{
+  /* width : 80% */
+}
+
+@media (max-width: 768px) {
+  .manager-order-tabel{
+    width : 100%
+  }
+  
+.all-patient-list-container{
+    padding: 0;
+}
+.patient-item1 p{
+    font-size: 15px;
+}
+
+}

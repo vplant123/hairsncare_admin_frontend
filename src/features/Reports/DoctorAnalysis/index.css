@@ -1,0 +1,268 @@
+.head-managereport{
+background: rgba(0, 160, 227, 0.48);
+height: 65px;
+padding: 15px 30px 15px 30px;
+}
+
+.head-managereport-logo{
+    height: 35px;
+    }
+
+.text-flex-line-center-horizontal{
+    display: flex;
+    justify-content: center;
+}
+
+.text-flex-line-center-overall{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.text-flex-line-center-veritcal{
+    display: flex;
+    align-items: center;
+}
+
+.head-managereport-text1{
+
+font-style: normal;
+font-weight: 600;
+font-size: 25px;
+line-height: 50px;
+/* identical to box height */
+display: flex;
+align-items: center;
+
+color: #292929;
+
+
+}
+
+.head-managereport-page1-sec-1{
+    width: 47%;
+}
+
+.head-managereport-page1-sec-1-left{
+    /* Frame 1261153113 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 15px 23px;
+gap: 37.76px;
+
+width: 100%;
+height: 35px;
+
+border: 1.25853px solid #000000;
+
+font-family: 'Poppins';
+font-style: normal;
+font-weight: 600;
+font-size: 15px;
+line-height: 123.5%;
+/* or 31px */
+color: #000000;flex: none;
+order: 0;
+flex-grow: 0;
+
+}
+
+.head-managereport-page1-sec-1-right-top{
+background: rgba(129, 206, 239, 0.36);
+width: 40%;
+padding: 10px;
+font-size: 12px;
+    }
+
+.head-managereport-page1-sec-1-right-bottom{
+padding: 10px;
+background: #00A0E3;
+border-radius: 15.8534px;
+position: relative;
+}
+
+.head-managereport-page1-sec-1-right-bottom-text-1{
+
+font-weight: 700;
+font-size: 20px;
+line-height: 35px;
+display: flex;
+align-items: center;
+text-align: center;
+color: #FFFFFF;
+flex: none;
+order: 0;
+flex-grow: 0;
+
+}
+
+.head-managereport-page1-sec-1-right-bottom-text-2{
+
+font-weight: 400;
+font-size: 12px;
+line-height: 22px;
+/* identical to box height */
+display: flex;
+align-items: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+    
+    }
+
+
+    .doctor-img{
+        position: absolute;
+        height: 175px;
+        right: 5px;
+        /* border: 0; */
+        bottom: 0;
+    }
+
+    .sec-2-text-1{
+
+
+font-style: normal;
+font-weight: 600;
+font-size: 25px;
+line-height: 90%;
+/* or 59px */
+
+color: #000000;
+
+
+    }
+
+    .sec-2-right{
+        width : 40%;
+        background: url("../../../../public/assets/img/reports/doctorAnalysis/page1/image143-7ojh-700w.png");
+        background-size:     cover;                
+        background-repeat:   no-repeat;
+        background-position: center center; 
+        border-radius: 10px;  
+    }
+
+    .sec-3-pos-1{
+height: 70px;
+
+background: #00A0E3;
+
+    }
+
+
+    .sec-3-pos-2{
+height: 60px;
+
+background: #82CEF0;
+border: 1px solid #000000;
+font-size: 14px;
+text-align: center;
+display: flex;
+align-items: center;
+justify-content: center;
+font-weight: 700;
+
+
+
+    }
+
+    .sec-4-main{
+        /* Rectangle 34624526 */
+
+box-sizing: border-box;
+
+
+background: #EAF8FF;
+border: 1px solid #000000;
+height: 175px;
+    }
+
+    .page-2-sec-1-main{
+        /* Frame 1261153115 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 5px 15px;
+
+background: #BECE37;
+border: 1.5px solid #000000;
+
+    }
+
+    .page-3-sec-2{
+        background: rgba(244, 244, 244, 1);
+        box-shadow: 0px 4.43px 8.97px 0px rgba(0, 0, 0, 0.03);
+        border: 1.11px solid rgba(0, 0, 0, 0.36);
+        padding: 15px;
+    }
+
+    .page-3-sec-3{
+background: #02A1E5;
+border-radius: 55.3498px;
+
+    }
+
+    .page-3-sec-3-sec-1{
+        /* Ellipse 1 */
+        height: 20px;
+        width: 20px;
+        border-radius: 17px;
+background: #FBFCFE;
+
+    }
+
+    .page-3-sec-4{
+        background: rgba(159, 239, 248, 1);
+        box-shadow: 0px 4.43px 8.97px 0px rgba(0, 0, 0, 0.03);
+        border: 1.11px solid rgba(0, 0, 0, 0.36);
+        padding: 3px;
+    }
+
+    .man-page-3-color-main{
+        /* Rectangle 34624518 */
+
+box-sizing: border-box;
+
+background: #FFFFFF;
+border: 1.21637px solid rgba(0, 0, 0, 0.51);
+box-shadow: 0px 4.86547px 7.17657px rgba(0, 0, 0, 0.04);
+border-radius: 35.2747px;
+
+    }
+
+    .man-page-3-color-text{
+        width: 23.5%;
+        height: 40px;
+background: #28EB28;
+border-radius: 137.45px;
+display: flex;
+
+    }
+
+    .man-page-3-color-text-sec{
+        font-size: 10px;
+    font-weight: 700;
+    color: black;
+    display: flex
+;
+    justify-content: center;
+    align-items: center;
+    }
+    

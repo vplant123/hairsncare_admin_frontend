@@ -1,0 +1,673 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  .management-report1ignore-container {
+    width: 100%;
+    display: flex;
+    overflow: auto;
+    min-height: 100vh;
+    align-items: center;
+    flex-direction: column;
+  }
+  .management-report1ignore-management-report1ignore {
+    width: 100%;
+    height: auto;
+    display: flex;
+    overflow: hidden;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-shrink: 0;
+    background-color: rgba(248, 249, 251, 1);
+  }
+  .management-report1ignore-rectangle34624510 {
+    top: 0px;
+    left: 0px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 111px;
+    background-color: #009fe3c4;
+  }
+  .header-text {
+    margin-top: 2%;
+  }
+  .management-report1ignore-text10 {
+    margin-left: -10em;
+    color: rgba(84, 84, 84, 1);
+    height: auto;
+    font-size: 24px;
+    font-style: Bold;
+    text-align: center;
+    font-family: DM Sans;
+    font-weight: 700;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report1ignore-rectangle34624511 {
+    top: 1696px;
+    left: 0px;
+    width: 100%;
+    height: 1px;
+    position: relative;
+  }
+  .management-report1ignore-group1707485983 {
+    top: 15px;
+    left: 76%;
+    width: 286px;
+    height: 81.8226547241211px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .management-report1ignore-rectangle34624522 {
+    background-color: white;
+    width: 288px;
+    height: 81px;
+    margin-left: 4%;
+    margin-top: 1%;
+  }
+  .management-report1ignore-hairsn11 {
+    top: 0px;
+    left: 18.0625px;
+    width: 249px;
+    height: 82px;
+    position: relative;
+  }
+  .management-report1ignore-text11 {
+    top: 35.425537109375px;
+    left: -4em;
+    color: rgba(40, 40, 40, 1);
+    height: auto;
+    position: relative;
+    font-size: 31.65311622619629px;
+    font-style: Bold;
+    text-align: center;
+    font-family: DM Sans;
+    font-weight: 700;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report1ignore-group2147223852 {
+    left: 0px;
+    right: 0px;
+    width: 1154.999755859375px;
+    height: auto;
+    margin: auto;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .management-report1ignore-rectangle34624526 {
+    left: 6.11572265625px;
+    width: 222px;
+    height: 339px;
+    position: relative;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 0.8736762404441833px;
+    border-radius: 3.4947049617767334px;
+  }
+  .management-report1ignore-rectangle34624527 {
+    left: 237.64013671875px;
+    width: 222px;
+    height: 339px;
+    position: relative;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 0.8736762404441833px;
+    border-radius: 3.4947049617767334px;
+  }
+  .management-report1ignore-rectangle34624528 {
+    left: 469.1640625px;
+    width: 223px;
+    height: 339px;
+    position: relative;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 0.8736762404441833px;
+    border-radius: 3.4947049617767334px;
+  }
+  .management-report1ignore-rectangle34624530 {
+    left: 701.56201171875px;
+    width: 222px;
+    height: 339px;
+    position: relative;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 0.8736762404441833px;
+    border-radius: 3.4947049617767334px;
+  }
+  .management-report1ignore-rectangle34624531 {
+    left: 933.0859375px;
+    width: 222px;
+    height: 339px;
+    position: relative;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 0.8736762404441833px;
+    border-radius: 3.4947049617767334px;
+  }
+  .management-report1ignore-frame1261153112 {
+    margin-left: -150px;
+    gap: 13.105143547058105px;
+    top: 0px;
+    left: 0px;
+    margin-top: 6%;
+    display: flex;
+    position: relative;
+    align-self: stretch;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .management-report1ignore-frame1261153113 {
+    gap: 32.98638916015625px;
+    width: 516.3426513671875px;
+    display: flex;
+    padding: 16.493194580078125px 20.094552993774414px;
+    align-items: center;
+    flex-shrink: 0;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 1.0995460748672485px;
+    justify-content: center;
+    background-color: rgba(2, 161, 229, 1);
+  }
+  .management-report1ignore-text12 {
+    color: rgba(0, 0, 0, 1);
+    height: auto;
+    flex-grow: 1;
+    font-size: 21.865095138549805px;
+    font-style: SemiBold;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 600;
+    line-height: 123.50000143051147%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report1ignore-frame1261153114 {
+    gap: 32.98638916015625px;
+    width: 516.3426513671875px;
+    display: flex;
+    padding: 16.493194580078125px 29.687744140625px;
+    align-items: center;
+    flex-shrink: 0;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 1.0995460748672485px;
+    justify-content: center;
+    background-color: rgba(159, 239, 248, 1);
+  }
+  .management-report1ignore-text13 {
+    color: rgba(0, 0, 0, 1);
+    width: 476px;
+    height: auto;
+    font-size: 21.865095138549805px;
+    font-style: SemiBold;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 600;
+    line-height: 123.50000143051147%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report1ignore-frame1261153115 {
+    gap: 32.98638916015625px;
+    width: 516.3426513671875px;
+    display: flex;
+    padding: 16.493194580078125px 20.094552993774414px;
+    align-items: center;
+    flex-shrink: 0;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 1.0995460748672485px;
+    justify-content: center;
+    background-color: rgba(190, 206, 55, 1);
+  }
+  .management-report1ignore-text16 {
+    color: rgba(0, 0, 0, 1);
+    height: auto;
+    flex-grow: 1;
+    font-size: 21.865095138549805px;
+    font-style: SemiBold;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 600;
+    line-height: 123.50000143051147%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report1ignore-frame1261153116 {
+    gap: 32.98638916015625px;
+    width: 516.3426513671875px;
+    display: flex;
+    padding: 16.493194580078125px 20.094552993774414px;
+    align-items: center;
+    flex-shrink: 0;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 1.0995460748672485px;
+    justify-content: center;
+    background-color: rgba(248, 180, 115, 1);
+  }
+  .management-report1ignore-text17 {
+    color: rgba(0, 0, 0, 1);
+    height: auto;
+    flex-grow: 1;
+    font-size: 21.865095138549805px;
+    font-style: SemiBold;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 600;
+    line-height: 123.50000143051147%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report1ignore-frame1261153117 {
+    gap: 32.98638916015625px;
+    width: 516.3426513671875px;
+    display: flex;
+    padding: 16.493194580078125px 20.094552993774414px;
+    align-items: center;
+    flex-shrink: 0;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 1.0995460748672485px;
+    justify-content: center;
+    background-color: rgba(230, 146, 208, 1);
+  }
+  .management-report1ignore-text18 {
+    color: rgba(0, 0, 0, 1);
+    height: auto;
+    flex-grow: 1;
+    font-size: 21.865095138549805px;
+    font-style: SemiBold;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 600;
+    line-height: 123.50000143051147%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .welcome-txt {
+    width: 90%;
+    overflow: hidden;
+    margin-left: 9%;
+    padding-right: 8.4em;
+  }
+  
+  .management-report1ignore-text19 {
+    margin-top: 6em;
+    margin-left: 0.8em;
+    color: rgba(70, 70, 70, 1);
+    font-size: 24.462934494018555px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 400;
+    line-height: 164.9999976158142%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report1ignore-text29 {
+    top: 1em;
+    left: 6.11572265625px;
+    color: rgba(0, 0, 0, 1);
+    width: 921px;
+    height: auto;
+    position: relative;
+    font-size: 52.42057418823242px;
+    font-style: SemiBold;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 600;
+    line-height: 123.50000143051147%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report1ignore-text30 {
+    top: 2.2em;
+    margin-left: -16.8em;
+    color: rgba(0, 0, 0, 1);
+    width: 516px;
+    height: auto;
+    position: relative;
+    font-size: 52.42057418823242px;
+    font-style: Medium;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 500;
+    line-height: 123.50000143051147%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report1ignore-text31 {
+    color: rgba(0, 0, 0, 1);
+  }
+  .management-report1ignore-text32 {
+    color: rgba(0, 160, 227, 1);
+  }
+  .management-report1ignore-group1707485965 {
+    top: 89.98876953125px;
+    left: 23%;
+    width: 606.331298828125px;
+    height: 264.5424499511719px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .management-report1ignore-rectangle5944 {
+    top: 43.38344955444336px;
+    left: 0.00013961445074528456px;
+    width: 90%;
+    height: 221px;
+    position: relative;
+    border-radius: 12.698038101196289px;
+  }
+  .management-report1ignore-group9874 {
+    top: 221.1541748046875px;
+    left: 34.923301696777344px;
+    width: 38.096229553222656px;
+    height: 7.618846416473389px;
+    display: flex;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .management-report1ignore-ellipse186 {
+    top: 0px;
+    left: 0px;
+    width: 8px;
+    height: 8px;
+    position: absolute;
+  }
+  .management-report1ignore-ellipse187 {
+    top: 0.00011689940583892167px;
+    left: 15.237249374389648px;
+    width: 8px;
+    height: 8px;
+    position: absolute;
+  }
+  .management-report1ignore-ellipse188 {
+    top: 0.00011689940583892167px;
+    left: 30.477523803710938px;
+    width: 8px;
+    height: 8px;
+    position: absolute;
+  }
+  .management-report1ignore-image45dr-amit11 {
+    top: -0.00003656569242593832px;
+    left: 320px;
+    width: 230px;
+    height: 265px;
+    position: absolute;
+  }
+  .management-report1ignore-frame1000004465 {
+    gap: 5.290849208831787px;
+    top: 60.316471099853516px;
+    left: 34.917327880859375px;
+    width: 240.2045440673828px;
+    height: 136.50392150878906px;
+    display: flex;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 0;
+    flex-direction: column;
+  }
+  .management-report1ignore-text33 {
+    color: rgba(255, 255, 255, 1);
+    font-size: 33.86143493652344px;
+    text-align: left;
+    font-family: Poppins;
+  }
+  .management-report1ignore-text34 {
+    color: rgba(255, 255, 255, 1);
+    height: auto;
+    font-size: 16.93071746826172px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 400;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report1ignore-text35 {
+    color: rgba(255, 255, 255, 1);
+    height: auto;
+    font-size: 16.93071746826172px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 400;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report1ignore-text36 {
+    color: rgba(255, 255, 255, 1);
+    height: auto;
+    font-size: 16.93071746826172px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 400;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .grid {
+    width: 80%;
+    display: flex;
+    margin-top: 8em;
+    justify-content: space-between;
+    gap: 1%;
+  }
+  .box1 {
+    background-color: #02a1e5;
+    width: 388.87px;
+    height: 332.21px;
+    align-items: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .box1 img {
+    display: block;
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 75%;
+  }
+  .box3 img {
+    display: block;
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 75%;
+  }
+  .box4 img {
+    display: block;
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 75%;
+  }
+  .box5 img {
+    display: block;
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 75%;
+  }
+  
+  .box2 img {
+    margin-top: 15px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 75%;
+  }
+  .management-report1ignore-grade2baldnesspatienttreatmentplan {
+    width: 204px;
+    margin-left: 0.6em;
+    margin-top: 4em;
+    height: 204px;
+    position: relative;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 0.8736762404441833px;
+  }
+  .management-report1ignore-grade2baldnesspatienttreatmentplan {
+    width: 204px;
+    margin-left: 0.6em;
+    margin-top: 4em;
+    height: 204px;
+    position: relative;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 0.8736762404441833px;
+  }
+  .box2 {
+    background-color: #9feff8;
+    width: 388.87px;
+    height: 332.21px;
+  }
+  .management-report1ignore-hairand-scalpanalysis1 {
+    margin-left: 0.6em;
+    width: 211px;
+    height: 204px;
+    position: relative;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 0.8736762404441833px;
+  }
+  .box3 {
+    background-color: #bece37;
+    width: 388.87px;
+    height: 332.21px;
+  }
+  .management-report1ignore-nutritional1 {
+    margin-left: 0.6em;
+    margin-top: 3em;
+    width: 203px;
+    height: 201px;
+    position: relative;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 0.8736762404441833px;
+  }
+  .box4 {
+    background-color: #f8b473;
+    width: 388.87px;
+    height: 332.21px;
+  }
+  .management-report1ignore-lifestyle4 {
+    margin-left: 0.6em;
+    margin-top: 3em;
+    width: 207px;
+    height: 204px;
+    position: relative;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 0.8736762404441833px;
+  }
+  .box5 {
+    background-color: #e692d0;
+    width: 388.87px;
+    height: 332.21px;
+  }
+  .management-report1ignore-doctorstressmanagementposter2 {
+    margin-left: 0.6em;
+    margin-top: 3em;
+    width: 202px;
+    height: 204px;
+    position: relative;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 0.8736762404441833px;
+  }
+  .box1 .management-report1ignore-text37 {
+    /* color: black;
+    font-weight: bold;
+    font-size: large;
+    display: block;
+    margin-left: auto;
+    margin-right: auto; */
+    margin-top: 25px;
+    text-align: center;
+    color: black;
+    font-weight: bold;
+    font-size: large;
+  }
+  .management-report1ignore-text38 {
+    margin-top: 25px;
+    text-align: center;
+    color: black;
+    font-weight: bold;
+    font-size: large;
+  }
+  .management-report1ignore-text39 {
+    margin-top: 25px;
+    text-align: center;
+    color: black;
+    font-weight: bold;
+    font-size: large;
+  }
+  .management-report1ignore-text40 {
+    margin-top: 25px;
+    text-align: center;
+    color: black;
+    font-weight: bold;
+    font-size: large;
+  }
+  .management-report1ignore-text41 {
+    margin-top: 25px;
+    text-align: center;
+    color: black;
+    font-weight: bold;
+    font-size: large;
+  }
+  /* footer {
+    width: 100%;
+    height: 10vh;
+    background-color: #02a1e5;
+    margin-top: 8%;
+  } */
+  
+  @media (max-width: 1386px) {
+    .management-report1ignore-text10 {
+      left: 998px;
+    }
+    .management-report1ignore-rectangle34624511 {
+      left: 0px;
+      width: 100%;
+    }
+    .management-report1ignore-group1707485965 {
+      top: 89.98876953125px;
+      left: 10%;
+      width: 606.331298828125px;
+      height: 264.5424499511719px;
+      display: flex;
+      position: relative;
+      align-items: flex-start;
+      flex-shrink: 1;
+    }
+    .grid {
+      width: 90%;
+      display: flex;
+      margin-top: 8em;
+      margin-left: -2em;
+      justify-content: space-between;
+      gap: 1%;
+    }
+  }
+  

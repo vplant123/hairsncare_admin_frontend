@@ -1,0 +1,19 @@
+.rx-container{
+    display: flex;
+    justify-content: center;
+    gap: 5rem;
+    padding-top: 3rem;
+}
+.rx-container img{
+    width: 100%;
+}
+@media (max-width: 768px) {
+.rx-container{
+    flex-direction: column;
+}
+
+.rx-container h2{
+    margin-bottom: 2rem;
+    text-align: center;
+}
+}

@@ -1,0 +1,126 @@
+/* .product-list-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+  .loader{
+    
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+  }
+  .product-item {
+   width:30%;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+  }
+  
+  .product-item img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+  }
+   */
+   .product-list-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+  
+  .loader {
+  
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .product-item {
+    /* width: 30%; */
+    margin: 10px; /* Add margin to create space between cart items */
+    padding: 1.5rem;
+    border: 1px solid #ccc;
+    text-align: center;
+  }
+  
+  .product-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .product-item p {
+    margin-top: 1rem;
+  }
+  
+  .prod-button {
+    margin-top: 1rem;
+  }
+  @media screen and (max-width: 768px) {
+    .product-item {
+      /* width: 95%;  */
+      margin: 0;
+    }
+  }
+
+
+
+  .theme-btn-2 {
+    border: solid 1px #005cad;
+    color: #fff;
+    background-color: #005cad;
+    text-transform: none;
+    border-radius: 5px;
+}
+
+.product-price-des {
+  font-size: 16px;
+  opacity: 0.9;
+  color: #FF0000;
+  text-decoration: line-through;
+}
+
+.nt_label{
+  background-color: #83b738;
+}
+
+.nt_label {
+  display: -ms-flexbox;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  min-width: 30px;
+  backface-visibility: hidden;
+  border-radius: 3px;
+  font-weight: 700;
+  opacity: .8;
+  line-height: 1.1;
+  font-size: 11.6px;
+  height: auto;
+  width: auto;
+  padding: 4.5px 10px;
+}
+
+.star-review-1{
+  font-size: 16px;
+  color: #ffa500;
+}
+
+.star-review-1-inactive{
+  font-size: 16px;
+  color: #ffa500;
+}
+
+.image-container-product-all:hover {
+  transform: scale(1.2); /* Zoom in by 1.5 times on hover */
+}
+
+.image-container-product-all{
+  overflow: hidden;
+  position: relative;
+}

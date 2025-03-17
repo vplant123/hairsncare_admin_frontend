@@ -1,0 +1,56 @@
+.search-icon{
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    opacity: 0.5;
+}
+
+.search_header__prs {
+    padding: 10px 20px;
+    border-bottom: 1px solid rgba(129,129,129,.2);
+    box-shadow: 0 3px 10px 0 rgb(129 129 129 / 20%);
+}
+.fwb {
+    font-weight: 700;
+}
+.cd {
+    color: #333;
+}
+
+.seacrh-product-name{
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+}
+
+.filter-cart {
+    position: fixed;
+    top: 0;
+    right: -100%; /* Hide initially */
+    width: 300px;
+    height: 100%;
+    background-color: #fff;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    transition: right 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .filter-cart.open {
+    left: 0; /* Slide in */
+  }
+
+  .filter-price-1{
+    background-color: #CEF1FB;
+    padding: 20px;
+    margin-bottom: 2rem;
+  }
+
+  .fiter-rating-1 {
+    background-color: #EEF3F9;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}

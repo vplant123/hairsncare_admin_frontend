@@ -1,0 +1,722 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  .management-report-pg2-treatment-plan-rectangle34624510 {
+    top: 0px;
+    left: 0px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 111px;
+    background-color: #009fe3c4;
+  }
+  
+  .management-report-pg2-treatment-plan-text10 {
+    margin-left: -10em;
+    position: relative;
+    top: 1.6em;
+    color: rgba(84, 84, 84, 1);
+    height: auto;
+    font-size: 24px;
+    font-style: Bold;
+    text-align: center;
+    font-family: DM Sans;
+    font-weight: 700;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .treat-txt {
+    background-color: #02a1e5;
+    height: 70px;
+    width: 534px;
+    margin-left: -18em;
+    margin-top: 1em;
+  }
+  .management-report-pg2-treatment-plan-text36 {
+    top: 20%;
+    margin-left: 4.4em;
+    color: rgba(40, 40, 40, 1);
+    height: auto;
+    position: relative;
+    font-size: 31.65311622619629px;
+    font-style: Bold;
+    text-align: center;
+    font-family: DM Sans;
+    font-weight: 700;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .middle-txt {
+    display: flex;
+    justify-content: space-between;
+  }
+  .management-report-pg2-treatment-plan-text11 {
+    top: 6%;
+    left: 63px;
+    color: rgba(70, 70, 70, 1);
+    width: 744px;
+    height: auto;
+    position: relative;
+    font-size: 24px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 400;
+    line-height: 164.9999976158142%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report-pg2-treatment-plan-text28 {
+    top: 2%;
+    left: 63px;
+    color: rgba(0, 0, 0, 1);
+    width: 80%;
+    height: auto;
+    position: relative;
+    font-size: 60px;
+    font-style: SemiBold;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 600;
+    line-height: 123.50000143051147%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report-pg2-treatment-plan-text29 {
+    color: rgba(0, 0, 0, 1);
+  }
+  .management-report-pg2-treatment-plan-text30 {
+    color: rgba(0, 160, 227, 1);
+  }
+  .management-report-pg2-treatment-plan-text33 {
+    padding-top: 6%;
+    color: rgba(0, 0, 0, 1);
+    right: 0px;
+    width: 608px;
+    height: auto;
+    margin: auto;
+    position: relative;
+    font-size: 60px;
+    font-style: SemiBold;
+    text-align: center;
+    font-family: Poppins;
+    font-weight: 600;
+    line-height: 123.50000143051147%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .background1 {
+    background-color: #00a0e3;
+    height: 135px;
+    width: 100%;
+    margin-top: -22em;
+  }
+  .management-report-pg2-treatment-plan-rectangle34624511 {
+    margin-top: 8%;
+    left: 0px;
+    width: 100%;
+    height: 108px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-group1707485983 {
+    top: 15px;
+    left: 63px;
+    width: 286px;
+    height: 81.8226547241211px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .management-report-pg2-treatment-plan-rectangle34624522 {
+    background-color: white;
+    width: 288px;
+    height: 81px;
+    margin-left: 4%;
+    margin-top: 1%;
+  }
+  .management-report-pg2-treatment-plan-hairsn11 {
+    top: 0px;
+    left: 18.0625px;
+    width: 249px;
+    height: 82px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-rectangle34624533 {
+    top: 21px;
+    left: 0px;
+    right: 0px;
+    width: 534px;
+    height: 70px;
+    margin: auto;
+    position: relative;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 1px;
+  }
+  .flex1 {
+    width: 80%;
+  }
+  .background {
+    background-color: #00a0e3;
+    width: 650px;
+    height: 197px;
+    margin-top: -12.4em;
+    border-radius: 30%;
+  }
+  .management-report-pg2-treatment-plan-modernmedicine {
+    top: 0;
+    right: 0px;
+    width: 700px;
+    height: 890px;
+    margin: auto;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-diagnosissynopsis {
+    top: 4%;
+    align-items: center;
+    width: 941px;
+    height: 627px;
+    margin: auto;
+    position: relative;
+    border-radius: 18px;
+  }
+  .management-report-pg2-treatment-plan-text37 {
+    color: rgba(0, 0, 0, 1);
+    height: auto;
+    position: relative;
+    font-size: 40px;
+    font-style: SemiBold;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 600;
+    line-height: 164.9999976158142%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report-pg2-treatment-plan-text38 {
+    color: rgba(0, 0, 0, 1);
+    width: 793px;
+    height: auto;
+    position: relative;
+    font-size: 40px;
+    font-style: SemiBold;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 600;
+    line-height: 142.99999475479126%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report-pg2-treatment-plan-text39 {
+    color: rgba(0, 0, 0, 1);
+    height: auto;
+    position: relative;
+    font-size: 40px;
+    font-style: SemiBold;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 600;
+    line-height: 164.9999976158142%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report-pg2-treatment-plan-text40 {
+    color: rgba(84, 84, 84, 1);
+    width: 814px;
+    height: auto;
+    position: relative;
+    font-size: 24px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 400;
+    line-height: 164.9999976158142%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report-pg2-treatment-plan-text43 {
+    top: 2780px;
+    left: 422px;
+    color: rgba(84, 84, 84, 1);
+    width: 814px;
+    height: auto;
+    position: relative;
+    font-size: 24px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 400;
+    line-height: 164.9999976158142%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report-pg2-treatment-plan-text44 {
+    color: rgba(84, 84, 84, 1);
+    width: 847px;
+    height: auto;
+    position: relative;
+    font-size: 24px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 400;
+    line-height: 164.9999976158142%;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .management-report-pg2-treatment-plan-vector10 {
+    top: 2121px;
+    left: 1113px;
+    width: 134px;
+    height: 31px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-vector11 {
+    top: 2633px;
+    left: 1113px;
+    width: 134px;
+    height: 31px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-vector12 {
+    top: 2379px;
+    left: 317.60205078125px;
+    width: 134px;
+    height: 31px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-group2147223856 {
+    top: 2122.0810546875px;
+    left: 91px;
+    width: 297.82421875px;
+    height: 222.4620361328125px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .management-report-pg2-treatment-plan-group1707485984 {
+    top: 0px;
+    left: 0px;
+    width: 297.82421875px;
+    height: 222.4620361328125px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .management-report-pg2-treatment-plan-vector13 {
+    top: 18.16162109375px;
+    left: 245.08322143554688px;
+    width: 53px;
+    height: 186px;
+    position: relative;
+  }
+  .round-box1 {
+    display: flex;
+    justify-content: space-between;
+    /* margin-top: 40em;
+    margin-left: 6%; */
+    border-radius: 100px;
+    width: 88%;
+    /* height: 223px; */
+    background-color: white;
+  }
+  .round-img {
+    background: linear-gradient(274deg, #00a0e3 13%, #0b82b4 73%);
+    width: 22%;
+    border-top-left-radius: 100px;
+    border-bottom-left-radius: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .box1-txt {
+    margin-left: 4%;
+    padding-right: 8%;
+  }
+  .number-box {
+    border: 4px solid white;
+    background-color: rgb(197, 197, 197);
+    border-radius: 60%;
+    width: 20%;
+    height: 20%;
+    padding: 2em;
+    /* position: relative;
+    top: 4.8em;
+    left: 6.6em; */
+  }
+  .number {
+    margin-top: -0.6em;
+    margin-left: -0.2em;
+    color: #000000;
+    font-family: "poppins";
+    font-weight: 600;
+    font-size: 24px;
+  }
+  .blue-box {
+    margin-left: 80%;
+    background: linear-gradient(274deg, #00a0e3 13%, #0b82b4 73%);
+    width: 20%;
+    height: 20px;
+  }
+  .round-box2 {
+    display: flex;
+    justify-content: space-between;
+    /* margin-top: 8em;
+    margin-left: 6%; */
+    border-radius: 100px;
+    width: 88%;
+    /* height: 243px; */
+    background-color: white;
+  }
+  .round-img2 {
+    background: linear-gradient(274deg, #00a0e3 13%, #0b82b4 73%);
+    width: 22%;
+    border-top-left-radius: 100px;
+    border-bottom-left-radius: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .box1-txt2 {
+    margin-left: 4%;
+    padding-right: 8%;
+  }
+  .number-box2 {
+    border: 4px solid white;
+    background-color: rgb(197, 197, 197);
+    border-radius: 60%;
+    width: 20%;
+    height: 20%;
+    padding: 2em;
+    /* position: relative;
+    top: 4.8em;
+    left: 6.6em; */
+  }
+  .number2 {
+    margin-top: -0.6em;
+    margin-left: -0.3em;
+    color: #000000;
+    font-family: "poppins";
+    font-weight: 600;
+    font-size: 24px;
+  }
+  .blue-box2 {
+    margin-left: 80%;
+    background: linear-gradient(274deg, #00a0e3 13%, #0b82b4 73%);
+    width: 20%;
+    height: 20px;
+  }
+  .round-box3 {
+    display: flex;
+    justify-content: space-between;
+    /* margin-top: 8em;
+    margin-left: 6%; */
+    border-radius: 100px;
+    width: 88%;
+    /* height: 223px; */
+    background-color: white;
+  }
+  .round-img3 {
+    background: linear-gradient(274deg, #00a0e3 13%, #0b82b4 73%);
+    width: 22%;
+    border-top-left-radius: 100px;
+    border-bottom-left-radius: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .box1-txt3 {
+    margin-left: 4%;
+    padding-right: 8%;
+  }
+  .number-box3 {
+    border: 4px solid white;
+    background-color: rgb(197, 197, 197);
+    border-radius: 60%;
+    width: 20%;
+    height: 20%;
+    padding: 2em;
+    /* position: relative;
+    top: 4.8em;
+    left: 6.6em; */
+  }
+  .number3 {
+    margin-top: -0.6em;
+    margin-left: -0.3em;
+    color: #000000;
+    font-family: "poppins";
+    font-weight: 600;
+    font-size: 24px;
+  }
+  .blue-box3 {
+    margin-left: 80%;
+    background: linear-gradient(274deg, #00a0e3 13%, #0b82b4 73%);
+    width: 20%;
+    height: 20px;
+  }
+  .management-report-pg2-treatment-plan-vector14 {
+    top: 0px;
+    left: 0px;
+    width: 279px;
+    height: 222px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-vector15 {
+    top: 36.20166015625px;
+    left: 44.4508056640625px;
+    width: 146px;
+    height: 146px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-vector16 {
+    top: 109.39990234375px;
+    left: 22.90179443359375px;
+    width: 134px;
+    height: 134px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-vector17 {
+    top: 59.40673828125px;
+    left: 50.69970703125px;
+    width: 117px;
+    height: 117px;
+    opacity: 0.1;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-clippath1 {
+    top: 0px;
+    left: 0px;
+    width: 278.5357971191406px;
+    height: 222.4620361328125px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .management-report-pg2-treatment-plan-vector18 {
+    top: 0px;
+    left: 0px;
+    width: 279px;
+    height: 222px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-group1 {
+    top: -12.0810546875px;
+    left: 47.491912841796875px;
+    width: 240.29232788085938px;
+    height: 246.99951171875px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .management-report-pg2-treatment-plan-vector19 {
+    top: 0px;
+    left: 0px;
+    width: 240px;
+    height: 247px;
+    opacity: 0.36;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-group2147223855 {
+    top: 2634.0810546875px;
+    left: 91px;
+    width: 297.82421875px;
+    height: 222.4620361328125px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .management-report-pg2-treatment-plan-group1707485986 {
+    top: 0px;
+    left: 0px;
+    width: 297.82421875px;
+    height: 222.4620361328125px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .management-report-pg2-treatment-plan-vector20 {
+    top: 18.16162109375px;
+    left: 245.08322143554688px;
+    width: 53px;
+    height: 186px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-vector21 {
+    top: 0px;
+    left: 0px;
+    width: 279px;
+    height: 222px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-vector22 {
+    top: 36.20166015625px;
+    left: 44.4508056640625px;
+    width: 146px;
+    height: 146px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-vector23 {
+    top: 109.39990234375px;
+    left: 22.90179443359375px;
+    width: 134px;
+    height: 134px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-vector24 {
+    top: 59.40673828125px;
+    left: 50.69970703125px;
+    width: 117px;
+    height: 117px;
+    opacity: 0.1;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-clippath2 {
+    top: 0px;
+    left: 0px;
+    width: 278.5357971191406px;
+    height: 222.4620361328125px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .management-report-pg2-treatment-plan-vector25 {
+    top: 0px;
+    left: 0px;
+    width: 279px;
+    height: 222px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-group2 {
+    top: -12.0810546875px;
+    left: 47.491912841796875px;
+    width: 240.29232788085938px;
+    height: 246.99951171875px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .management-report-pg2-treatment-plan-vector26 {
+    top: 0px;
+    left: 0px;
+    width: 240px;
+    height: 247px;
+    opacity: 0.36;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-group2147223854 {
+    top: 2380.0810546875px;
+    left: 20em;
+    width: 297.82421875px;
+    height: 222.4620361328125px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .management-report-pg2-treatment-plan-group1707485985 {
+    top: 0px;
+    left: 44em;
+    width: 297.82421875px;
+    height: 222.4620361328125px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .management-report-pg2-treatment-plan-vector27 {
+    top: 18.16162109375px;
+    width: 53px;
+    height: 186px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-vector28 {
+    top: 0px;
+    left: 0px;
+    width: 279px;
+    height: 222px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-vector29 {
+    top: 36.20166015625px;
+    left: -44.4508056640625px;
+    width: 146px;
+    height: 146px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-vector30 {
+    top: 109.39990234375px;
+    left: -22.90179443359375px;
+    width: 134px;
+    height: 134px;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-vector31 {
+    top: 59.40673828125px;
+    left: -50.69970703125px;
+    width: 117px;
+    height: 117px;
+    opacity: 0.1;
+    position: relative;
+  }
+  .management-report-pg2-treatment-plan-clippath3 {
+    top: 0px;
+    left: 0px;
+    width: 278.5357971191406px;
+    height: 222.4620361328125px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .management-report-pg2-treatment-plan-group3 {
+    top: -12.0810546875px;
+    left: 40em;
+    width: 240.29232788085938px;
+    height: 246.99951171875px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  /* footer {
+    margin-top: 20em;
+    background-color: #00a0e3;
+    width: 100%;
+    height: 10vh;
+  } */
+  @media (max-width: 1386px) {
+    .management-report-pg2-treatment-plan-rectangle34624535 {
+      left: 0px;
+      right: 0px;
+      width: 100%;
+      margin: auto;
+    }
+    .management-report-pg2-treatment-plan-text28 {
+      position: relative;
+      left: 1.4em;
+      width: 100%;
+      font-size: 40px;
+    }
+    .management-report-pg2-treatment-plan-rectangle34624511 {
+      width: 100%;
+    }
+  
+    .management-report-pg2-treatment-plan-modernmedicine {
+      width: 649px;
+    }
+  }
+  

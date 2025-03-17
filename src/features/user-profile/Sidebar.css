@@ -1,0 +1,17 @@
+.sideBar-col-width-3{
+    width: 100%;
+  }
+
+  .sideBar-col-width-4{
+    width: 90%;
+  }
+
+  .sidebar-top-end{
+    display: flex;
+    flex-direction: column;
+    /* flex-wrap: wrap; */
+    /* height: 400px; */
+    /* align-content: space-between; */
+    justify-content: space-between;
+    height: 100vh;
+  }

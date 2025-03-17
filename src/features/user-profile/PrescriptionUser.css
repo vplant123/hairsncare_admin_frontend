@@ -1,0 +1,22 @@
+.input-med-1 {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .lab-test-1{
+    font-size: 18px;
+  }
+  @media screen and (max-width: 768px) {
+    .input-med-1 {
+      display: flex;
+      gap: 0px;
+    }
+    .lab-test-1{
+        font-size: 15px;
+      }
+  }
+
+.page-break-2{
+  page-break-inside: avoid;
+
+}

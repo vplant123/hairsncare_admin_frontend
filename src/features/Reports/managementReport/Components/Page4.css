@@ -1,0 +1,644 @@
+
+
+.page-4 .nutrition {
+  top: 2px;
+  left: 0px;
+  color: rgba(40, 40, 40, 1);
+  right: 0px;
+  height: auto;
+  margin: auto;
+  position: relative;
+  font-size: 35px;
+  font-style: Bold;
+  text-align: center;
+  font-family: DM Sans;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.page-4 .header-text{
+  margin-top: 2%;
+}
+.page-4 .smart-report {
+  margin-left: -10em;
+  color: rgba(84, 84, 84, 1);
+  height: auto;
+  font-size: 24px;
+  font-style: Bold;
+  text-align: center;
+  font-family: DM Sans;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.page-4 .diet-heading{
+  margin-top: 1.4em;
+  text-align: center;
+  color: rgba(55, 55, 55, 1);
+  height: auto;
+  margin: auto;
+  position: relative;
+  font-size: 36px;
+  font-style: SemiBold;
+  font-family: Poppins;
+  font-weight: 600;
+  line-height: 123.50000143051147%;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.page-4 .diet-flex{
+  display: flex;
+  justify-content: center;
+  /* margin-top: 2em; */
+  padding: 30px;
+}
+.page-4 .diet-content{
+  width: 60%;
+  color: rgba(0, 0, 0, 1);
+  height: auto;
+  position: relative;
+  font-size: 20px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Poppins;
+  font-weight: 400;
+  line-height: 123.50000143051147%;
+  font-stretch: normal;
+  text-decoration: none;
+}
+
+
+.page-4 .diet-img{
+  width: 660px;
+  height: 369px;
+  position: relative;
+}
+.page-4 .diet-plan{
+  margin-top: 2em;
+}
+.page-4 .dietplan-text{
+  text-align: center;
+  color: rgba(0, 0, 0, 1);
+  right: 0px;
+  height: auto;
+  margin: auto;
+  position: relative;
+  font-size: 14px;
+  font-style: Regular;
+  font-family: Poppins;
+  font-weight: 400;
+  line-height: 123.50000143051147%;
+  font-stretch: normal;
+  text-decoration: none;
+}
+/* .page-4 .diet-content ul{
+  margin-top: 2%;
+} */
+.page-4 .diet-content li{
+  margin-left: 2.9%;
+  color: rgba(0, 0, 0, 1);
+  height: auto;
+  position: relative;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Poppins;
+  font-weight: 400;
+  line-height: 1.6em;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.page-4 .diet-titledesign{
+  /* margin-top: 4em; */
+  display: flex;
+  justify-content: center;
+}
+.page-4 .diet-box1{
+  width: 35.64px;
+  height: 200px;
+  position: relative;
+  border: 4px solid #016A44;
+  background-color: #016A44;
+  transform: skew(-20deg);
+}
+.page-4 .diet-box2{
+  margin-left: 0em;
+  margin-top: 2.8em;
+  display: flex;
+  justify-content: center;
+  gap: 4%;
+  /* width: 1253px; */
+  height: 100%;
+  position: relative;
+  border: 4px solid #016A44;
+  transform: skew(-20deg);
+  z-index: 999999 !important;
+}
+.page-4 .diet-boxdesign{
+  display: flex;
+  gap: 2%;
+  margin-left: 2%;
+}
+.page-4 .diet-box3{
+  top: 14px;
+  left: -1.4em;
+  width: 7.46px;
+  height: 80px;
+  position: relative;
+  border: 4px solid #016A44;
+  transform: skew(1deg);
+}
+.page-4 .diet-box4{
+  top: 14px;
+  left: -1em;
+  width: 7.46px;
+  height:  80px;
+  position: relative;
+  border: 4px solid #016A44;
+  transform: skew(1deg);
+}
+.page-4 .diet-title{
+  margin-top: 0.8em;
+  width: 70%;
+  color: rgba(1, 106, 68, 1);
+  height: auto;
+  position: relative;
+  font-size: 24px;
+  font-style: SemiBold;
+  text-align: center;
+  font-family: Poppins;
+  font-weight: 600;
+  line-height: 123.50000143051147%;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.page-4 .diet-box6{
+  margin-left: -1em;
+  width: 35.64px;
+  height: 200px;
+  position: relative;
+  border: 4px solid #016A44;
+  background-color: #016A44;
+  transform: skew(-20deg);
+  z-index: 1;
+}
+.page-4 .breakfast-titlebox {
+  /* top: 3em; */
+  right: 0px;
+  /* width: 626px; */
+  /* height: 117px; */
+  /* margin: auto; */
+  position: relative;
+  border: 4px solid #6D9B3D;
+  transform: skew(20deg);
+  background-color: #6D9B3D;
+}
+.page-4 .breakfast-flextitle{
+  display: flex;
+  justify-content: space-between;
+  height: 100%;
+  /* flex-wrap: wrap; */
+}
+.page-4 .breakfast-title{
+  /* margin: auto; */
+  /* width: 42%; */
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  position: relative;
+  font-size: 20px;
+  font-style: SemiBold;
+  text-align: left;
+  font-family: Poppins;
+  font-weight: 600;
+  line-height: 100px;
+  font-stretch: normal;
+  text-decoration: none;
+  /* margin: auto; */
+}
+.page-4 .breakfast-img{
+  margin: auto;
+  width: 201px;
+  height: 134px;
+  position: relative;
+}
+.page-4 .breakfast-flex{
+  display: flex;
+  justify-content: center;
+  /* margin: 0 8em 0 8em; */
+}
+.page-4 .bordered-container {
+  background-color: white; /* White background for content */
+  /* padding: 20px; */
+  width: 666px;
+  /* height: 100%; */
+
+  text-align: left;
+  background-color: #c8d5b9;
+  /* margin: 100px auto; */
+  display: flex;
+  flex-direction: column;
+}
+.page-4 .bordered-container2 {
+  background-color: white; /* White background for content */
+  /* padding: 20px; */
+  width: 50%;
+  /* height: 100%; */
+
+  text-align: left;
+  background-color: #c8d5b9;
+  /* margin: 100px auto; */
+  display: flex;
+  flex-direction: column;
+}
+.page-4 .breakfast-fullcontent{
+  /* top: 1.8em; */
+  color: rgba(43, 43, 43, 1);
+  height: auto;
+  position: relative;
+  font-size: 10px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Poppins;
+  font-weight: 700;
+  line-height: 189.9999976158142%;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.page-4 .breakfast-fullcontent2{
+  /* top: 1.8em; */
+  color: rgba(43, 43, 43, 1);
+  height: 100%;
+  position: relative;
+  font-size: 10px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Poppins;
+  font-weight: 700;
+  line-height: 189.9999976158142%;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text135 {
+  color: rgba(43, 43, 43, 1);
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text137 {
+  color: rgba(73, 72, 72, 1);
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text139 {
+  color: rgba(73, 72, 72, 1);
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text141 {
+  color: rgba(73, 72, 72, 1);
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text143 {
+  color: rgba(73, 72, 72, 1);
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text145 {
+  color: rgba(43, 43, 43, 1);
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text147 {
+  color: rgba(73, 72, 72, 1);
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text149 {
+  color: rgba(73, 72, 72, 1);
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text152 {
+  color: rgba(43, 43, 43, 1);
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text162 {
+  color: rgba(43, 43, 43, 1);
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text164 {
+  color: rgba(73, 72, 72, 1);
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text166 {
+  color: rgba(73, 72, 72, 1);
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text168 {
+  color: rgba(73, 72, 72, 1);
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text170 {
+  color: rgba(43, 43, 43, 1);
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text172 {
+  color: rgba(73, 72, 72, 1);
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text174 {
+  color: rgba(73, 72, 72, 1);
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text176 {
+  color: rgba(43, 43, 43, 1);
+  font-weight: 700;
+}
+.page-4 .lunch-img{
+  margin: auto;
+  width: 135px;
+  height: 135px;
+  position: relative;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text185 {
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text187 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text189 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text192 {
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text194 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text196 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text199 {
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text208 {
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text210 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text212 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text214 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text216 {
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text218 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text220 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text222 {
+  font-weight: 700;
+}
+.page-4 .snacks-img{
+  margin: auto;
+  width: 186px;
+  height: 127px;
+  position: relative;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text233 {
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text235 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text238 {
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text240 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text243 {
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text250 {
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text252 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text254 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text256 {
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text258 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text260 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text262 {
+  font-weight: 700;
+}
+.page-4 .dinner-img{
+  margin: auto;
+  width: 208px;
+  height: 117px;
+  position: relative;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text296 {
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text298 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text300 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text302 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text305 {
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text307 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text309 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text312 {
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text269 {
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text271 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text273 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text275 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text278 {
+  font-weight: 700;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text280 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text282 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text284 {
+  font-weight: 400;
+}
+.page-4 .management-report-page4-nutrition-mngmnt1-text286 {
+  font-weight: 700;
+}
+.page-4 .card {
+  width: 350px;
+  background-color: #f9ffe6;
+  border: 15px solid;
+  border-image-source: linear-gradient(
+    45deg,
+    #7b9e48 25%,
+    #e5f2d8 25%,
+    #e5f2d8 50%,
+    #7b9e48 50%
+  );
+  border-image-slice: 1;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.page-4 .header {
+  text-align: center;
+  margin-bottom: 15px;
+}
+.page-4 .labels {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.page-4 .label {
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+}
+.page-4 .label.green {
+  background-color: #4caf50;
+}
+.page-4 .label.red {
+  background-color: #f44336;
+}
+.page-4 .box-text{
+  /* top: 0.2em; */
+  color: rgba(0, 0, 0, 1);
+  /* width: 100%; */
+  /* height: auto; */
+  position: relative;
+  font-size: 20px;
+  font-style: Bold;
+  text-align: center;
+  font-family: DM Sans;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.page-4 .content {
+  color: #4a5932;
+}
+.page-4 .content ol {
+  padding-left: 20px;
+}
+.page-4 .content ul {
+  margin-left: 20px;
+  list-style-type: circle;
+}
+.page-4 .bordered-container {
+  background-color: white; /* White background for content */
+  /* padding: 20px; */
+  width: 50%;
+
+  text-align: left;
+  background-color: #c8d5b9;
+  /* margin: 100px auto; */
+  display: flex;
+  flex-direction: column;
+}
+.page-4 .bordered-container h1 {
+  font-size: 18px;
+  color: black; /* Color matching your header */
+  text-align: center;
+}
+.page-4 .bordered-container p {
+  color: black;
+  font-weight: bold;
+  font-size: 20px;
+}
+.page-4 .bordered-container li {
+  font-size: 20px;
+  color: #494949;
+}
+
+/* @media only screen and (min-width: 300px) and (max-width: 1499px) {
+  .hairloss-img{
+    padding: 2em 10em 1em 10em;
+  }
+  .diet-titledesign{
+    margin: auto;
+    margin-top: 4em;
+    width: 80%;
+  }
+  .diet-title{
+    margin-top: 0.2em;
+  }
+  .diet-box6{
+    margin-left: -0.2em;
+  }
+  .diet-box3{
+    margin-left: 1em;
+  }
+  .breakfast-title{
+    width: 50%;
+  }
+  
+  .breakfast-flex{
+    margin: 0 2em 0 2em;
+  }
+}
+@media only screen and (min-width: 300px) and (max-width: 700px) {
+  .foodhair-box{
+    grid-template-columns: repeat(1,1fr);
+  }
+  .diet-titledesign{
+    margin: auto;
+    width: 80%;
+  }
+  .diet-box6{
+    margin-left: 0.1em;
+  }
+  .diet-boxs{
+    display: grid;
+    grid-template-columns: repeat(1,1fr);
+  }
+  .breakfast-flex{
+    display: flex;
+    flex-wrap: wrap;
+  }
+} */
+
+
+.teijsie{
+  background: url("../../../../../public/assets/img/reports/management/page4/pencil-border.png");
+  background-size: contain;
+  height: 667px;
+  padding: 55px 75px 55px 55px;
+  background-repeat: no-repeat;
+}

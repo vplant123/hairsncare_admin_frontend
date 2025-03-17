@@ -1,0 +1,163 @@
+/* Header Section */
+.page-7 .header {
+  height: 111px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: rgba(0, 160, 227, 0.48);
+  color: white;
+}
+
+.page-7 .header .logo img {
+  height: 81px;
+  width: 248.79px;
+}
+
+.page-7 .header .life {
+  height: 70px;
+  width: 577px;
+  background-color: #e692d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid black;
+}
+
+.page-7 .header h1 {
+  font-size: 16px;
+  color: #292929;
+  margin-bottom: 0;
+}
+
+.page-7 .header p {
+  font-size: 24px;
+  color: #545454;
+}
+
+.page-7 .smart-report {
+  font-size: 1rem;
+}
+
+.page-7 div {
+  text-align: center;
+}
+
+.page-7 h1 {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 0;
+}
+
+.page-7 p {
+  margin-inline: 12.5rem;
+  margin-top: 1.4rem;
+  font-size: 1.2rem;
+}
+
+.page-7 .content {
+  height: 6rem;
+  width: 100%;
+  padding: 4px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-7 .content .image {
+  height: 100%;
+  width: 16%;
+  /* border: 0.4px solid black; */
+  background-size: cover;
+  border-top-left-radius: 31px;
+  border-bottom-left-radius: 20px;
+}
+
+.page-7 .content .content-body {
+  height: 100%;
+  width: 70%;
+  border: 1px solid black;
+  background-color: #f9c2eb;
+  margin-left: 7px;
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4px;
+}
+
+ul {
+  list-style-type: none;
+  text-align: left;
+}
+
+li {
+  font-size: 1.2rem;
+}
+
+
+.page-7 .content-body-reverse {
+  height: 100%;
+  width: 70%;
+  border: 1px solid black;
+  background-color: #fde7e4;
+  margin-right: 7px;
+  border-top-left-radius: 31px;
+  border-bottom-left-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4px;
+}
+
+.page-7 .image-reverse {
+  height: 100%;
+  width: 16%;
+  /* border: 1px solid black; */
+  background-size: cover;
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 18px;
+}
+
+.page-7 .disclamer {
+  font-size: 12px;
+  /* margin-top: 50px; */
+  /* margin-bottom: 50px; */
+  padding: 4px;
+
+}
+
+.page-7 .bg-1 {
+  background-image: url("../../../../../public/assets/img/reports/management/page7/image1.png")
+}
+
+.page-7 .bg-2 {
+  background-image: url("../../../../../public/assets/img/reports/management/page7/image2.png")
+}
+
+.page-7 .bg-3 {
+  background-image: url("../../../../../public/assets/img/reports/management/page7/image3.png")
+}
+
+.page-7 .bg-4 {
+  background-image: url("../../../../../public/assets/img/reports/management/page7/image4.png")
+}
+
+.page-7 .bg-5 {
+  background-image: url("../../../../../public/assets/img/reports/management/page7/image5.png")
+}
+ 
+.page-7 .bg-6 {
+  background-image: url("../../../../../public/assets/img/reports/management/page7/image6.png")
+}
+
+.page-7 .bg-7 {
+  background-image: url("../../../../../public/assets/img/reports/management/page7/image7.png")
+}
+
+.page-7 .bg-8 {
+  background-image: url("../../../../../public/assets/img/reports/management/page7/image8.png")
+}

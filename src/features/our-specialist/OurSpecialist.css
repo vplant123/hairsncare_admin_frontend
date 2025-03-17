@@ -1,0 +1,292 @@
+.our-specialist{
+    
+        min-height: 340px;
+}
+.our-specialist-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 320px;
+}
+.specialist-section-2{
+    margin: 3rem auto;
+    display: flex;
+   
+    flex-wrap: wrap;
+}
+.section-item{
+    flex: 0 0 auto;
+    width: 50%;
+    display: flex;
+    margin-bottom: 2rem;
+    gap:2rem;
+}
+.sec-item h2{
+    margin-bottom: .5rem;
+    color: #535353;
+}
+
+.specialist-section-3{
+    display: flex;
+    /* padding: 1rem; */
+    color: white;
+    background-image: linear-gradient(to left top, #39a8db, #269bd7, #148ed1, #0b81cb, #1373c4);
+}
+.sec-3 {
+    flex: 0 0 auto;
+    width: 33.333%;
+    position: relative;
+    overflow: visible; /* Allow content to overflow */
+  }
+  
+  .sec-3 img {
+    border: 7px solid #0b81cb;
+    position: absolute; /* Position the image absolutely */
+    top: 50%; /* Align image to the middle vertically */
+    left: 40%; /* Align image to the middle horizontally */
+    transform: translate(-50%, -50%) scale(1); /* Scale the image by 1.1 times */
+  }
+  .sec-pad{
+    font-size: 1.5rem;
+    padding:1.5rem;
+  }
+  .sec-pad h3{
+    margin-bottom: 1rem;
+  }
+  .sec-pad p{
+    line-height: 1.5;
+  }
+  .sec-pad1{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+   padding-left: 5rem;
+   font-size: 1.4rem;
+   line-height: 1.7;
+  }
+  .specialist-section-4{
+    background-color: #E9F4F9;
+    padding-top: 4rem;
+    display: flex;
+    padding-bottom: 3rem;
+  }
+  .section-4-first{
+    flex: 0 0 auto;
+    width: 66.66666667%;
+  }
+  .section-4-second{
+    flex: 0 0 auto;
+    width: 30.33333333%;
+    padding: 0 3rem;
+    margin-left: 2rem;
+    text-align: end;
+    border-left: 1px solid rgb(27, 26, 26);
+  }
+.row{
+    display: flex;
+    gap: 7rem;
+    padding:2rem ;
+}
+.col-lg-3 h6{
+    font-size: 1.2rem;
+}
+.section-4-second img{
+    margin-top: 1.5rem;
+}
+
+.doc-head{
+  text-align: center;
+  margin-top: 4rem;
+}
+.doc-head h1{
+  margin-bottom: 1rem;
+  color: #535353;
+  
+}
+.doc-container{
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+ 
+}
+.doctors{
+  flex: 0 0 auto;
+  width: 50%;
+  display: flex;
+margin-top: 2rem;
+}
+.doc-detail p{
+  margin-top: 1rem;
+}
+.doc-detail{
+  background: white;
+  border-radius: 8px;
+  box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.1);
+  margin: 35px 40px 35px -40px;
+  padding: 30px;
+  color: #535353;
+}
+.faq-wraper-container{
+ 
+  background-color: #CEF1FB;
+}
+.faq-wraper-container h1{
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-top: 6rem;
+  padding-bottom: 2.5rem;
+}
+.councellor-container{
+  margin-top: 2rem;
+  text-align: center;
+  color: white;
+  padding-bottom: 4rem;
+  background: url('../../../public/assets/img/specialists/counsellor-bg.jpg');
+}
+.councellor-item{
+  display: flex;
+}
+.councellor-container h1{
+  color: #4dbaff;
+  padding-top: 3rem;
+  margin-bottom: 2rem;
+}
+.councellor-container p{
+  margin-bottom: 4rem;
+}
+.coun-item{
+  flex: 1;
+}
+.coun-item img{
+  margin-bottom: 1.5rem;
+}
+
+.scroll-doc{
+  height: 70%;
+  overflow-y: scroll;
+}
+
+.doc-img-1{
+   height: 300px;
+    width: 300px
+}
+@media screen and (max-width: 768px) {
+  .doc-img-1{
+    height: 225px;
+    width: 235px;
+ }
+  .scroll-doc{
+    height: 80vw;
+    overflow-y: scroll;
+  }
+  .our-specialist {
+    min-height: auto;
+    background-size: cover;
+  }
+  .councellor-item{
+    flex-direction: column;
+  }
+  .doc-detail{
+    width: 65%;
+    margin: 9px 7px 44px -40px;
+    padding: 15px;
+  }
+  .doc-detail h2{
+    font-size: 1rem;
+  }
+  .doc-detail p{
+    font-size: .8rem;
+  }
+  .our-specialist-container {
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 0;
+  }
+  
+  .specialist-section-2 {
+    flex-direction: column;
+  }
+  
+  .section-item {
+    width: 100%;
+    gap: 1rem;
+  }
+  .section-4-first{
+    width: 100%;
+  }
+  .col-lg-8{
+    padding: 1rem;
+  }
+  .specialist-section-3 {
+    flex-direction: column;
+    align-items: center;
+  }
+  .sec-item p{
+    font-size: 15px;
+  }
+  .sec-item h2{
+    font-size: 1.3rem;
+  }
+  .sec-3 img {
+    max-width: 100%;
+    width: 200px; /* Adjust width as needed */
+    height: auto;
+    margin: 0 auto;
+    display: block;
+    border: 7px solid #0b81cb;
+    position: static;
+    transform: translate(0 ,0);
+  }
+  
+  .sec-3, .sec-pad, .sec-pad1 {
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+  }
+  
+  .sec-pad h3 {
+    margin-bottom: 0.5rem;
+  }
+  
+  .sec-pad1 {
+    padding: 1rem 0;
+  }
+  
+  .specialist-section-4 {
+    flex-direction: column;
+    padding: 2rem 0;
+  }
+  
+  .row {
+    /* flex-direction: column; */
+    gap: 2rem;
+    padding: 0;
+  }
+  
+  .col-lg-3 {
+    text-align: center;
+  }
+  
+  .section-4-second {
+    width: 100%;
+    border-left: none;
+    text-align: center;
+    margin: 2rem 0 0;
+  }
+  
+  .doc-head {
+    margin-top: 2rem;
+  }
+  
+  .doc-container {
+    flex-direction: column;
+  }
+  
+  .doctors {
+    width: 100%;
+    padding: 1rem;
+  }
+  .doc-image img{
+   max-width: 100%;
+  }
+}

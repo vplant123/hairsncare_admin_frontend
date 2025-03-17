@@ -1,0 +1,149 @@
+.cover-head{
+  text-align: center;
+  margin-top: 1rem;
+}
+.main-container{
+background-color: #F3F3E4;
+padding: 2rem 0;
+}
+.container1 {
+  max-width:100%!important;
+  width:100%;
+  height:420px;
+  perspective:1000;
+  -webkit-perspective:1000;
+  perspective-origin:50% 50%;
+  transform-style:preserve-3d;
+  position:relative;
+  margin:0 auto;
+  overflow:hidden;
+  margin-top: 2rem;
+}
+
+.coverflow {
+
+  position:absolute;
+  top:50%;
+  left:50%;
+  backface-visibility: visible;
+  transform:scale(1) translateZ(-400px);
+  transform-style:preserve-3d;
+  transform-origin:50% 50%;
+
+}
+
+.coverflow-item {
+display: flex;
+align-items: center;
+justify-content: center;
+  width:500px;
+  height:300px;
+  transform-origin:50% 50%;
+  position:absolute;
+  backface-visibility: visible;
+  top:-175px;
+  left:-250px;
+  border:2px solid #eee;
+  border-radius:8px;
+  background-color:#111;
+  background-repeat:no-repeat;
+  background-size:cover;
+  background-position:center;
+  transition:0.5s all ease-out;
+
+
+  transition:1.25s all cubic-bezier(.17,.75,.58,.95);
+  -webkit-box-shadow: 0px 10px 27px -1px rgba(0,0,0,0.7);
+  -moz-box-shadow: 0px 10px 27px -1px rgba(0,0,0,0.7);
+  box-shadow: 0px 10px 27px -1px rgba(0,0,0,0.7);
+}
+.play-button:hover{
+color: hsl(0, 87%, 47%);
+cursor: pointer;
+transition: all 0.3s ease 0s;
+
+}
+
+
+.popup1 {
+ 
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: transparent; 
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: none;
+}
+.popup1 h2{
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.popup1 iframe{
+  border: 1rem solid white;
+}
+.popup1 h2:hover{
+  cursor: pointer;
+} 
+.radio-buttons {
+  display: flex;
+  justify-content: center;
+ 
+}
+
+.radio-buttons input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px; /* Adjust the width as needed */
+  height: 20px; /* Adjust the height as needed */
+  border-radius: 50%; /* Makes the radio button round */
+  border: 2px solid #ccc; /* Border color */
+  margin: 0 5px; /* Adjust margin as needed */
+  cursor: pointer;
+}
+
+/* Style the radio button when checked */
+.radio-buttons input[type="radio"]:checked {
+  background-color: #007bff; /* Color when checked */
+  border-color: #007bff; /* Border color when checked */
+}
+
+/* Hide the default radio button appearance */
+.radio-buttons input[type="radio"]::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+/* Style the radio button label */
+.radio-buttons label {
+  font-size: 16px; /* Adjust font size as needed */
+  color: #333; /* Label color */
+  cursor: pointer;
+}
+
+
+@media screen and (max-width: 768px) {
+  .container1 {
+    height: 230px;
+    margin-top: 0; /* Adjust height for mobile devices */
+  }
+  .popup1 iframe{
+    width: 300px; /* Adjust width for mobile devices */
+    height:190px; /* Adjust height for mobile devices */
+    padding: 10px; /* Adjust padding for mobile devices */
+    border-radius: 16px; /* Adjust border-radius for mobile devices */
+    border: none;
+  }
+  
+  .coverflow-item {
+    width: 250px; /* Adjust width for mobile devices */
+    height: 150px; /* Adjust height for mobile devices */
+    top: -84px; /* Adjust top for mobile devices */
+    left: -125px; /* Adjust left for mobile devices */
+  }
+}

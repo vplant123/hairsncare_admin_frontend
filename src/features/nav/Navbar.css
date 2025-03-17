@@ -1,0 +1,240 @@
+.btn-test {
+  padding: 0 25px;
+  border-radius: 25px;
+  height: 45px;
+  background: white;
+  font-weight: 600;
+  border: 1px solid #6ed6f4;
+  transition: all 0.3s ease 0s;
+}
+.show-search {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 10%;
+  background-color: #fff;
+  padding: 1rem 2rem;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform: translateY(-10px); /* Initially move it up by 10px */
+  opacity: 0;
+  z-index: 1;
+}
+
+.user-svg .search-open {
+  display: block !important;
+  transform: translateY(0); /* Move it back to its original position */
+  opacity: 1; /* Make it fully visible */
+}
+
+.input-wrap {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  gap: 1rem;
+}
+.input-wrap input {
+  border: 1px solid black;
+  border-radius: 9px;
+  width: 15rem;
+  height: 2rem;
+}
+
+.input-wrap input::placeholder {
+  padding-left: 1rem;
+  font-size: 1rem;
+}
+.input-wrap input:focus::placeholder {
+  visibility: hidden;
+}
+.input-wrap input:focus {
+  outline: none !important;
+  border-color: #04c9ff;
+}
+.active {
+  color: #04c9ff !important; /* Change color to red for active tab */
+  text-decoration: none;
+}
+.user-svg {
+  position: relative;
+}
+
+.sub-link {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 10%;
+  background-color: #fff;
+  padding: 1rem 2rem;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+.sub-link p {
+  margin-bottom: 0.7rem;
+}
+.sub-link p:hover {
+  cursor: pointer;
+  color: #879bf8;
+}
+.who-we-link {
+  position: relative;
+}
+.sub-link-2 {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 10%;
+  background-color: #fff;
+  padding: 1rem 2rem;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  width: 12rem;
+  z-index: 1;
+}
+.sub-link-2 p {
+  margin-bottom: 0.7rem;
+}
+.sub-link-2 p {
+  cursor: pointer;
+  color: #1a1a1a;
+}
+.who-we-link:hover .sub-link-2 {
+  display: block !important;
+}
+.user-svg:hover .sub-link {
+  display: block !important;
+}
+.btn-test:hover {
+  cursor: pointer;
+  background-color: #08baed;
+  color: white;
+}
+.nav-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 10px 0 10px 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin: 0 auto;
+}
+.nav-logo {
+  width: 220px;
+  padding-left: 15px;
+}
+.nav-link {
+  display: flex;
+  gap: 2rem;
+}
+.nav-link a {
+  text-decoration: none;
+  color: black;
+  transition: all 0.3s ease 0s;
+}
+
+.nav-link-1 {
+  display: flex;
+  gap: 2rem;
+}
+.nav-link-1 a {
+  text-decoration: none;
+  color: black;
+  transition: all 0.3s ease 0s;
+}
+.nav-link-1 a:hover {
+  color: #879bf8;
+}
+.nav-link-1 a:hover {
+  color: #879bf8;
+}
+
+.menubar {
+  display: none;
+}
+/* ///////////////////////////////////////////// */
+.nav-right {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+.nav-icons {
+  display: flex;
+  gap: 10px;
+  padding-right: 15px;
+}
+.nav-icons svg:hover {
+  color: #04c9ff;
+  cursor: pointer;
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-link {
+    display: none;
+  }
+
+  .nav-link-1 {
+    /* display: none; */
+  }
+  .nav-container {
+    flex-direction: column;
+  }
+
+  .nav-logo {
+    display: none;
+    width: 220px;
+    padding-left: 15px;
+  }
+  .nav-container {
+    width: auto;
+  }
+  .nav-link.show {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .nav-link-1.show {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .nav-link {
+    position: absolute;
+    background: white;
+    padding-left: 20px;
+    /* display: flex; */
+    flex-direction: column;
+    /* height: 100%; */
+    margin-top: 12%;
+    align-items: flex-start;
+    width: 50%;
+    padding-bottom: 1rem;
+    right: 0;
+  }
+
+  .nav-link1 {
+  }
+  .menubar {
+    display: block;
+  }
+  .nav-container {
+    padding-bottom: 25px;
+  }
+}
+
+@media (max-width: 1080px) {
+  .nav-container {
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,50 @@
+.haircare {
+  margin-top: 3rem;
+  background: url("../../../public/assets/img/home/care-bg.jpg") center bottom
+    no-repeat;
+  height: 400px;
+  border-radius: 8px;
+  background-size: cover;
+  color: white;
+  display: flex;
+}
+
+.trust-care {
+  flex: 1;
+  padding: 2rem;
+}
+.care2 div {
+  height: 100px;
+  width: 100px;
+  border-radius: 100%;
+  /* background-color: #9f7272; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.trust-care h1 {
+  margin-bottom: 2rem;
+}
+.care2 {
+  display: flex;
+  gap: 2rem;
+}
+.carr1 {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+@media (max-width: 768px) {
+  .haircare {
+    flex-direction: column;
+    height: auto;
+  }
+}
+
+.font-trust {
+  font-size: "14px";
+  font-weight: 500;
+}

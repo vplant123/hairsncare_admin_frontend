@@ -1,0 +1,220 @@
+.book-appointment{
+    background: linear-gradient(135deg, rgb(142, 208, 235) 33%, rgb(249, 235, 206) 66%);
+
+    
+}
+.book-appointment-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  
+}
+.get-in{
+    background: url("https://hairsncares.com/assets/img/contact/info-bg.jpg");
+      margin-top: 4rem;
+      padding: 3rem;
+}
+.get-in h2{
+    margin-bottom: 1rem;
+}
+.contect-us-heading{
+    font-size: 3.625rem;
+    color: white;
+    font-weight: 500;
+}
+.cont-head-2{
+    font-size: 1.875rem;
+}
+.sub-had-2{
+    font-size: 1.25rem;
+}
+.touch-container{
+    display: flex;
+    padding: 2rem;
+    justify-content: space-between;
+}
+.touch{
+    display: flex;
+    gap: 2rem;
+    flex: 0 0 auto;
+    width: 33.33333333%;
+}
+.touch img{
+    width: 4rem;
+    height: 4rem;
+}
+.c-content h4 , p {
+    font-size: 18px;
+}
+.c-content h4{
+    margin-bottom: 2rem;
+}
+.c-content{
+    margin-right: 1.2rem;
+}
+.contect-input {
+    display: flex;
+    max-width: 1280px; /* Ensure the container does not exceed this width */
+    margin: 0 auto; /* Center the container horizontally */
+    margin-top: 3rem;
+    gap: 2rem;
+  }
+  
+  .contect-input div {
+    flex: 1; /* Use flex-grow to distribute available space equally among child elements */
+    border: 1px solid gray;
+    border-radius: 9px;
+    padding: 3rem;
+    box-sizing: border-box; /* Ensure padding is included in the element's width */
+  }
+  .text-center{
+    text-align: center;
+  }
+  .contect-input h2{
+    margin-bottom: 1.5rem;
+  }
+  .input-content input{
+     display: block;
+     border-top: none;
+     border-left: none;border-right: none;
+     width: 100%;
+     margin-bottom: 1.5rem;
+     height: 2rem;
+     outline: none;
+     border-bottom: 1px solid black !important;
+  }
+  .input-content input:hover{
+    border: none !important;
+    outline: none !important;
+     border-bottom: 1px solid black !important;
+   
+  }
+  .input-content input:focus{
+    border-bottom: 1px solid #03a0d5 !important;
+  }
+  .input-content textarea{
+    width: 100%;
+    height: 7rem;
+    outline: none;
+    border-top: none;
+    border-left: none;border-right: none;
+    margin-bottom: 1rem;
+  }
+  .input-content textarea:focus{
+    border-bottom: 1px solid #03a0d5 !important;
+
+  }
+
+  .input-button-content{
+    display:block;
+    width: 100%;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    padding: .7rem;
+    color: white;
+    border-radius: 9px;
+    font-size: 1.5rem;
+    font-weight: 500;
+    border: none;
+    background-image: linear-gradient(to top, #03a0d5, #03a2d7, #04a5da, #04a7dc, #05aade);
+   
+  }
+  .input-button-content:hover{
+    cursor: pointer;
+    background-image: linear-gradient(to top, #0682ab, #1080a5, #026b8f, #0379a1, #05aade);
+  }
+
+  .text-list span{
+  
+    background: #F2D487;
+    padding: .3rem;
+    border-radius: 100%;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .text-list{
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 1rem;
+  }
+  .check-contact{
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: 16px;
+    font-weight: 400;
+    margin-top: .3rem;
+  }
+  .check-contact input{
+    width: 1.3rem;
+    margin: 0;
+  }
+  .item-i{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .contact-img{
+    height: 100%
+  }
+  @media screen and (max-width: 768px) {
+    .contact-img{
+      height: 50%
+    }
+    .book-appointment-container {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .get-in {
+      padding: 1rem;
+    }
+    
+    .touch-container {
+      flex-direction: column;
+    }
+    
+    .touch {
+      width: 100%;
+      margin-bottom: 2rem;
+    }
+    
+    .c-content {
+      margin-right: 0;
+    }
+    
+    .contect-input {
+      flex-direction: column;
+      gap: 2rem;
+      padding: 1rem;
+    }
+    .text-center img{
+      max-width: 100%;
+    }
+    .contect-input div {
+      padding: 2rem;
+    }
+    
+    .input-content input,
+    .input-content textarea {
+      width: 100%;
+    }
+  }
+  
+
+  .contact-information {
+    background-size: cover;
+    padding: 50px 50px;
+    border-radius: 8px;
+    min-height: 350px;
+}
+
+.pt-70 {
+  padding-top: 70px;
+}

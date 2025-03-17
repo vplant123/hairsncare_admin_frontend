@@ -1,0 +1,9 @@
+.inputBoxCust3 {
+    background: #2e7c7b;
+    border: 1px solid #e2e2e2;
+    border-radius: 3px;
+    cursor: "pointer";
+    height: 20px;
+    line-height: 14px;
+    padding: 2px 10px 3px;
+}

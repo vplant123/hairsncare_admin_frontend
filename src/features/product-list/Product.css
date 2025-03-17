@@ -1,0 +1,109 @@
+.product-card {
+/* Set a fixed width for each product card */
+  border: solid 1px #e6e5e3;
+  padding: 2rem;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content horizontally */
+}
+
+.product-card img {
+  width: 100%; /* Ensure that the image fills the container width */
+  max-width: 100%; /* Ensure that the image doesn't exceed its original size */
+  height: auto; /* Maintain the aspect ratio */
+  position: relative;
+    border-radius: 8px 8px 0 0;
+    transition: all 3.5s ease 0s;
+}
+
+.product-card p {
+  margin: 5px 0;
+}
+
+.product-card .btn-container {
+  display: flex;
+  align-items: center;
+}
+
+.product-card .btn-container img {
+  width: 30px;
+  margin-right: 10px;
+}
+
+.product-container {
+  display: flex;
+  /* Allow product cards to wrap to the next line */
+  margin: 3rem auto; /* Center the product container horizontally */
+  margin-bottom: 1.5rem;
+  justify-content: center; /* Center the product cards horizontally */
+  gap: 1rem;
+}
+
+.btn-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.product-title {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.product-title::before,
+.product-title::after {
+  content: "";
+  display: inline-block;
+  width: 8rem; /* Adjust the width as needed */
+  height: 1px; /* Adjust the height of the line */
+  background-color: black; /* Color of the line */
+  vertical-align: middle;
+}
+
+.product-title::before {
+  margin-right: 0.5rem; /* Adjust the spacing between the line and the text */
+}
+
+.product-title::after {
+  margin-left: 0.5rem; /* Adjust the spacing between the line and the text */
+}
+
+@media (max-width: 768px) {
+.product-container{
+  flex-direction: column;
+}
+.product-card{
+  width: 90%;
+  margin: 1rem;
+}
+.product-title::before,
+.product-title::after{
+  width: 3rem;
+}
+}
+
+
+ .slick-next {
+  right: -50px;
+  left: auto;
+}
+ .slick-arrow {
+  transition: inherit;
+  cursor: pointer;
+  line-height: 38px;
+  text-align: center;
+  font-size: 20px;
+  color: #b3bbbf !important;
+  z-index: 1;
+  opacity: 1;
+  visibility: visible;
+}
+
+
+.slick-prev {
+  right: auto;
+  left: -50px;
+}

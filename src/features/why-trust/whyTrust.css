@@ -1,0 +1,39 @@
+.footprints-container {
+    position: relative;
+    width: 100px; /* Adjust this value as per your requirement */
+  }
+  
+  .footprint {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: red;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    position: absolute;
+  }
+  
+  .top-left {
+    top: 0;
+    left: 0;
+  }
+  
+  .top-middle {
+    top: -10px;
+    left: 40px;
+  }
+  
+  .top-right {
+    top: 0;
+    right: 0;
+  }
+  
+  .bottom-left {
+    bottom: 0;
+    left: 20px;
+  }
+  
+  .bottom-right {
+    bottom: 0;
+    right: 20px;
+  }
+  

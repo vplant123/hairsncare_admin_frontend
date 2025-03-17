@@ -1,0 +1,133 @@
+.container-Products {
+    display: flex; /* Use flexbox for the container */
+  }
+  
+  .col-3 {
+    flex: 0 0 25%; /* Make the first column take up 25% of the container width */
+    padding: 0 10px; /* Optional: Add padding for spacing */
+  }
+  
+  .col-9 {
+    flex: 0 0 75%; /* Make the second column take up 75% of the container width */
+    padding: 0 10px; /* Optional: Add padding for spacing */
+  }
+  .filter-price{
+    background-color: #CEF1FB;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .fiter-rating{
+    background-color:#EEF3F9;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  .nav-tabs{
+   
+      display: flex;
+      list-style: none;
+      justify-content: space-between;
+      text-decoration: none;
+      margin-bottom: 2rem;
+  
+  }
+  .col-3 img{
+    max-width: 100%;
+  }
+  .col-9 a{
+    text-decoration: none;
+    font-size: 1.2rem;
+  }
+  .rating-lebel{
+    display: flex;
+    gap:.5rem;
+    line-height: 1.7rem;
+  }
+  .fiter-rating h4{
+    margin-bottom: 1rem;
+  }
+  .lavel {
+    margin-bottom: 1rem;
+  }
+  .filter-price-heading{
+    margin-bottom: 1rem;
+  }
+  /* ////////////Range Slider////////////// */
+  .multi-range-slider {
+  
+    border: none !important;
+   box-shadow: none !important;
+   
+    /* box-shadow: 1px 1px 4px black; */
+    
+}
+.multi-range-slider .ruler{
+  display: none !important;
+}
+.multi-range-slider .label{
+  display: none;
+}
+.multi-range-slider{
+  padding: 25px 0px !important;
+  margin-bottom: 1rem;
+}
+.barr{
+  height: 3rem;
+  background-color: #FBD84E;
+  margin-bottom: 4rem;
+}
+.hoem{
+  padding: .8rem;
+}
+.view-all-product{
+  text-align: center;
+}
+.sortBylistMenu{
+  display: none;
+}
+
+@media screen and (max-width: 768px) {
+  .container-Products {
+    flex-direction: column;
+  }
+  .produ
+  .col-3, .col-9 {
+    flex: 1;
+    width: 100%;
+    padding: 0;
+  }
+  .filter-price, .fiter-rating, .nav-tabs {
+    margin-bottom: 1rem;
+  }
+  .sortBylist{
+    display: none;
+  }
+  .sortBylistMenu{
+    display:block  }
+
+    .mainProduct{
+      margin-left: 0;
+    }
+
+}
+
+.mainProduc{
+  margin-left: "20px";
+}
+
+
+.ltn__secondary-color {
+  color: #08BAED !important;
+}
+
+.ltn__breadcrumb-list {
+  font-family: "Font Awesome 5 Free";
+  content: "\f054";
+
+  font-weight: 900;
+  font-size: 10px;
+
+  transform: translateY(-50%);
+}

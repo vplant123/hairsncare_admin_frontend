@@ -1,0 +1,136 @@
+/* .review-card {
+    width: 30%;
+    border: 1px solid #ccc;
+    padding: 2rem;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+  
+  .review-card img {
+    width: 100%;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+  
+  .review-card p {
+    margin: 5px 0;
+  }
+  
+  .review-card .logo-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .review-card .logo-container img {
+    width: 30px;
+    margin-right: 10px;
+  }
+.review-container  {
+    display: flex;
+    margin: 3rem auto 3rem auto;
+    justify-content: space-between;
+    
+} */
+
+.review-card {
+    width: 30%;
+    border: 1px solid #ccc;
+    padding: 2rem;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+  }
+  
+  .review-card img {
+    width: 100%;
+    max-width: 100px; /* Adjust as needed */
+    border-radius: 50%;
+   
+  }
+  
+  .review-card p {
+    margin: 5px 0;
+  }
+  
+  .review-card .logo-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .review-card .logo-container img {
+    width: 30px;
+    margin-right: 10px;
+  }
+  
+  .review-container {
+    display: flex;
+    margin: 3rem auto 3rem auto;
+    justify-content: space-between;
+  }
+  .logo-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+  @media (max-width: 768px) {
+    .review-card{
+      width: 100%;
+    }
+    .review-container{
+      flex-direction: column;
+    }
+    
+  }
+
+  .review-loop {
+    position: relative;
+    text-align: center;
+    padding: 30px 25px;
+    border-radius: 8px;
+    border: solid 1px #d4d3d0;
+}
+
+.review-person-name{
+  text-transform: uppercase;
+  margin: 0px;
+  padding: 15px 0 0px 0;
+  color: #071c1f;
+    clear: both;
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.review-star-google{
+  display: flex;
+  justify-content: center;
+  margin: 7px 0 0 0;
+  margin-bottom: 5px;
+}
+
+.star-review-1{
+  font-size: 15px;
+    color: #f6d786;
+}
+
+.star-review-1-inactive{
+  font-size: 15px;
+  color: #f6d786;
+}
+
+.review-person-msg{
+  font-size: 16px;
+  color: black;
+  line-height: 20px;
+  padding-bottom: 10px;
+  margin-bottom: 0px;
+}
+
+/* ::-webkit-scrollbar {
+  height: 0px;
+  width: 8px;
+  border: 1px solid #fff;
+} */

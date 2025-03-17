@@ -1,0 +1,28 @@
+.shopping-feature{
+    display: flex;
+    justify-content: space-between;
+    background-color: #C8CA6C;
+    padding: 2rem 3rem 2rem 3rem;
+    margin-top: 4rem;
+margin-bottom: 4rem;
+}
+.shopping-feature img{
+    margin-bottom: 1rem;
+}
+.feature-heading{
+    
+        font-size: 1.2rem;
+        color: white;
+        font-weight: 600;
+    
+}
+
+@media (max-width: 768px) {
+.shopping-feature{
+    flex-direction: column;
+    gap:2rem;
+    padding: 2rem 3rem 2rem 4rem;
+}
+
+
+}

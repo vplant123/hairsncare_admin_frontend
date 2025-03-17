@@ -1,0 +1,143 @@
+/* Page1.css */
+.a4-page {
+    /* width: 210mm;   */
+    /* height: 297mm;  */
+    /* border: 1px solid black;  */
+/* padding: 1rem; */
+    box-sizing: border-box;
+    margin: auto; /* Center the page */
+  }
+  .treat-plan-h1{
+    background-color: #169bf7;
+    color: white;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+  }
+  .don{
+    margin:1rem 0;
+    display: inline-block;
+    text-align: center;
+    padding: .5rem;
+  }
+  .mm-container p{
+    margin-top: 2rem;
+    font-size: 1.2rem;
+  }
+  .importance-h1{
+    font-size: 1.8rem;
+    text-align: center;
+    background-color: #c9c34d;
+    margin: .5rem 0;
+    padding: .5rem 0;
+  }
+  .imo-p p{
+    font-size:1rem;
+  }
+  .imo-p2 p{
+    font-size: 1.2rem;
+  }
+  .general-h1{
+    font-size: 1.1rem;
+    text-align: center;
+    background-color: #c9c34d;
+    margin: .5rem 0;
+    padding: .5rem 0;
+  }
+  .hair-scalp-h1{
+    font-size: 1.7rem;
+    text-align: center;
+    background-color: #118cce;
+    color: white;
+    margin: .5rem 0;
+    padding: .5rem 0;
+  }
+  .span-scalp{
+    color: #118cce;
+
+  }
+  .hair-scalp-h1{
+    background-color: #118cce;
+    
+    padding: .5rem;
+  }
+  .strong-highlight strong{
+    color: #118cce;
+
+  }
+  .strong-highlight p{
+    font-size: 1.2rem;
+  }
+  .block-h1{
+    display: inline-block;
+  }
+  /* /////////////////////////////////////////////////////////////////////////// */
+  .nutrition-h1{
+    background-color: #aded37;
+    
+    padding: .5rem;
+  }
+  .nut-highlight strong{
+    font-size:1.2rem;
+  }
+  .nut-highlight p{
+    font-size: 1.2rem;
+  }
+  .nut-head{
+    color: #118cce;
+
+  }
+  .tick{
+    max-width: 10% !important;
+  }
+  .tick-con{
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin: 1rem 0;
+  }
+  .tick-con1{
+    display: flex;
+    align-items: start;
+    gap: .5rem;
+    margin: 1rem 0;
+  }
+  .tick1{
+    max-width: 5% !important;
+  }
+  .tick-mark{
+    max-width: 5% !important;
+  }
+  .lifeStyle-h1{
+    background-color: #d26f05;
+  }
+  .stress-h1{
+    background-color: #ed0ccf;
+  }
+
+  .img-sign1{
+    }
+
+    .report-container1 div  {
+      page-break-inside: avoid;
+    }
+
+    .a4-page div  {
+      page-break-inside: avoid;
+    }
+    
+    .a4-page p  {
+      margin-bottom: 0.7rem;
+      page-break-inside: avoid;
+    }
+    .a4-page img  {
+      page-break-inside: avoid;
+    }
+    .a4-page h1  {
+      page-break-inside: avoid;
+    }
+    .a4-page strong  {
+      page-break-inside: avoid;
+    }
+    .a4-page ul li  {
+      page-break-inside: avoid;
+    }

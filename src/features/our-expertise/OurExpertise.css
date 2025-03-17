@@ -1,0 +1,134 @@
+.our-expertise-container{
+  
+    display: flex;
+    align-items: center;
+    height: 320px;
+    /* margin-bottom: 3rem; */
+    height: 600px;
+}
+.our-expertise-container div{
+    flex: 0 0 auto;
+    width: 33.33333%;
+}
+.iman img{
+max-width: 100%;
+}
+.tes-alig{
+    text-align: center;
+}
+.trust-head{
+    text-align: center;
+    
+
+}
+.trust-head p{
+    width: 500px;
+    margin: 0 auto;
+    margin-bottom: 2rem;
+}
+.our-expertise-section{
+    display: flex;
+    gap: 1rem
+   
+}
+.trust-head1{
+    background-color: #ACE3FF;
+    margin-top: 3rem;
+}
+.trust-head1 h1{
+    text-align: center;
+    padding-top: 3rem;
+}
+.item-21{
+    background-color: white;
+    margin-top: 7rem;
+    text-align: center;
+    padding: 0 !important;
+}
+.item-21 img{
+    max-width: 100%;
+    max-width: 35%;
+    margin-top: -6rem;
+}
+.item-h1{
+    font-size: 1.8rem !important;
+    padding-top: 1.5rem !important;
+}
+.item-21 p{
+ 
+    padding: 1rem 3rem 3rem 3rem !important;
+ 
+}
+.item-21{
+    margin-bottom: 5rem !important;
+}
+
+.item-21-1{
+    background-color: white;
+    margin-top: 7rem;
+    text-align: center;
+    padding: 0 !important;
+}
+.item-21-1 img{
+    /* max-width: 100%; */
+    /* max-width: 35%; */
+    margin-top: -6rem;
+    height: 215px;
+    width: 185px;
+}
+.item-21-1 p{
+ 
+    padding: 1rem 3rem 0.5rem 3rem !important;
+ 
+}
+.item-21-1{
+    margin-bottom: 5rem !important;
+}
+.trust-head2 {
+    background-color: #E6F6FE;
+    margin-top: 3rem;
+}
+.trust-head2 h1 {
+    text-align: center;
+    padding-top: 3rem;
+}
+.image-coverr img{
+max-width: 100%;
+margin: 3rem 0
+}
+.image-coverr{
+    background-color: #BECE38;
+}
+
+.item-21-1-1{
+    text-align: left;
+}
+
+@media screen and (max-width: 768px) {
+.our-expertise-container{
+    flex-direction: column;
+    height: auto;
+    text-align: center;
+    height: 100%;
+}
+.our-expertise-container div{
+    width: 100% !important
+}
+.trust-head p{
+    width: auto;
+}
+.our-expertise-section{
+    flex-direction: column;
+}
+.item-21-1 p{
+    padding: 1rem 1rem 0.5rem 1rem !important;
+}
+}
+
+.ojowee p {
+    padding: "1rem 3rem 0rem 3rem !important",;
+    margin-bottom: 0;
+    height: 150px;
+    max-height: 150px;
+    overflow-y: scroll,
+}
