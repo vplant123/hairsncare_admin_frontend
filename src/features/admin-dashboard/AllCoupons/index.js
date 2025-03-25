@@ -16,8 +16,8 @@ export default function AllCoupons(props) {
 
 
   useEffect(() => {
-    if(props?.setTitle) props?.setTitle(window.location.pathname)
-  },[])
+    if (props?.setTitle) props?.setTitle(window.location.pathname)
+  }, [])
 
 
 
@@ -29,6 +29,7 @@ export default function AllCoupons(props) {
     percent: '',
     validity: '',
     type: '',
+    isActive: true
   });
   const [editingAddress, setEditingAddress] = useState(null);
 
@@ -39,7 +40,7 @@ export default function AllCoupons(props) {
         'Content-Type': 'application/json',
         'Authorization': storedUserData?.logedInUser?.accessToken
       },
-    //   body: JSON.stringify({ userId: storedUserData?.logedInUser?.user?._id }),
+      //   body: JSON.stringify({ userId: storedUserData?.logedInUser?.user?._id }),
     })
       .then(response => response.json())
       .then(data => {
@@ -62,26 +63,26 @@ export default function AllCoupons(props) {
     const apiUrl = editingAddress ? editApiUrl : addApiUrl;
     const method = editingAddress ? 'POST' : 'POST';
     const addressData = editingAddress ? { ...coupon, id: editingAddress._id } : coupon;
-    console.log("jsiejfijer",addressData)
+    console.log("jsiejfijer", addressData)
 
-    if(!addressData?.code) {
+    if (!addressData?.code) {
       toast.error("Please code name");
       return false
     }
 
-    if(!addressData?.percent) {
+    if (!addressData?.percent) {
       toast.error("Please provide percent");
       return false
     }
-    if(!addressData?.validity) {
+    if (!addressData?.validity) {
       toast.error("Please provide pincode");
       return false
     }
-    else{
-        addressData.validity = moment(addressData?.validity).format("YYYY-MM-DD")
+    else {
+      addressData.validity = moment(addressData?.validity).format("YYYY-MM-DD")
     }
 
-    if(!addressData?.type) {
+    if (!addressData?.type) {
       toast.error("Please provide type name");
       return false
     }
@@ -97,7 +98,6 @@ export default function AllCoupons(props) {
     })
       .then(response => response.json())
       .then(data => {
-        console.log("nwenifew",data)
         if (editingAddress) {
           toast.success("Address edit successfully");
           setAddresses(addresses.map(addr => addr._id == editingAddress._id ? data?.data : addr));
@@ -107,10 +107,10 @@ export default function AllCoupons(props) {
         }
         setEditingAddress(null);
         setCoupon({
-            code: '',
-            percent: '',
-            validity: '',
-            type: '',
+          code: '',
+          percent: '',
+          validity: '',
+          type: '',
         });
       })
       .catch(error => {
@@ -122,7 +122,7 @@ export default function AllCoupons(props) {
   const handleEdit = (address) => {
     setEditingAddress(address);
     setCoupon(address);
-    console.log("knerig",address)
+    console.log("knerig", address)
   };
 
   const handleDelete = (id) => {
@@ -145,7 +145,7 @@ export default function AllCoupons(props) {
       });
   };
 
-  return ( 
+  return (
     <AdminNavbar>
 
       <div className={styles.container}>
@@ -157,8 +157,8 @@ export default function AllCoupons(props) {
               <p><strong>Percent:</strong> {address?.percent}</p>
               <p><strong>validity:</strong> {address?.validity}</p>
               <p><strong>type:</strong> {address?.type == "1" ? "Hait-test" : address.type == "2" ? "Order" : "Both"}</p>
-               <button onClick={() => handleEdit(address)} className={styles.button}>Edit</button>
-              <button style={{margin: "0 0 0 5px"}} onClick={() => handleDelete(address._id)} className={styles.button}>Delete</button>
+              <button onClick={() => handleEdit(address)} className={styles.button}>Edit</button>
+              <button style={{ margin: "0 0 0 5px" }} onClick={() => handleDelete(address._id)} className={styles.button}>Delete</button>
             </li>
           ))}
         </ul>
@@ -189,55 +189,80 @@ export default function AllCoupons(props) {
             <input
               type="date"
               name="validity"
-              defaultValue={moment(coupon.validity).format("YYYY-MM-DD")}
+              value={coupon.validity ? moment(coupon.validity).format("YYYY-MM-DD") : moment(new Date()).format("YYYY-MM-DD")}
               onChange={handleInputChange}
               required
             />
           </div>
-          <div className={styles.formGroup} style={{display:"flex",gap:"20px"}}>
+          <div className={styles.formGroup} style={{ display: "flex", gap: "20px" }}>
             <label>type: </label>
-            <div style={{display:"flex",gap:"10px"}}>
-            <label>Hair Test: </label>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <label>Hair Test: </label>
+              <input
+                type="checkbox"
+                name="type"
+                checked={coupon.type == "1" ? true : false}
+                onChange={() => handleInputChange({
+                  target: {
+                    name: "type",
+                    value: "1"
+                  }
+                })}
+              //   required
+              />
+              <label>Order: </label>
+              <input
+                type="checkbox"
+                name="type"
+                checked={coupon.type == "2" ? true : false}
+                onChange={() => handleInputChange({
+                  target: {
+                    name: "type",
+                    value: "2"
+                  }
+                })}
+              //   required
+              />
+              <label>Both: </label>
+
+              <input
+                type="checkbox"
+                name="type"
+                checked={coupon.type == "3" ? true : false}
+                onChange={() => handleInputChange({
+                  target: {
+                    name: "type",
+                    value: "3"
+                  }
+                })}
+              //   required
+              />
+            </div>
+
+
+          </div>
+          <div className={styles.formGroup} style={{ display: "flex", width: "110px", justifyContent: "space-between", alignItems: "center" }}>
+            <label>Is Active: </label>
             <input
               type="checkbox"
               name="type"
-              checked={coupon.type == "1" ? true : false}
-              onChange={() => handleInputChange({target : {
-                name : "type",
-                value : "1"
-              }})}
-            //   required
+              style={{ width: "20px", height: "20px" }}
+              value={coupon.isActive}
+              checked={coupon.isActive}
+              onChange={(state) => {
+                handleInputChange({
+                  target: {
+                    name: "isActive",
+                    value: state.target.checked
+                  }
+                })
+              }}
             />
-                        <label>Order: </label>
-                        <input
-              type="checkbox"
-              name="type"
-              checked={coupon.type == "2" ? true : false}
-              onChange={() => handleInputChange({target : {
-                name : "type",
-                value : "2"
-              }})}
-            //   required
-            />
-                        <label>Both: </label>
-
-                        <input
-              type="checkbox"
-              name="type"
-              checked={coupon.type == "3" ? true : false}
-              onChange={() => handleInputChange({target : {
-                name : "type",
-                value : "3"
-              }})}
-            //   required
-            />
-            </div>
-
           </div>
           <button type="submit" className={styles.button}>{editingAddress ? 'Save Changes' : 'Add Coupon'}</button>
         </form>
       </div>
-      <ToastContainer position="bottom-right"/>
+      <ToastContainer position="bottom-right" />
     </AdminNavbar>
   );
 }
