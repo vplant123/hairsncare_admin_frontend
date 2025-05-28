@@ -1,0 +1,193 @@
+.headManagerReport {
+  background: rgba(0, 160, 227, 0.48);
+  height: 65px;
+  padding: 15px 30px 15px 30px;
+}
+
+.headManagerReportLogo {
+  height: 35px;
+}
+
+.textFlexLineCenterHorizontal {
+  display: flex;
+  justify-content: center;
+}
+
+.textFlexLineCenterOverall {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.textFlexLineCenterVertical {
+  display: flex;
+  align-items: center;
+}
+
+.headManagerReportText1 {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 25px;
+  line-height: 50px;
+  display: flex;
+  align-items: center;
+  color: #292929;
+}
+
+.headManagerReportPage1Sec1 {
+  width: 47%;
+}
+
+.headManagerReportPage1Sec1Left {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 15px 23px;
+  gap: 37.76px;
+  width: 100%;
+  height: 35px;
+  border: 1.25853px solid #000000;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 123.5%;
+  color: #000000;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.headManagerReportPage1Sec1RightTop {
+  background: rgba(129, 206, 239, 0.36);
+  width: 40%;
+  padding: 10px;
+  font-size: 12px;
+}
+
+.headManagerReportPage1Sec1RightBottom {
+  padding: 10px;
+  background: #00a0e3;
+  border-radius: 15.8534px;
+  position: relative;
+}
+
+.headManagerReportPage1Sec1RightBottomText1 {
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 35px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #ffffff;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.headManagerReportPage1Sec1RightBottomText2 {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 22px;
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+  flex: none;
+  order: 2;
+  flex-grow: 0;
+}
+
+.doctorImg {
+  position: absolute;
+  height: 175px;
+  right: 5px;
+  bottom: 0;
+}
+
+.sec2Text1 {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 25px;
+  line-height: 90%;
+  color: #000000;
+}
+
+.sec2Right {
+  width: 40%;
+  background: url("../../../../public/assets/img/reports/doctorAnalysis/page1/image143-7ojh-700w.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  border-radius: 10px;
+}
+
+.sec3Pos1 {
+  height: 70px;
+  background: #00a0e3;
+}
+
+.sec3Pos2 {
+  height: 60px;
+  background: #82cef0;
+  border: 1px solid #000000;
+  font-size: 14px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.sec4Main {
+  box-sizing: border-box;
+  background: #eaf8ff;
+  border: 1px solid #000000;
+  height: 175px;
+}
+
+.page2Sec1Main {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 15px;
+  background: #bece37;
+  border: 1.5px solid #000000;
+}
+
+.page3Sec2 {
+  background: rgba(244, 244, 244, 1);
+  box-shadow: 0px 4.43px 8.97px 0px rgba(0, 0, 0, 0.03);
+  border: 1.11px solid rgba(0, 0, 0, 0.36);
+  padding: 15px;
+}
+
+.page3Sec3 {
+  background: #02a1e5;
+  border-radius: 55.3498px;
+}
+
+.page3Sec3Sec1 {
+  height: 20px;
+  width: 20px;
+  border-radius: 17px;
+  background: #fbfcfe;
+}
+
+.page3Sec4 {
+  background: rgba(159, 239, 248, 1);
+  box-shadow: 0px 4.43px 8.97px 0px rgba(0, 0, 0, 0.03);
+  border: 1.11px solid rgba(0, 0, 0, 0.36);
+  padding: 3px;
+}
+
+.manPage3ColorMain {
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1.21637px solid rgba(0, 0, 0, 0.51);
+  box-shadow: 0px 4.86547px 7.17657px rgba(0, 0, 0, 0.04);
+  border-radius: 35.2747px;
+}

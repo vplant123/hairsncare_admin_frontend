@@ -1,0 +1,348 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.container {
+  width: 100%;
+  display: flex;
+  overflow: auto;
+  min-height: 100vh;
+  align-items: center;
+  flex-direction: column;
+}
+.managementReport {
+  width: 100%;
+  height: auto;
+  display: flex;
+  overflow: hidden;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-color: rgba(248, 249, 251, 1);
+}
+.headerRectangle {
+  top: 0px;
+  left: 0px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 111px;
+  background-color: #009fe3c4;
+}
+.headerText {
+  margin-top: 2%;
+}
+.smartReportText {
+  margin-left: -10em;
+  color: rgba(84, 84, 84, 1);
+  height: auto;
+  font-size: 24px;
+  font-style: Bold;
+  text-align: center;
+  font-family: DM Sans;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.divider {
+  top: 1696px;
+  left: 0px;
+  width: 100%;
+  height: 1px;
+  position: relative;
+}
+.logoGroup {
+  top: 15px;
+  left: 76%;
+  width: 286px;
+  height: 81.8226547241211px;
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+.logoRectangle {
+  background-color: white;
+  width: 288px;
+  height: 81px;
+  margin-left: 4%;
+  margin-top: 1%;
+}
+.logo {
+  top: 0px;
+  left: 18.0625px;
+  width: 249px;
+  height: 82px;
+  position: relative;
+}
+.managementReportText {
+  top: 35.425537109375px;
+  left: -4em;
+  color: rgba(40, 40, 40, 1);
+  height: auto;
+  position: relative;
+  font-size: 31.65311622619629px;
+  font-style: Bold;
+  text-align: center;
+  font-family: DM Sans;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.contentGroup {
+  left: 0px;
+  right: 0px;
+  width: 1154.999755859375px;
+  height: auto;
+  margin: auto;
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+.treatmentPlanBox {
+  left: 6.11572265625px;
+  width: 222px;
+  height: 339px;
+  position: relative;
+  border-color: rgba(0, 0, 0, 1);
+  border-style: solid;
+  border-width: 0.8736762404441833px;
+  border-radius: 3.4947049617767334px;
+}
+.hairScalpBox {
+  left: 237.64013671875px;
+  width: 222px;
+  height: 339px;
+  position: relative;
+  border-color: rgba(0, 0, 0, 1);
+  border-style: solid;
+  border-width: 0.8736762404441833px;
+  border-radius: 3.4947049617767334px;
+}
+.nutritionalBox {
+  left: 469.1640625px;
+  width: 223px;
+  height: 339px;
+  position: relative;
+  border-color: rgba(0, 0, 0, 1);
+  border-style: solid;
+  border-width: 0.8736762404441833px;
+  border-radius: 3.4947049617767334px;
+}
+.lifestyleBox {
+  left: 701.56201171875px;
+  width: 222px;
+  height: 339px;
+  position: relative;
+  border-color: rgba(0, 0, 0, 1);
+  border-style: solid;
+  border-width: 0.8736762404441833px;
+  border-radius: 3.4947049617767334px;
+}
+.stressBox {
+  left: 933.0859375px;
+  width: 222px;
+  height: 339px;
+  position: relative;
+  border-color: rgba(0, 0, 0, 1);
+  border-style: solid;
+  border-width: 0.8736762404441833px;
+  border-radius: 3.4947049617767334px;
+}
+.treatmentPlanFrame {
+  margin-left: -150px;
+  gap: 13.105143547058105px;
+  top: 0px;
+  left: 0px;
+  margin-top: 6%;
+  display: flex;
+  position: relative;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.treatmentPlanButton {
+  gap: 32.98638916015625px;
+  width: 516.3426513671875px;
+  display: flex;
+  padding: 16.493194580078125px 20.094552993774414px;
+  align-items: center;
+  flex-shrink: 0;
+  border-color: rgba(0, 0, 0, 1);
+  border-style: solid;
+  border-width: 1.0995460748672485px;
+  justify-content: center;
+  background-color: rgba(2, 161, 229, 1);
+}
+.treatmentPlanText {
+  color: rgba(0, 0, 0, 1);
+  height: auto;
+  flex-grow: 1;
+  font-size: 21.865095138549805px;
+  font-style: SemiBold;
+  text-align: left;
+  font-family: Poppins;
+  font-weight: 600;
+  line-height: 123.50000143051147%;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.hairScalpButton {
+  gap: 32.98638916015625px;
+  width: 516.3426513671875px;
+  display: flex;
+  padding: 16.493194580078125px 29.687744140625px;
+  align-items: center;
+  flex-shrink: 0;
+  border-color: rgba(0, 0, 0, 1);
+  border-style: solid;
+  border-width: 1.0995460748672485px;
+  justify-content: center;
+  background-color: rgba(159, 239, 248, 1);
+}
+.hairScalpText {
+  color: rgba(0, 0, 0, 1);
+  width: 476px;
+  height: auto;
+  font-size: 21.865095138549805px;
+  font-style: SemiBold;
+  text-align: left;
+  font-family: Poppins;
+  font-weight: 600;
+  line-height: 123.50000143051147%;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.nutritionalButton {
+  gap: 32.98638916015625px;
+  width: 516.3426513671875px;
+  display: flex;
+  padding: 16.493194580078125px 20.094552993774414px;
+  align-items: center;
+  flex-shrink: 0;
+  border-color: rgba(0, 0, 0, 1);
+  border-style: solid;
+  border-width: 1.0995460748672485px;
+  justify-content: center;
+  background-color: rgba(190, 206, 55, 1);
+}
+.nutritionalText {
+  color: rgba(0, 0, 0, 1);
+  height: auto;
+  flex-grow: 1;
+  font-size: 21.865095138549805px;
+  font-style: SemiBold;
+  text-align: left;
+  font-family: Poppins;
+  font-weight: 600;
+  line-height: 123.50000143051147%;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.lifestyleButton {
+  gap: 32.98638916015625px;
+  width: 516.3426513671875px;
+  display: flex;
+  padding: 16.493194580078125px 20.094552993774414px;
+  align-items: center;
+  flex-shrink: 0;
+  border-color: rgba(0, 0, 0, 1);
+  border-style: solid;
+  border-width: 1.0995460748672485px;
+  justify-content: center;
+  background-color: rgba(248, 180, 115, 1);
+}
+.lifestyleText {
+  color: rgba(0, 0, 0, 1);
+  height: auto;
+  flex-grow: 1;
+  font-size: 21.865095138549805px;
+  font-style: SemiBold;
+  text-align: left;
+  font-family: Poppins;
+  font-weight: 600;
+  line-height: 123.50000143051147%;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.stressButton {
+  gap: 32.98638916015625px;
+  width: 516.3426513671875px;
+  display: flex;
+  padding: 16.493194580078125px 20.094552993774414px;
+  align-items: center;
+  flex-shrink: 0;
+  border-color: rgba(0, 0, 0, 1);
+  border-style: solid;
+  border-width: 1.0995460748672485px;
+  justify-content: center;
+  background-color: rgba(230, 146, 208, 1);
+}
+.stressText {
+  color: rgba(0, 0, 0, 1);
+  height: auto;
+  flex-grow: 1;
+  font-size: 21.865095138549805px;
+  font-style: SemiBold;
+  text-align: left;
+  font-family: Poppins;
+  font-weight: 600;
+  line-height: 123.50000143051147%;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.welcomeText {
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(40, 40, 40, 1);
+  margin-bottom: 20px;
+}
+.doctorInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.doctorName {
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(40, 40, 40, 1);
+}
+.doctorQualification {
+  font-size: 14px;
+  color: rgba(84, 84, 84, 1);
+}
+.doctorRegNo {
+  font-size: 14px;
+  color: rgba(84, 84, 84, 1);
+}
+.doctorImage {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.legalDisclaimer {
+  font-size: 8px;
+  height: 100%;
+  color: #ffffff;
+  background: rgba(0, 160, 227, 1);
+  margin-top: 13%;
+}
+@media (max-width: 1386px) {
+  .smartReportText {
+    margin-left: -5em;
+  }
+  .divider {
+    width: 90%;
+  }
+  .contentGroup {
+    width: 90%;
+  }
+  .grid {
+    gap: 10px;
+  }
+}

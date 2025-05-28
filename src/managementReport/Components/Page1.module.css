@@ -1,0 +1,203 @@
+.page {
+  break-avoid: page;
+  padding: 1.25rem;
+  position: relative;
+}
+
+.header {
+  background-color: rgba(0, 160, 227, 0.48);
+  height: 65px;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.logo {
+  height: 35px;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 25px;
+  line-height: 50px;
+  display: flex;
+  align-items: center;
+  color: #292929;
+}
+
+.smartReport {
+  display: flex;
+  align-items: center;
+  color: rgba(84, 84, 84, 1);
+}
+
+.content {
+  display: flex;
+  gap: 6%;
+}
+
+.leftSection {
+  width: 47%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.25rem;
+  gap: 0.75rem;
+}
+
+.menuItem {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 15px 23px;
+  gap: 37.76px;
+  width: 100%;
+  height: 35px;
+  border: 1px solid black;
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 123.5%;
+  color: black;
+}
+
+.rightSection {
+  width: 47%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+.patientName {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.nameBox {
+  background-color: rgba(129, 206, 239, 0.36);
+  width: 40%;
+  padding: 10px;
+  font-size: 12px;
+}
+
+.doctorInfo {
+  padding: 10px;
+  background-color: #00a0e3;
+  border-radius: 15.8534px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.doctorName {
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 35px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: white;
+}
+
+.doctorDetails {
+  font-size: 12px;
+  line-height: 22px;
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+.doctorImage {
+  position: absolute;
+  height: 175px;
+  right: 5px;
+  bottom: 0;
+}
+
+.welcomeSection {
+  display: flex;
+  margin-top: 1.25rem;
+  gap: 5%;
+}
+
+.welcomeText {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.welcomeTitle {
+  font-weight: 600;
+  font-size: 25px;
+  line-height: 90%;
+  color: black;
+}
+
+.welcomeSubtitle {
+  font-size: 28px;
+}
+
+.highlight {
+  color: rgba(0, 160, 227, 1);
+}
+
+.welcomeMessage {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message {
+  font-size: 12px;
+}
+
+.cardsContainer {
+  display: flex;
+  margin-top: 1.25rem;
+  gap: 1%;
+}
+
+.card {
+  width: 19%;
+  height: 250px;
+  border: 1px solid black;
+  gap: 5%;
+  display: flex;
+  flex-direction: column;
+}
+
+.cardTitle {
+  height: 30%;
+  text-align: center;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardImage {
+  height: 65%;
+  padding: 10px;
+}
+
+.cardImage img {
+  width: 100%;
+  height: 100%;
+}
+
+.disclaimer {
+  background-color: rgba(0, 160, 227, 1);
+  font-size: 8px;
+  height: 100%;
+  color: white;
+  margin-top: 13%;
+}
+
+.disclaimerBold {
+  font-weight: bold;
+}

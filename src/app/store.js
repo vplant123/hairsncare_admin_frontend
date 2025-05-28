@@ -1,17 +1,20 @@
 import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
-import LoginSlice from '../features/login/LoginSlice';
-import { productSlice } from '../features/products/productSlice';
-import CartSlice from '../features/products/CartSlice';
-import PatientTestResultSlice from '../features/doctor-dashboard/PatientTestResultSlice';
+import counterReducer from '../features/counterSlice';
+import LoginSlice from '../features/LoginSlice';
+import { productSlice } from '../features/productSlice';
+import CartSlice from '../features/CartSlice';
+import PatientTestResultSlice from '../features//PatientTestResultSlice';
 import contentDataSlice from './conteneDataSlice';
+
+// Exporting store as a named export (instead of default)
 export const store = configureStore({
   reducer: {
     counter: counterReducer,
-    login:LoginSlice,
+    login: LoginSlice,
     product: productSlice.reducer,
-    patientTestResult:PatientTestResultSlice,
+    patientTestResult: PatientTestResultSlice,
     cart: CartSlice,
     content: contentDataSlice,
   },
 });
+
