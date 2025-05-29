@@ -62,7 +62,7 @@ const EditProduct = () => {
 
     try {
       const imageResponse = await fetch(
-        `http://localhost:3000/api/v1/hair-tests/upload-image`,
+        `https://apihair.txogavideo.in/api/v1/hair-tests/upload-image`,
         {
           method: "POST",
           headers: {
@@ -197,7 +197,7 @@ const EditProduct = () => {
   //       // Log API endpoint
   //       console.log(
   //         "API Endpoint:",
-  //         "http://localhost:3000/api/v1/admin/update-product"
+  //         "https://apihair.txogavideo.in/api/v1/admin/update-product"
   //       );
 
   //       // Prepare FormData
@@ -208,7 +208,7 @@ const EditProduct = () => {
   //       console.log("FormData product JSON:", JSON.stringify(updatedProduct));
 
   //       const response = await fetch(
-  //         `http://localhost:3000/api/v1/admin/update-product`,
+  //         `https://apihair.txogavideo.in/api/v1/admin/update-product`,
   //         {
   //           method: "PUT",
   //           headers: {
@@ -312,7 +312,7 @@ const EditProduct = () => {
 
       // Send the product data as JSON
       const response = await fetch(
-        `http://localhost:3000/api/v1/admin/update-product`,
+        `https://apihair.txogavideo.in/api/v1/admin/update-product`,
         {
           method: "PUT",
           headers: {

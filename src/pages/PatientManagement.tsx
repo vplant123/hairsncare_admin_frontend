@@ -86,7 +86,7 @@ const PatientManagement = () => {
     const fetchPatients = async () => {
       try {
         const res = await fetch(
-          "http://localhost:3000/api/v1/admin/allpatient",
+          "https://apihair.txogavideo.in/api/v1/admin/allpatient",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -125,7 +125,7 @@ const PatientManagement = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        "http://localhost:3000/api/v1/admin/get-patient-Data",
+        "https://apihair.txogavideo.in/api/v1/admin/get-patient-Data",
         {
           method: "POST",
           headers: {
@@ -177,7 +177,7 @@ const PatientManagement = () => {
     // Add deactivate account logic here
     try {
       const response = await fetch(
-        `http://localhost:3000/api/v1/admin/deleteuser?userId=${userId}`,
+        `https://apihair.txogavideo.in/api/v1/admin/deleteuser?userId=${userId}`,
         {
           method: "DELETE",
           headers: {

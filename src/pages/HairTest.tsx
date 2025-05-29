@@ -117,7 +117,7 @@ const HairTest = () => {
   const handleFetchData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1/hair-tests/getall",
+        "https://apihair.txogavideo.in/api/v1/hair-tests/getall",
         {
           method: "GET",
         }
@@ -133,7 +133,7 @@ const HairTest = () => {
   const handleFetchOrders = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1/admin/getOrders",
+        "https://apihair.txogavideo.in/api/v1/admin/getOrders",
         {
           method: "GET",
         }
@@ -229,7 +229,7 @@ const HairTest = () => {
   const handleFetchDoctor = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1/admin/all-doctor-Data",
+        "https://apihair.txogavideo.in/api/v1/admin/all-doctor-Data",
         {
           method: "GET",
         }
@@ -312,7 +312,7 @@ const HairTest = () => {
       console.log("Preparing API request with data:", requestData);
 
       const response = await fetch(
-        "http://localhost:3000/api/v1/admin/create-Followup-Appointment",
+        "https://apihair.txogavideo.in/api/v1/admin/create-Followup-Appointment",
         {
           method: "POST",
           headers: {
@@ -405,7 +405,7 @@ const HairTest = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1/admin/assignAppointmentToDoctor",
+        "https://apihair.txogavideo.in/api/v1/admin/assignAppointmentToDoctor",
         {
           method: "POST",
           headers: {
@@ -466,7 +466,7 @@ const HairTest = () => {
   const viewReport = async (testId, status) => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1/hair-tests/getall",
+        "https://apihair.txogavideo.in/api/v1/hair-tests/getall",
         {
           method: "GET",
         }
@@ -487,7 +487,7 @@ const HairTest = () => {
   const viewOrderDetails = async orderId => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/v1/admin/order-details`,
+        `https://apihair.txogavideo.in/api/v1/admin/order-details`,
         {
           method: "POST",
           headers: {
@@ -524,7 +524,7 @@ const HairTest = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/v1/admin/assignDoctorForPrescription`,
+        `https://apihair.txogavideo.in/api/v1/admin/assignDoctorForPrescription`,
         {
           method: "POST",
           headers: {

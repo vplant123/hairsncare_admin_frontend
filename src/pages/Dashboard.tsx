@@ -255,7 +255,7 @@ const Dashboard = () => {
       try {
         const [patientsRes, ordersRes] = await Promise.all([
           fetch(
-            "http://localhost:3000/api/v1/admin/allpatient",
+            "https://apihair.txogavideo.in/api/v1/admin/allpatient",
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -264,7 +264,7 @@ const Dashboard = () => {
             }
           ),
           fetch(
-            "http://localhost:3000/api/v1/admin/getOrders",
+            "https://apihair.txogavideo.in/api/v1/admin/getOrders",
             {
               headers: {
                 Authorization: `Bearer ${token}`,

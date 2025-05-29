@@ -51,7 +51,7 @@ const DoctorManagement = () => {
   const handleFetchData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1/admin/all-doctor-Data",
+        "https://apihair.txogavideo.in/api/v1/admin/all-doctor-Data",
         {
           method: "GET",
         }
@@ -86,7 +86,7 @@ const DoctorManagement = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/v1/admin/delete-doctor`,
+        `https://apihair.txogavideo.in/api/v1/admin/delete-doctor`,
         {
           method: "DELETE",
           headers: {

@@ -256,7 +256,7 @@ const Coupons = () => {
       if (!token) throw new Error("Authentication token not found");
 
       const res = await fetch(
-        "http://localhost:3000/api/v1/admin/getCoupons",
+        "https://apihair.txogavideo.in/api/v1/admin/getCoupons",
         {
           method: "GET",
           headers: {
@@ -308,7 +308,7 @@ const Coupons = () => {
       console.log('Creating coupon with payload:', payload);
 
       const res = await fetch(
-        "http://localhost:3000/api/v1/admin/editCoupon",
+        "https://apihair.txogavideo.in/api/v1/admin/editCoupon",
         {
           method: "POST",
           headers: {
@@ -376,7 +376,7 @@ const Coupons = () => {
       console.log('Editing coupon with payload:', payload);
 
       const res = await fetch(
-        "http://localhost:3000/api/v1/admin/editCoupon",
+        "https://apihair.txogavideo.in/api/v1/admin/editCoupon",
         {
           method: "POST",
           headers: {
@@ -437,7 +437,7 @@ const Coupons = () => {
       if (!token) throw new Error("Authentication token not found");
 
       const res = await fetch(
-        "http://localhost:3000/api/v1/admin/deleteCoupon",
+        "https://apihair.txogavideo.in/api/v1/admin/deleteCoupon",
         {
           method: "POST",
           headers: {
@@ -491,7 +491,7 @@ const Coupons = () => {
       };
 
       const res = await fetch(
-        "http://localhost:3000/api/v1/admin/editCoupon",
+        "https://apihair.txogavideo.in/api/v1/admin/editCoupon",
         {
           method: "POST",
           headers: {

@@ -72,7 +72,7 @@ const Admins = () => {
   const handleFetchData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1/admin/getAdmin",
+        "https://apihair.txogavideo.in/api/v1/admin/getAdmin",
         {
           method: "POST",
         }
@@ -238,7 +238,7 @@ const Admins = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1/admin/addAdmin",
+        "https://apihair.txogavideo.in/api/v1/admin/addAdmin",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -307,7 +307,7 @@ const Admins = () => {
       }
 
       const response = await fetch(
-        "http://localhost:3000/api/v1/admin/update-admin-profile",
+        "https://apihair.txogavideo.in/api/v1/admin/update-admin-profile",
         {
           method: "PUT",
           headers: {

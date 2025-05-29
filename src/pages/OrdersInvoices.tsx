@@ -74,7 +74,7 @@ const OrdersInvoices = () => {
     setError(null);
     try {
       const response = await fetch(
-        `http://localhost:3000/api/v1/admin/getOrders`,
+        `https://apihair.txogavideo.in/api/v1/admin/getOrders`,
         {
           method: "GET",
           headers: {
@@ -119,7 +119,7 @@ const OrdersInvoices = () => {
     };
     try {
       const response = await fetch(
-        `http://localhost:3000/api/v1/payment/change-order-status`,
+        `https://apihair.txogavideo.in/api/v1/payment/change-order-status`,
         {
           method: "POST",
           headers: {

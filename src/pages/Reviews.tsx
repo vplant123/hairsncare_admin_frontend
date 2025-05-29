@@ -27,7 +27,7 @@ const Reviews = () => {
   const handleFetchData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1/admin/getReviewAll",
+        "https://apihair.txogavideo.in/api/v1/admin/getReviewAll",
         {
           method: "POST",
           headers: {
@@ -52,7 +52,7 @@ const Reviews = () => {
   const handleDelete = async (id: string) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/v1/admin/deleteReview/${id}`,
+        `https://apihair.txogavideo.in/api/v1/admin/deleteReview/${id}`,
         {
           method: "POST",
           headers: {

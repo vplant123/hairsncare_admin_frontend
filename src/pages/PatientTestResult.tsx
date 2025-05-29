@@ -181,7 +181,7 @@ const PatientTestResult = () => {
 
       const token = localStorage.getItem("token");
       const response = await fetch(
-        "http://localhost:3000/api/v1/doctor/upload-assessment-image",
+        "https://apihair.txogavideo.in/api/v1/doctor/upload-assessment-image",
         {
           method: "POST",
           headers: {

@@ -54,7 +54,7 @@ export default function DoctorAnalysis(props) {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/v1/doctor/getPrescription?appointmentId=${params.id}`
+          `https://apihair.txogavideo.in/api/v1/doctor/getPrescription?appointmentId=${params.id}`
         );
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);

@@ -51,7 +51,7 @@ const AddInvoice = () => {
   const handleDoctorData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1/admin/all-doctor-Data",
+        "https://apihair.txogavideo.in/api/v1/admin/all-doctor-Data",
         { method: "GET" }
       );
       const data = await response.json();
@@ -64,7 +64,7 @@ const AddInvoice = () => {
   const handleProductData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1/admin/product",
+        "https://apihair.txogavideo.in/api/v1/admin/product",
         { method: "GET" }
       );
       const data = await response.json();
@@ -178,7 +178,7 @@ const AddInvoice = () => {
     // Send invoice data to the backend API
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1/admin/addInvoice",
+        "https://apihair.txogavideo.in/api/v1/admin/addInvoice",
         {
           method: "POST",
           headers: {

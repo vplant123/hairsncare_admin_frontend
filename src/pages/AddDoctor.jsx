@@ -95,7 +95,7 @@ const AddDoctor = () => {
     formData.append("image", file);
 
     const imageResponse = await fetch(
-      `http://localhost:3000/api/v1/hair-tests/upload-image`,
+      `https://apihair.txogavideo.in/api/v1/hair-tests/upload-image`,
       {
         method: "POST",
         headers: {
@@ -179,7 +179,7 @@ const AddDoctor = () => {
 
       console.log("Final payload to send:", payload);
 
-      const baseUrl = "http://localhost:3000/api/v1/admin";
+      const baseUrl = "https://apihair.txogavideo.in/api/v1/admin";
       const url = isEdit ? `${baseUrl}/edit-doctor` : `${baseUrl}/addDoctor`;
       console.log("API URL:", url);
 

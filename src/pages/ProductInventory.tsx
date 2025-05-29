@@ -25,7 +25,7 @@ const ProductInventory = () => {
     const fetchProducts = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3000/api/v1/admin/product"
+          "https://apihair.txogavideo.in/api/v1/admin/product"
         );
         const data = await response.json();
         if (data.statusCode === 200) {

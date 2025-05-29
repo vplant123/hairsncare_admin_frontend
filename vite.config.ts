@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => ({
     historyApiFallback: true,
     proxy: {
       "/api": {
-        target: "http://localhost:3000",
+        target: "https://apihair.txogavideo.in",
         changeOrigin: true,
         secure: false,
         rewrite: path => path.replace(/^\/api/, ""),
