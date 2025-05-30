@@ -9,16 +9,8 @@ import autoprefixer from "autoprefixer";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 3000,
+    port: 5173,
     historyApiFallback: true,
-    proxy: {
-      "/api": {
-        target: "https://apihair.txogavideo.in",
-        changeOrigin: true,
-        secure: false,
-        rewrite: path => path.replace(/^\/api/, ""),
-      },
-    },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(
     Boolean

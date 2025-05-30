@@ -254,24 +254,18 @@ const Dashboard = () => {
       }
       try {
         const [patientsRes, ordersRes] = await Promise.all([
-          fetch(
-            "https://apihair.txogavideo.in/api/v1/admin/allpatient",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          ),
-          fetch(
-            "https://apihair.txogavideo.in/api/v1/admin/getOrders",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          ),
+          fetch("https://apihair.txogavideo.in/api/v1/admin/allpatient", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }),
+          fetch("https://apihair.txogavideo.in/api/v1/admin/getOrders", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }),
         ]);
 
         if (!patientsRes.ok)
@@ -374,29 +368,27 @@ const Dashboard = () => {
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="month" 
-                    tick={{ fontSize: 12 }}
-                    interval={0}
-                  />
-                  <YAxis 
+                  <XAxis dataKey="month" tick={{ fontSize: 12 }} interval={0} />
+                  <YAxis
                     yAxisId="left"
                     orientation="left"
                     tick={{ fontSize: 12 }}
-                    tickFormatter={(value) => value.toLocaleString()}
+                    tickFormatter={value => value.toLocaleString()}
                   />
-                  <YAxis 
+                  <YAxis
                     yAxisId="right"
                     orientation="right"
                     tick={{ fontSize: 12 }}
-                    tickFormatter={(value) => `Rs. ${value.toLocaleString()}`}
+                    tickFormatter={value => `Rs. ${value.toLocaleString()}`}
                   />
-                  <Tooltip 
+                  <Tooltip
                     content={({ active, payload, label }) => {
                       if (active && payload && payload.length) {
                         return (
                           <div className="bg-white p-3 rounded-lg shadow-lg border">
-                            <p className="font-semibold text-gray-800">{label}</p>
+                            <p className="font-semibold text-gray-800">
+                              {label}
+                            </p>
                             <p className="text-sm text-gray-600">
                               Orders: {payload[0].value.toLocaleString()}
                             </p>
@@ -410,17 +402,17 @@ const Dashboard = () => {
                     }}
                   />
                   <Legend />
-                  <Bar 
+                  <Bar
                     yAxisId="left"
-                    dataKey="orders" 
-                    fill="#1E40AF" 
+                    dataKey="orders"
+                    fill="#1E40AF"
                     name="Orders"
                     radius={[4, 4, 0, 0]}
                   />
-                  <Bar 
+                  <Bar
                     yAxisId="right"
-                    dataKey="sales" 
-                    fill="#3B82F6" 
+                    dataKey="sales"
+                    fill="#3B82F6"
                     name="Sales (Rs.)"
                     radius={[4, 4, 0, 0]}
                   />
@@ -479,7 +471,8 @@ const Dashboard = () => {
                     fill="#8884d8"
                     dataKey="quantity"
                     label={({ name, percent }) => {
-                      const formattedName = name.length > 15 ? `${name.substring(0, 15)}...` : name;
+                      const formattedName =
+                        name.length > 15 ? `${name.substring(0, 15)}...` : name;
                       return `${formattedName} (${(percent * 100).toFixed(0)}%)`;
                     }}
                   >
@@ -490,12 +483,14 @@ const Dashboard = () => {
                       />
                     ))}
                   </Pie>
-                  <Tooltip 
+                  <Tooltip
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         return (
                           <div className="bg-white p-3 rounded-lg shadow-lg border">
-                            <p className="font-semibold text-gray-800">{payload[0].name}</p>
+                            <p className="font-semibold text-gray-800">
+                              {payload[0].name}
+                            </p>
                             <p className="text-sm text-gray-600">
                               Quantity: {payload[0].value.toLocaleString()}
                             </p>
@@ -505,12 +500,14 @@ const Dashboard = () => {
                       return null;
                     }}
                   />
-                  <Legend 
-                    layout="vertical" 
-                    verticalAlign="middle" 
+                  <Legend
+                    layout="vertical"
+                    verticalAlign="middle"
                     align="right"
-                    formatter={(value) => {
-                      return value.length > 15 ? `${value.substring(0, 15)}...` : value;
+                    formatter={value => {
+                      return value.length > 15
+                        ? `${value.substring(0, 15)}...`
+                        : value;
                     }}
                   />
                 </PieChart>

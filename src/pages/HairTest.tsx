@@ -1065,7 +1065,7 @@ const HairTest = () => {
                       className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
                       onClick={() =>
                         window.open(
-                          `http://localhost:5173/doctor-analyse-report/${selectedTest.appointments[0]._id}`,
+                          `https://report.txogavideo.in/doctor-analyse-report/${selectedTest.appointments[0]._id}`,
                           "_blank"
                         )
                       }
@@ -1078,7 +1078,7 @@ const HairTest = () => {
                       className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
                       onClick={() =>
                         window.open(
-                          `http://localhost:5173/management-report/${selectedTest.appointments[0]._id}`,
+                          `https://report.txogavideo.in/management-report/${selectedTest.appointments[0]._id}`,
                           "_blank"
                         )
                       }
@@ -1091,7 +1091,7 @@ const HairTest = () => {
                       className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
                       onClick={() =>
                         window.open(
-                          `http://localhost:5173/doctor/report/${selectedTest.appointments[0]._id}`,
+                          `https://report.txogavideo.in/doctor/report/${selectedTest.appointments[0]._id}`,
                           "_blank"
                         )
                       }
