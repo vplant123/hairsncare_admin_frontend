@@ -96,20 +96,20 @@ const Admins = () => {
 
   const handleInputChange = e => {
     const { name, value } = e.target;
-    
+
     // Special handling for mobile number input
     if (name === "mobile") {
       // Remove all characters except numbers and plus sign
-      const cleanedValue = value.replace(/[^\d+]/g, '');
+      const cleanedValue = value.replace(/[^\d+]/g, "");
       // Ensure only one plus sign at the start
-      const finalValue = cleanedValue.replace(/\+/g, (match, index) => 
-        index === 0 ? '+' : ''
+      const finalValue = cleanedValue.replace(/\+/g, (match, index) =>
+        index === 0 ? "+" : ""
       );
       setNewAdmin(prev => ({ ...prev, [name]: finalValue }));
     } else {
       setNewAdmin(prev => ({ ...prev, [name]: value }));
     }
-    
+
     setErrorMessages(prev =>
       prev.filter(err => !err.field || err.field !== name)
     );
@@ -130,18 +130,21 @@ const Admins = () => {
       ...prev,
       role,
       // Reset permissions if switching to admin role
-      permission: role === "admin" ? {
-        hairTest: true,
-        doctor: true,
-        patient: true,
-        website: true,
-        coupon: true,
-        orders: true,
-        contactus: true,
-        product: true,
-        reviews: true,
-        admin: true,
-      } : prev.permission
+      permission:
+        role === "admin"
+          ? {
+              hairTest: true,
+              doctor: true,
+              patient: true,
+              website: true,
+              coupon: true,
+              orders: true,
+              contactus: true,
+              product: true,
+              reviews: true,
+              admin: true,
+            }
+          : prev.permission,
     }));
   };
 
@@ -252,7 +255,7 @@ const Admins = () => {
         handleCloseDialog();
         toast({
           title: "Admin Added",
-          className:"bg-white",
+          className: "bg-white",
           description: `${newAdmin.fullname} has been added as a ${newAdmin.role}`,
         });
       } else {

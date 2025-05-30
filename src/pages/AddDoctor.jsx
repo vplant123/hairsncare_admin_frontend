@@ -451,8 +451,8 @@ const AddDoctor = () => {
                 {isSubmitting
                   ? "Saving..."
                   : isEdit
-                  ? "Update Doctor"
-                  : "Add Doctor"}
+                    ? "Update Doctor"
+                    : "Add Doctor"}
               </Button>
             </div>
           </form>

@@ -24,7 +24,7 @@ import { toast } from "@/components/ui/use-toast";
 const AppointmentManagement = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
-   const [selectedTest, setSelectedTest] = useState(null);
+  const [selectedTest, setSelectedTest] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -281,23 +281,16 @@ const AppointmentManagement = () => {
                                 : "bg-blue-500 text-white"
                             }
                             onClick={() => {
-                              if (
-                                appointment.appointmentType ===
-                                  "prescription" &&
-                                !appointment.followupOf
-                              ) {
-                                // Add your generate report logic here
-                                toast({
-                                  title: "Generate Report",
-                                  description:
-                                    "Report generation functionality will be implemented here",
-                                });
-                                return;
-                              }
+                              const userId = appointment.userId?._id;
+                              const appointmentId = appointment._id;
                               const testId =
-                                appointment.followupOf ||
-                                appointment.hairTestId;
-                              if (!appointment.userId?._id || !testId) {
+                                appointment.appointmentType ===
+                                "prescription_only"
+                                  ? appointment.orderId
+                                  : appointment.followupOf ||
+                                    appointment.hairTestId;
+
+                              if (!userId || !testId) {
                                 toast({
                                   variant: "destructive",
                                   title: "Error",
@@ -306,8 +299,16 @@ const AppointmentManagement = () => {
                                 });
                                 return;
                               }
+
+                              const baseUrl = "https://report.txogavideo.in";
+                              const path =
+                                appointment.appointmentType ===
+                                "prescription_only"
+                                  ? "Prescription-Only"
+                                  : "patient-test-result";
+
                               window.open(
-                                `http://localhost:5173/patient-test-result/${appointment.userId?._id},${appointment._id},${appointment.hairTestId}`,
+                                `${baseUrl}/${path}/${userId},${appointmentId},${testId}`,
                                 "_blank"
                               );
                             }}
@@ -315,9 +316,14 @@ const AppointmentManagement = () => {
                             {appointment?.status === "completed"
                               ? "View"
                               : appointment.appointmentType ===
-                                    "prescription" && !appointment.followupOf
-                                ? "Generate Report"
-                                : "Test"}
+                                  "prescription_only"
+                                ? "Prescribe"
+                                : appointment.appointmentType ===
+                                    "hairTest_with_prescription"
+                                  ? "Test & Prescribe"
+                                  : appointment.followupOf
+                                    ? "Followup"
+                                    : "Test Again"}
                           </Button>
                         ) : (
                           "N/A"

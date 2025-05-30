@@ -233,7 +233,7 @@ const Coupons = () => {
       if (selectedDate < today) {
         toast({
           title: "Validation Error",
-          className:"bg-white",
+          className: "bg-white",
           description: "Validity Date must be today or a future date.",
           variant: "destructive",
           duration: 5000,
@@ -255,16 +255,13 @@ const Coupons = () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Authentication token not found");
 
-      const res = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/getCoupons",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await fetch("https://apihair.txogavideo.in/api/v1/admin/getCoupons", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
@@ -302,25 +299,22 @@ const Coupons = () => {
         validity: formData.validity,
         percent: Number(formData.value),
         type: formData.type,
-        isActive: formData.isActive ?? true
+        isActive: formData.isActive ?? true,
       };
 
-      console.log('Creating coupon with payload:', payload);
+      console.log("Creating coupon with payload:", payload);
 
-      const res = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/editCoupon",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const res = await fetch("https://apihair.txogavideo.in/api/v1/admin/editCoupon", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
       const data = await res.json();
-      console.log('Create coupon response:', data);
+      console.log("Create coupon response:", data);
 
       if (!res.ok) {
         throw new Error(data.message || `HTTP error! status: ${res.status}`);
@@ -340,10 +334,10 @@ const Coupons = () => {
         throw new Error(data.message || "Failed to create coupon");
       }
     } catch (error: any) {
-      console.error('Create coupon error details:', {
+      console.error("Create coupon error details:", {
         message: error.message,
         stack: error.stack,
-        response: error.response
+        response: error.response,
       });
       toast({
         title: "Error",
@@ -370,25 +364,22 @@ const Coupons = () => {
         validity: formData.validity,
         percent: Number(formData.value),
         type: formData.type,
-        isActive: formData.isActive
+        isActive: formData.isActive,
       };
 
-      console.log('Editing coupon with payload:', payload);
+      console.log("Editing coupon with payload:", payload);
 
-      const res = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/editCoupon",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const res = await fetch("https://apihair.txogavideo.in/api/v1/admin/editCoupon", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
       const data = await res.json();
-      console.log('Edit coupon response:', data);
+      console.log("Edit coupon response:", data);
 
       if (!res.ok) {
         throw new Error(data.message || `HTTP error! status: ${res.status}`);
@@ -407,10 +398,10 @@ const Coupons = () => {
         throw new Error(data.message || "Failed to update coupon");
       }
     } catch (error: any) {
-      console.error('Edit coupon error details:', {
+      console.error("Edit coupon error details:", {
         message: error.message,
         stack: error.stack,
-        response: error.response
+        response: error.response,
       });
       toast({
         title: "Error",
@@ -490,17 +481,14 @@ const Coupons = () => {
         isActive: !couponToToggle.isActive,
       };
 
-      const res = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/editCoupon",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedCoupon),
-        }
-      );
+      const res = await fetch("https://apihair.txogavideo.in/api/v1/admin/editCoupon", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedCoupon),
+      });
 
       const data = await res.json();
       if (data.success) {
