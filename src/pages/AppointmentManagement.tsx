@@ -96,7 +96,7 @@ const AppointmentManagement = () => {
   }, []); // Empty dependency array means this effect runs once on mount
 
   // Filter appointments based on search query
-  const filteredAppointments = appointments.filter(appointment =>
+  const filteredAppointments = appointments.filter((appointment) =>
     // Check if userId and fullname exist before accessing
     appointment.userId?.fullname
       .toLowerCase()
@@ -132,7 +132,7 @@ const AppointmentManagement = () => {
                   placeholder="Search appointments..."
                   className="px-10"
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
@@ -144,13 +144,13 @@ const AppointmentManagement = () => {
               <span>Rows per page&nbsp;</span>
               <select
                 value={rowsPerPage}
-                onChange={e => {
+                onChange={(e) => {
                   setRowsPerPage(Number(e.target.value));
                   setCurrentPage(1); // Reset to first page
                 }}
                 className="border rounded px-2 py-1"
               >
-                {[5, 10, 25, 50].map(num => (
+                {[5, 10, 25, 50].map((num) => (
                   <option key={num} value={num}>
                     {num}
                   </option>
@@ -175,7 +175,7 @@ const AppointmentManagement = () => {
                 {"|<"}
               </button>
               <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 className="px-2"
               >
@@ -183,7 +183,7 @@ const AppointmentManagement = () => {
               </button>
               <button
                 onClick={() =>
-                  setCurrentPage(prev => Math.min(prev + 1, totalPages))
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
                 className="px-2"
@@ -234,7 +234,7 @@ const AppointmentManagement = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paginatedAppointments.map(appointment => (
+                  paginatedAppointments.map((appointment) => (
                     <TableRow key={appointment._id}>
                       <TableCell className="font-medium">
                         {appointment.userId?.fullname || "N/A"}
