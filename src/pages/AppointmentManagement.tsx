@@ -60,7 +60,7 @@ const AppointmentManagement = () => {
         }
 
         const response = await fetch(
-          "https://apihair.txogavideo.in/api/v1/doctor/get-all-appointment",
+          "http://localhost:5000/api/v1/doctor/get-all-appointment",
           {
             headers: {
               Authorization: `Bearer ${token}`,

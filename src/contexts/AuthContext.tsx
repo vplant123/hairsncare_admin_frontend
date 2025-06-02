@@ -2,10 +2,18 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
+interface UserProfile {
+  fullname: string;
+  email: string;
+  mobile: string;
+  role: string;
+}
+
 interface AuthContextType {
   isAuthenticated: boolean;
   role: string | null;
   permissions: { [key: string]: boolean };
+  userProfile: UserProfile | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }
@@ -36,6 +44,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       return storedPermissions ? JSON.parse(storedPermissions) : {};
     }
   );
+
+  // Initialize userProfile with stored data or default values
+  const [userProfile, setUserProfile] = useState<UserProfile>(() => {
+    const storedProfile = localStorage.getItem("userProfile");
+    if (storedProfile) {
+      return JSON.parse(storedProfile);
+    }
+    return {
+      fullname: "",
+      email: "",
+      mobile: "",
+      role: "",
+    };
+  });
+
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -46,38 +69,51 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch("https://apihair.txogavideo.in/api/v1/users/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/users/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        }
+      );
 
       const data = await response.json();
 
       if (data.success) {
+        console.log("Login Response:", data);
         const token = data.data.logedInUser.accessToken;
         const userRole = data.data.logedInUser.role;
-        const userPermissions = data?.data.user?.permission || {};
+        const userPermissions = data.data.logedInUser?.user?.permission || {};
+        const userData = data.data.logedInUser.user;
+
+        const profileData: UserProfile = {
+          fullname: userData.fullname || "",
+          email: userData.email || "",
+          mobile: userData.mobile || "",
+          role: userRole || "",
+        };
 
         // Store authentication data
         localStorage.setItem("token", token);
         localStorage.setItem("role", userRole);
         localStorage.setItem("permissions", JSON.stringify(userPermissions));
+        localStorage.setItem("userProfile", JSON.stringify(profileData));
 
         setIsAuthenticated(true);
         setRole(userRole);
         setPermissions(userPermissions);
+        setUserProfile(profileData);
 
         // Navigate based on role
         const redirectPath = "/dashboard";
         navigate(redirectPath, { replace: true });
 
-        // Show success toast
         setTimeout(() => {
           toast({
             title: "Success",
@@ -108,16 +144,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsAuthenticated(false);
     setRole(null);
     setPermissions({});
+    setUserProfile({
+      fullname: "",
+      email: "",
+      mobile: "",
+      role: "",
+    });
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("role");
     localStorage.removeItem("token");
     localStorage.removeItem("permissions");
+    localStorage.removeItem("userProfile");
     navigate("/signin");
   };
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, role, permissions, login, logout }}
+      value={{ isAuthenticated, role, permissions, userProfile, login, logout }}
     >
       {children}
     </AuthContext.Provider>

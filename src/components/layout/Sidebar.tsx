@@ -23,6 +23,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
+interface SidebarProps {
+  isMobileOpen?: boolean;
+  onMobileClose?: () => void;
+}
+
 const routesByRole = {
   admin: [
     { path: "/dashboard", label: "Dashboard" },
@@ -56,15 +61,13 @@ const routesByRole = {
     { path: "/dashboard", label: "Dashboard" },
     { path: "/users", label: "Patient Management", permissionKey: "patient" },
     { path: "/doctors", label: "Doctor Management", permissionKey: "doctor" },
-    { path: "/hair-test", label: "Hair Test", permissionKey: "hairTest" },
     { path: "/orders", label: "Orders", permissionKey: "orders" },
     { path: "/products", label: "Products", permissionKey: "product" },
     { path: "/website", label: "Manage Website", permissionKey: "website" },
-    { path: "/reviews", label: "Reviews", permissionKey: "reviews" },
     { path: "/coupons", label: "Coupons", permissionKey: "coupon" },
-    { path: "/invoice", label: "Invoice" },
-    { path: "/reports", label: "Reports" },
     { path: "/contact", label: "Contact Us", permissionKey: "contactus" },
+    { path: "/hair-test", label: "Hair Tests", permissionKey: "hairTest" },
+    { path: "/reviews", label: "Reviews", permissionKey: "reviews" },
   ],
 };
 
@@ -88,7 +91,7 @@ const icons = {
   "/prescriptions": FileCheck,
 };
 
-const Sidebar = forwardRef(({ isMobileOpen = false, onMobileClose }, ref) => {
+const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(({ isMobileOpen = false, onMobileClose }, ref) => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const { role, permissions } = useAuth();
@@ -96,13 +99,13 @@ const Sidebar = forwardRef(({ isMobileOpen = false, onMobileClose }, ref) => {
   // Filter routes based on role and permissions
   const filteredRoutes = React.useMemo(() => {
     if (!role) return [];
-    return (routesByRole[role] || []).filter(route => {
+    return (routesByRole[role] || []).filter((route) => {
       return !route.permissionKey || permissions[route.permissionKey];
     });
   }, [role, permissions]);
 
   // Determine if route is active
-  const isActiveRoute = path => {
+  const isActiveRoute = (path) => {
     if (path === "/dashboard") {
       return location.pathname === "/" || location.pathname === "/dashboard";
     }

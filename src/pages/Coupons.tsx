@@ -44,7 +44,7 @@ interface CouponFormData {
   _id?: string | null;
   code: string;
   type: string;
-  value: string;
+  percent: string;
   validity: string;
   isActive: boolean;
   notes: string;
@@ -71,7 +71,7 @@ const Coupons = () => {
     _id: null,
     code: "",
     type: "percentage",
-    value: "",
+    percent: "",
     validity: "",
     isActive: true,
     notes: "",
@@ -86,7 +86,7 @@ const Coupons = () => {
         _id: selectedCoupon._id || null,
         code: selectedCoupon.code || "",
         type: selectedCoupon.type || "percentage",
-        value: selectedCoupon.value || "",
+        percent: selectedCoupon.percent?.toString() || "",
         validity: selectedCoupon.validity
           ? new Date(selectedCoupon.validity).toISOString().split("T")[0]
           : "",
@@ -123,23 +123,23 @@ const Coupons = () => {
       return false;
     }
 
-    // Validate value
-    if (!formData.value.trim()) {
+    // Validate percent
+    if (!formData.percent.trim()) {
       toast({
         title: "Validation Error",
-        description: "Value is required.",
+        description: "Percent is required.",
         variant: "destructive",
         duration: 5000,
       });
       return false;
     }
 
-    // Validate value is a positive number
-    const value = Number(formData.value);
-    if (isNaN(value) || value <= 0) {
+    // Validate percent is a positive number
+    const percent = Number(formData.percent);
+    if (isNaN(percent) || percent <= 0) {
       toast({
         title: "Validation Error",
-        description: "Value must be a positive number.",
+        description: "Percent must be a positive number.",
         variant: "destructive",
         duration: 5000,
       });
@@ -147,7 +147,7 @@ const Coupons = () => {
     }
 
     // Validate percentage value range
-    if (formData.type === "percentage" && value > 100) {
+    if (formData.type === "percentage" && percent > 100) {
       toast({
         title: "Validation Error",
         description: "Percentage value cannot be greater than 100%.",
@@ -201,12 +201,12 @@ const Coupons = () => {
   // Handle input change for form fields with validation
   const handleInputChange = (field: keyof CouponFormData, value: any) => {
     // Validate value field for numbers
-    if (field === "value") {
+    if (field === "percent") {
       const numValue = Number(value);
       if (isNaN(numValue) || numValue < 0) {
         toast({
           title: "Validation Error",
-          description: "Value must be a positive number.",
+          description: "Percent must be a positive number.",
           variant: "destructive",
           duration: 5000,
         });
@@ -242,7 +242,7 @@ const Coupons = () => {
       }
     }
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
@@ -256,7 +256,7 @@ const Coupons = () => {
       if (!token) throw new Error("Authentication token not found");
 
       const res = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/getCoupons",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/getCoupons`,
         {
           method: "GET",
           headers: {
@@ -300,7 +300,7 @@ const Coupons = () => {
         code: formData.code,
         _id: null,
         validity: formData.validity,
-        percent: Number(formData.value),
+        percent: Number(formData.percent),
         type: formData.type,
         isActive: formData.isActive ?? true
       };
@@ -308,7 +308,7 @@ const Coupons = () => {
       console.log('Creating coupon with payload:', payload);
 
       const res = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/editCoupon",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/editCoupon`,
         {
           method: "POST",
           headers: {
@@ -368,7 +368,7 @@ const Coupons = () => {
         code: formData.code,
         _id: formData._id,
         validity: formData.validity,
-        percent: Number(formData.value),
+        percent: Number(formData.percent),
         type: formData.type,
         isActive: formData.isActive
       };
@@ -376,7 +376,7 @@ const Coupons = () => {
       console.log('Editing coupon with payload:', payload);
 
       const res = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/editCoupon",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/editCoupon`,
         {
           method: "POST",
           headers: {
@@ -456,7 +456,7 @@ const Coupons = () => {
           className: "bg-green-50 border-green-200",
           duration: 5000,
         });
-        setCoupons(prev => prev.filter(c => c._id !== couponToDelete));
+        setCoupons((prev) => prev.filter((c) => c._id !== couponToDelete));
       } else {
         throw new Error(data.message || "Failed to delete coupon");
       }
@@ -482,7 +482,7 @@ const Coupons = () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Authentication token not found");
 
-      const couponToToggle = coupons.find(c => c._id === couponId);
+      const couponToToggle = coupons.find((c) => c._id === couponId);
       if (!couponToToggle) throw new Error("Coupon not found");
 
       const updatedCoupon = {
@@ -491,7 +491,7 @@ const Coupons = () => {
       };
 
       const res = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/editCoupon",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/editCoupon`,
         {
           method: "POST",
           headers: {
@@ -504,7 +504,9 @@ const Coupons = () => {
 
       const data = await res.json();
       if (data.success) {
-        setCoupons(prev => prev.map(c => (c._id === couponId ? data.data : c)));
+        setCoupons((prev) =>
+          prev.map((c) => (c._id === couponId ? data.data : c))
+        );
         toast({
           title: "Success",
           description: `Coupon ${
@@ -540,7 +542,7 @@ const Coupons = () => {
   };
 
   // Filter coupons by search, status, and expiry
-  const filteredCoupons = coupons.filter(coupon => {
+  const filteredCoupons = coupons.filter((coupon) => {
     const now = new Date();
     const expiry = new Date(coupon.validity);
     const isExpired = expiry < now;
@@ -610,7 +612,7 @@ const Coupons = () => {
                   placeholder="Search by coupon code..."
                   className="pl-10"
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <div className="flex gap-2">
@@ -622,8 +624,6 @@ const Coupons = () => {
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="active">Active</SelectItem>
                     <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="expired">Expired</SelectItem>
-                    <SelectItem value="maxed_out">Maxed Out</SelectItem>
                   </SelectContent>
                 </Select>
                 <Select value={expiryFilter} onValueChange={setExpiryFilter}>
@@ -635,10 +635,7 @@ const Coupons = () => {
                     <SelectItem value="valid">Valid</SelectItem>
                     <SelectItem value="expired">Expired</SelectItem>
                   </SelectContent>
-                </Select>
-                <Button variant="outline" size="icon">
-                  <Filter className="h-4 w-4" />
-                </Button>
+                </Select> */}
               </div>
             </div>
           </CardHeader>
@@ -678,7 +675,7 @@ const Coupons = () => {
                         </TableCell>
                       </TableRow>
                     ) : (
-                      currentCoupons.map(coupon => {
+                      currentCoupons.map((coupon) => {
                         const isExpired =
                           new Date(coupon.validity) < new Date();
                         return (
@@ -688,8 +685,8 @@ const Coupons = () => {
                             </TableCell>
                             <TableCell>
                               {coupon.type === "percentage"
-                                ? `${coupon.value || 0}%`
-                                : `${(parseFloat(coupon.value) || 0).toFixed(
+                                ? `${coupon.percent || 0}%`
+                                : `${(parseFloat(coupon.percent) || 0).toFixed(
                                     2
                                   )} Rs`}
                             </TableCell>
@@ -758,7 +755,7 @@ const Coupons = () => {
                         {Array.from(
                           { length: totalPages },
                           (_, i) => i + 1
-                        ).map(page => (
+                        ).map((page) => (
                           <Button
                             key={page}
                             variant={
@@ -804,7 +801,7 @@ const Coupons = () => {
                 </div>
                 <Input
                   value={formData.code}
-                  onChange={e => handleInputChange("code", e.target.value)}
+                  onChange={(e) => handleInputChange("code", e.target.value)}
                   placeholder="e.g. SUMMER25"
                 />
               </div>
@@ -817,7 +814,7 @@ const Coupons = () => {
                   </div>
                   <Select
                     value={formData.type}
-                    onValueChange={value => handleInputChange("type", value)}
+                    onValueChange={(value) => handleInputChange("type", value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />
@@ -836,8 +833,8 @@ const Coupons = () => {
                   </div>
                   <Input
                     type="number"
-                    value={formData.value}
-                    onChange={e => handleInputChange("value", e.target.value)}
+                    value={formData.percent}
+                    onChange={(e) => handleInputChange("percent", e.target.value)}
                     placeholder={formData.type === "percentage" ? "25" : "100"}
                     min="0"
                   />
@@ -852,7 +849,9 @@ const Coupons = () => {
                 <Input
                   type="date"
                   value={formData.validity}
-                  onChange={e => handleInputChange("validity", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("validity", e.target.value)
+                  }
                 />
               </div>
 
@@ -860,7 +859,7 @@ const Coupons = () => {
                 <span>Notes</span>
                 <Input
                   value={formData.notes}
-                  onChange={e => handleInputChange("notes", e.target.value)}
+                  onChange={(e) => handleInputChange("notes", e.target.value)}
                   placeholder="Coupon notes or description"
                 />
               </div>
@@ -869,7 +868,7 @@ const Coupons = () => {
                 <Switch
                   id="coupon-active"
                   checked={formData.isActive}
-                  onCheckedChange={checked =>
+                  onCheckedChange={(checked) =>
                     handleInputChange("isActive", checked)
                   }
                 />
@@ -889,7 +888,7 @@ const Coupons = () => {
                   selectedCoupon ? handleEditSubmit() : handleCreateCoupon()
                 }
                 disabled={
-                  !formData.code || !formData.value || !formData.validity
+                  !formData.code || !formData.percent || !formData.validity
                 }
               >
                 {selectedCoupon ? "Update Coupon" : "Create New Coupon"}

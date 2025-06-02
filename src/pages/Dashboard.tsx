@@ -462,7 +462,7 @@ const Dashboard = () => {
             <CardTitle>Top 5 Sold Products</CardTitle>
             <CardDescription>By quantity sold</CardDescription>
           </CardHeader>
-          <CardContent className="h-80">
+          <CardContent className="h-[400px]">
             {topProducts.length === 0 ? (
               <div className="flex items-center justify-center h-full text-gray-500">
                 No product sales data available
@@ -474,13 +474,13 @@ const Dashboard = () => {
                     data={topProducts}
                     cx="50%"
                     cy="50%"
-                    labelLine={true}
-                    outerRadius={100}
+                    labelLine={{ strokeWidth: 1, stroke: '#888888', strokeDasharray: "2 2" }}
+                    outerRadius={60}
+                    innerRadius={20}
                     fill="#8884d8"
                     dataKey="quantity"
                     label={({ name, percent }) => {
-                      const formattedName = name.length > 15 ? `${name.substring(0, 15)}...` : name;
-                      return `${formattedName} (${(percent * 100).toFixed(0)}%)`;
+                      return `${(percent * 100).toFixed(0)}%`;
                     }}
                   >
                     {topProducts.map((entry, index) => (
@@ -493,10 +493,14 @@ const Dashboard = () => {
                   <Tooltip 
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
+                        const name = payload[0].name;
+                        const truncatedName = name.length > 25 ? `${name.substring(0, 25)}...` : name;
                         return (
-                          <div className="bg-white p-3 rounded-lg shadow-lg border">
-                            <p className="font-semibold text-gray-800">{payload[0].name}</p>
-                            <p className="text-sm text-gray-600">
+                          <div className="bg-white rounded-lg shadow-lg border">
+                            <p className="font-semibold text-gray-800 break-words max-w-[180px] text-sm">
+                              {truncatedName}
+                            </p>
+                            <p className="text-xs text-gray-600">
                               Quantity: {payload[0].value.toLocaleString()}
                             </p>
                           </div>
@@ -509,6 +513,11 @@ const Dashboard = () => {
                     layout="vertical" 
                     verticalAlign="middle" 
                     align="right"
+                    wrapperStyle={{
+                      paddingLeft: '20px',
+                      fontSize: '12px',
+                      width: '120px'
+                    }}
                     formatter={(value) => {
                       return value.length > 15 ? `${value.substring(0, 15)}...` : value;
                     }}
