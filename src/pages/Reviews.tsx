@@ -9,15 +9,16 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
-import toast from "react-hot-toast";
+import { Switch } from "@/components/ui/switch";
+import toast, { Toaster } from "react-hot-toast";
 
 interface Review {
-  id: string;
-  customerName: string;
+  _id: string;
+  name?: string;
   comment: string;
   rating: number;
-  productName: string;
+  productId?: { name?: string };
+  isDeleted?: boolean;
 }
 
 const Reviews = () => {
@@ -27,7 +28,7 @@ const Reviews = () => {
   const handleFetchData = async () => {
     try {
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/getReviewAll",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/getReviewAll`,
         {
           method: "POST",
           headers: {
@@ -49,10 +50,12 @@ const Reviews = () => {
     handleFetchData();
   }, []);
 
-  const handleDelete = async (id: string) => {
+  const handleToggleStatus = async (reviewId: string, newIsDeletedStatus: boolean) => {
+    console.log(`Attempting to update status for review ${reviewId} via delete endpoint. New isDeleted status: ${newIsDeletedStatus}`);
+
     try {
       const response = await fetch(
-        `https://apihair.txogavideo.in/api/v1/admin/deleteReview/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/deleteReview/${reviewId}`,
         {
           method: "POST",
           headers: {
@@ -61,24 +64,30 @@ const Reviews = () => {
           },
         }
       );
-      await handleFetchData();
-      if (!response.ok) {
-        const errorText = await response.text();
 
-        console.error("Delete failed:", errorText);
-        toast.success("Review Delete Successfully");
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to toggle status:", errorData);
+        toast.error(errorData.message || "Failed to update status via delete endpoint");
+        handleFetchData();
         return;
       }
 
-      // Remove deleted review from local state
-      setAllReviews(prev => prev.filter(review => review.id !== id));
+      const result = await response.json();
+      console.log("Status updated successfully via delete endpoint:", result);
+      toast.success(newIsDeletedStatus ? "Review set to inactive" : "Review set to active");
+
+      handleFetchData();
     } catch (error) {
-      toast.error("Review Deletion Unsuccessfully");
+      console.error("Error toggling status:", error);
+      toast.error("Error updating review status");
+      handleFetchData();
     }
   };
 
   return (
     <DashboardLayout>
+      <Toaster />
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-6">Customer Reviews</h1>
         <div className="rounded-md border">
@@ -89,8 +98,7 @@ const Reviews = () => {
                 <TableHead>Comment</TableHead>
                 <TableHead>Rating</TableHead>
                 <TableHead>Product Name</TableHead>
-                <TableHead>Visibility</TableHead>
-                <TableHead className="w-24">Actions</TableHead>
+                <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -103,17 +111,11 @@ const Reviews = () => {
                   <TableCell>{review.rating} / 5</TableCell>
                   <TableCell>{review?.productId?.name}</TableCell>
                   <TableCell>
-                    {review.isDeleted ? "Visible" : "Not Visible"}
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(review._id)}
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <Switch
+                      checked={!review.isDeleted}
+                      onCheckedChange={(isChecked) => handleToggleStatus(review._id, !isChecked)}
+                      aria-label={review.isDeleted ? "Activate review" : "Deactivate review"}
+                    />
                   </TableCell>
                 </TableRow>
               ))}
