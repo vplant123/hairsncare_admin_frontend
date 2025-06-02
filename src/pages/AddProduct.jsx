@@ -23,6 +23,8 @@ function AddProduct() {
   const navigate = useNavigate();
   const isEditMode = !!id;
 
+  const fileInputRef = React.useRef(null); // Create a ref for the file input
+
   const [formData, setFormData] = useState({
     category: "",
     subCategory: "",
@@ -169,6 +171,14 @@ function AddProduct() {
       const newImages = Array.from(files);
       setImageFiles(prev => [...prev, ...newImages]);
       setErrors(prev => ({ ...prev, image: "" }));
+    }
+  };
+
+  const removeSelectedImage = (indexToRemove) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== indexToRemove));
+    // Reset the file input value after removing an image
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
@@ -890,36 +900,53 @@ function AddProduct() {
                   accept="image/*"
                   multiple
                   onChange={handleImageUpload}
+                  ref={fileInputRef} // Assign the ref to the input
                 />
                 {errors.image && (
                   <p className="text-red-500 text-sm">{errors.image}</p>
                 )}
+
+                {/* Preview for newly selected images */}
                 {imageFiles.length > 0 && (
                   <div className="mt-2">
-                    <p>Selected Images:</p>
-                    <ul className="list-disc pl-5">
+                    <p className="text-sm font-medium">Selected Images:</p>
+                    <div className="flex flex-wrap gap-2 mt-2">
                       {imageFiles.map((file, index) => (
-                        <li key={index}>{file.name}</li>
+                        <div key={index} className="relative w-24 h-24 rounded-md overflow-hidden">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`Selected preview ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs"
+                            onClick={() => removeSelectedImage(index)} // Use the new remove function
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                          </button>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 )}
-                {formData.image.length > 0 && (
-                  <div className="mt-2">
-                    <p>Existing Images:</p>
-                    <ul className="list-disc pl-5">
+
+                {/* Preview for existing images in edit mode */}
+                {isEditMode && formData.image.length > 0 && (
+                  <div className="mt-4">
+                    <p className="text-sm font-medium">Existing Images:</p>
+                    <div className="flex flex-wrap gap-2 mt-2">
                       {formData.image.map((url, index) => (
-                        <li key={index}>
-                          <a
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            Image {index + 1}
-                          </a>
-                        </li>
+                         <div key={index} className="relative w-24 h-24 rounded-md overflow-hidden">
+                          <img
+                            src={url}
+                            alt={`Existing image ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                           {/* Add delete functionality for existing images if needed */}
+                         </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 )}
               </div>

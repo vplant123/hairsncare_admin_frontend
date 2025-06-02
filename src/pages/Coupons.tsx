@@ -255,7 +255,7 @@ const Coupons = () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Authentication token not found");
 
-      const res = await fetch("https://apihair.txogavideo.in/api/v1/admin/getCoupons", {
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/admin/getCoupons`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -304,7 +304,7 @@ const Coupons = () => {
 
       console.log("Creating coupon with payload:", payload);
 
-      const res = await fetch("https://apihair.txogavideo.in/api/v1/admin/editCoupon", {
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/admin/editCoupon`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -369,7 +369,7 @@ const Coupons = () => {
 
       console.log("Editing coupon with payload:", payload);
 
-      const res = await fetch("https://apihair.txogavideo.in/api/v1/admin/editCoupon", {
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/admin/editCoupon`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -428,7 +428,7 @@ const Coupons = () => {
       if (!token) throw new Error("Authentication token not found");
 
       const res = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/deleteCoupon",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/deleteCoupon`,
         {
           method: "POST",
           headers: {
@@ -481,7 +481,7 @@ const Coupons = () => {
         isActive: !couponToToggle.isActive,
       };
 
-      const res = await fetch("https://apihair.txogavideo.in/api/v1/admin/editCoupon", {
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/admin/editCoupon`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -596,7 +596,7 @@ const Coupons = () => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search by coupon code..."
-                  className="pl-10"
+                  className="px-10"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                 />
@@ -610,11 +610,10 @@ const Coupons = () => {
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="active">Active</SelectItem>
                     <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="expired">Expired</SelectItem>
-                    <SelectItem value="maxed_out">Maxed Out</SelectItem>
+                  
                   </SelectContent>
                 </Select>
-                <Select value={expiryFilter} onValueChange={setExpiryFilter}>
+                {/* <Select value={expiryFilter} onValueChange={setExpiryFilter}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Expiry" />
                   </SelectTrigger>
@@ -623,10 +622,8 @@ const Coupons = () => {
                     <SelectItem value="valid">Valid</SelectItem>
                     <SelectItem value="expired">Expired</SelectItem>
                   </SelectContent>
-                </Select>
-                <Button variant="outline" size="icon">
-                  <Filter className="h-4 w-4" />
-                </Button>
+                </Select> */}
+                
               </div>
             </div>
           </CardHeader>
@@ -706,7 +703,6 @@ const Coupons = () => {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => openEditModal(coupon)}
-                                disabled={isExpired}
                               >
                                 <Pencil className="h-4 w-4" />
                               </Button>

@@ -2,9 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Dashboard from "./pages/Dashboard";
 import UserManagement from "./pages/UserManagement";
 import PatientManagement from "./pages/PatientManagement";
@@ -26,7 +25,6 @@ import NotFound from "./pages/NotFound";
 import HairTest from "./pages/HairTest";
 import Admins from "./pages/Admins";
 import Reviews from "./pages/Reviews";
-import Blogs from "./pages/Blogs";
 import SignIn from "./pages/Singin";
 import Invoice from "./pages/Invoice";
 import ContactUs from "./pages/ContactUs";
@@ -41,6 +39,34 @@ import ManagementReport from "../src/managementReport";
 import TestResults from "./pages/TestResults";
 import HairTestPage from "./pages/HairTestPage";
 import AdminDashboard from "./pages/admin-dashboard/AdminDashboard.jsx";
+
+// Updated ProtectedRoute component
+const ProtectedRoute = ({ requiredRoles, requiredPermissionKey = null, children }) => {
+  const { isAuthenticated, role, permissions } = useAuth();
+
+  if (!isAuthenticated) {
+    // Redirect to login page if not authenticated
+    return <Navigate to="/signin" replace />;
+  }
+
+  if (requiredRoles && !requiredRoles.includes(role)) {
+    // Redirect to dashboard or forbidden page if role is not allowed
+    // For now, redirecting to dashboard
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  // For subadmin role, check specific permissions if requiredPermissionKey is provided
+  if (role === 'subadmin' && requiredPermissionKey) {
+    if (!permissions || !permissions[requiredPermissionKey]) {
+      // Redirect if subadmin doesn't have the required permission
+      return <Navigate to="/dashboard" replace />;
+    }
+  }
+
+  // If authenticated, role is allowed, and for subadmin, permission is granted (if required)
+  return children ? children : <Outlet />;
+};
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -57,6 +83,7 @@ const App = () => (
                 element={
                   <ProtectedRoute
                     requiredRoles={["admin", "subadmin", "doctor"]}
+                   // No specific permission key for this redirect, role check is sufficient
                   >
                     <Navigate to="/dashboard" replace />
                   </ProtectedRoute>
@@ -67,6 +94,7 @@ const App = () => (
                 path="/sign-in"
                 element={<Navigate to="/signin" replace />}
               />
+              {/* TestResults might not need protection or specific roles/permissions */}
               <Route path="/test-result/:id" element={<TestResults />} />
 
               <Route
@@ -74,17 +102,18 @@ const App = () => (
                 element={
                   <ProtectedRoute
                     requiredRoles={["admin", "subadmin", "doctor"]}
+                   // No specific permission key for dashboard, role check is sufficient
                   >
                     <Dashboard />
                   </ProtectedRoute>
                 }
               />
 
-              {/* Admin and Subadmin Access Only */}
+              {/* Admin and Subadmin Access Only with specific permissions for subadmin */}
               <Route
                 path="/users"
                 element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]}>
+                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="patient">
                     <PatientManagement />
                   </ProtectedRoute>
                 }
@@ -92,7 +121,7 @@ const App = () => (
               <Route
                 path="/doctors"
                 element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]}>
+                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="doctor">
                     <DoctorManagement />
                   </ProtectedRoute>
                 }
@@ -100,69 +129,92 @@ const App = () => (
               <Route
                 path="add-doctor"
                 element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]}>
+                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="doctor">
                     <AddDoctor />
                   </ProtectedRoute>
                 }
               ></Route>
 
               {/* Admin and Doctor Access Only */}
+              {/* HairTest route needs clarification - is it for admin/subadmin or doctor? Assuming admin for now based on sidebar */}
               <Route
                 path="/hair-test"
                 element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
+                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="hairTest">
                     <HairTest />
                   </ProtectedRoute>
                 }
               />
               <Route
-                path="/appoinment"
+                path="/appoinment" // Note: Typo in path, should likely be /appointment
                 element={
                   <ProtectedRoute requiredRoles={["admin", "doctor"]}>
                     <AppointmentManagement />
                   </ProtectedRoute>
                 }
               />
+              {/* PatientTestResult and related report routes might need more granular permission/role checks */}
               <Route
-                path="/patient-test-result/:userId/:hairTestId"
+                path="/patient-test-result/:userId/:hairTestId/:testId"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredRoles={["admin", "subadmin", "doctor"]} requiredPermissionKey="hairTest">
                     <PatientTestResult />
                   </ProtectedRoute>
                 }
               />
+               <Route
+                path="/Prescription-Only/:userId/:appointmentId/:orderId"
+                element={
+                  <ProtectedRoute requiredRoles={["admin", "subadmin", "doctor"]} requiredPermissionKey="orders">
+                    <PatientTestResult /> {/* Assuming this page also handles Prescription-Only view */}
+                  </ProtectedRoute>
+                }
+              />
+              {/* These report generation routes likely need specific permissions */}
               <Route
                 path="/generate-report/:userId/:hairTestId"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredRoles={["admin", "doctor"]} requiredPermissionKey="reports">
                     <GenerateReport />
                   </ProtectedRoute>
                 }
               />
-              <Route path="/hair-test" element={<HairTestPage />} />
-              <Route path="/doctor/report/:id" element={<Report />} />
+              <Route path="/doctor/report/:id" 
+               element={
+                  <ProtectedRoute requiredRoles={["admin", "subadmin", "doctor"]} requiredPermissionKey="reports">
+                   <Report />
+                  </ProtectedRoute>
+                } /> 
               <Route
                 path="/doctor-analyse-report/:id"
-                element={<DoctorAnalysis />}
+                element={
+                  <ProtectedRoute requiredRoles={["admin", "doctor"]} requiredPermissionKey="reports">
+                    <DoctorAnalysis />
+                  </ProtectedRoute>
+                }
               />
               <Route
                 path="management-report/:id"
-                element={<ManagementReport />}
-              />
-              <Route
-                path="/admins"
                 element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <Admins />
+                  <ProtectedRoute requiredRoles={["admin", "doctor"]} requiredPermissionKey="reports">
+                    <ManagementReport />
                   </ProtectedRoute>
                 }
               />
 
-              {/* Admin Access Only */}
+              {/* Admin Access Only with specific permissions for subadmin */}
+              <Route
+                path="/admins"
+                element={
+                  <ProtectedRoute requiredRoles={["admin"]} requiredPermissionKey="admin">
+                    <Admins />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/orders"
                 element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
+                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="orders">
                     <OrdersInvoices />
                   </ProtectedRoute>
                 }
@@ -170,7 +222,7 @@ const App = () => (
               <Route
                 path="/website"
                 element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
+                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="website">
                     <ManageWebsite />
                   </ProtectedRoute>
                 }
@@ -178,33 +230,26 @@ const App = () => (
               <Route
                 path="/reviews"
                 element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
+                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="reviews">
                     <Reviews />
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="/blogs"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <Blogs />
-                  </ProtectedRoute>
-                }
-              />
 
-              {/* Product Routes */}
+              {/* Product Routes with specific permissions for subadmin */}
               <Route
                 path="/products"
                 element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]}>
+                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="product">
                     <ProductInventory />
                   </ProtectedRoute>
                 }
               />
-              <Route
+              {/* Add, Edit, Delete Product routes also need product permission */}
+               <Route
                 path="/products/add"
                 element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]}>
+                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="product">
                     <AddProduct />
                   </ProtectedRoute>
                 }
@@ -212,7 +257,7 @@ const App = () => (
               <Route
                 path="/products/edit"
                 element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]}>
+                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="product">
                     <EditProduct />
                   </ProtectedRoute>
                 }
@@ -220,27 +265,26 @@ const App = () => (
               <Route
                 path="/products/delete"
                 element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]}>
+                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="product">
                     <DeleteProduct />
                   </ProtectedRoute>
                 }
               />
 
-              {/* Other Routes */}
+              {/* Other Routes with specific permissions for subadmin */}
               <Route
                 path="/coupons"
                 element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]}>
+                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="coupon">
                     <Coupons />
                   </ProtectedRoute>
                 }
               />
+              {/* Invoice and AddInvoices likely need orders permission or a separate invoice permission */}
               <Route
                 path="/invoice"
                 element={
-                  <ProtectedRoute
-                    requiredRoles={["admin", "subadmin", "doctor"]}
-                  >
+                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="orders">
                     <Invoice />
                   </ProtectedRoute>
                 }
@@ -248,23 +292,24 @@ const App = () => (
               <Route
                 path="/addinvoices"
                 element={
-                  <ProtectedRoute
-                    requiredRoles={["admin", "subadmin", "doctor"]}
-                  >
+                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="orders">
                     <AddInvoices />
                   </ProtectedRoute>
                 }
               />
-              <Route path="/admin-dashboard" element={<AdminDashboard />} />
+              {/* AdminDashboard - Assuming this is a general dashboard for admins/subadmins/doctors? Need clarification. Protecting for all roles for now. */}
+              <Route path="/admin-dashboard" element={<ProtectedRoute requiredRoles={["admin", "subadmin", "doctor"]}><AdminDashboard /></ProtectedRoute>} />
+
               <Route
                 path="/contact"
                 element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]}>
+                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="contactus">
                     <ContactUs />
                   </ProtectedRoute>
                 }
               />
-              <Route
+              {/* Appointments route needs clarification - is it for admin/subadmin or doctor? Assuming doctor for now based on sidebar. */}
+               <Route
                 path="/appointments"
                 element={
                   <ProtectedRoute requiredRoles={["admin", "doctor"]}>
@@ -272,17 +317,17 @@ const App = () => (
                   </ProtectedRoute>
                 }
               />
-              <Route
+              {/* Reports route needs clarification - Assuming it's linked to hair test/appointments? */}
+               <Route
                 path="/reports"
                 element={
-                  <ProtectedRoute
-                    requiredRoles={["admin", "subadmin", "doctor"]}
-                  >
+                  <ProtectedRoute requiredRoles={["admin", "subadmin", "doctor"]} requiredPermissionKey="reports">
                     <Reports />
                   </ProtectedRoute>
                 }
               />
-              <Route
+               {/* Logs route likely for admin only */}
+               <Route
                 path="/logs"
                 element={
                   <ProtectedRoute requiredRoles={["admin"]}>
@@ -290,7 +335,8 @@ const App = () => (
                   </ProtectedRoute>
                 }
               />
-              <Route
+              {/* Prescriptions route likely for doctor/admin */}
+               <Route
                 path="/prescriptions"
                 element={
                   <ProtectedRoute requiredRoles={["admin", "doctor"]}>

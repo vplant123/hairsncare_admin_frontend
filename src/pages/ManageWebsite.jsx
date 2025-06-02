@@ -38,6 +38,8 @@ import OtherProcedures from "./manage-website/OtherProcedures.jsx";
 import OnlineTest from "./manage-website/OnlineTest.jsx";
 import Dermatologist from "./manage-website/Dermatologist.jsx";
 
+import toast, { Toaster } from 'react-hot-toast';
+
 const ManageWebsite = () => {
   const [selectedTab, setSelectedTab] = useState("HomePage");
   const [content, setContent] = useState();
@@ -230,6 +232,7 @@ const ManageWebsite = () => {
   };
   return (
     <DashboardLayout>
+      <Toaster position="top-right" />
       <div className="">
         <div className="test-link-item ">
           <div

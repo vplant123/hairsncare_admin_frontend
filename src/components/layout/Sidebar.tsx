@@ -34,7 +34,6 @@ const routesByRole = {
     { path: "/orders", label: "Orders" },
     { path: "/products", label: "Products" },
     { path: "/website", label: "Manage Website" },
-    { path: "/blogs", label: "Blogs" },
     { path: "/coupons", label: "Coupons" },
     // { path: "/appointments", label: "Appointments" },
     // { path: "/reports", label: "Reports" },
@@ -77,7 +76,7 @@ const icons = {
   "/admins": UserCog,
   "/orders": ShoppingCart,
   "/reviews": Star,
-  "/blogs": FileText,
+
   "/website": Globe,
   "/products": ShoppingBag,
   "/coupons": Tag,

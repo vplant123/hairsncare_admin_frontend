@@ -153,7 +153,7 @@ const Topbar: React.FC<TopbarProps> = ({
       </div>
 
       <div className="flex items-center space-x-4">
-        {/* <DropdownMenu>
+        <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
@@ -181,26 +181,11 @@ const Topbar: React.FC<TopbarProps> = ({
               />
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="justify-center font-medium text-health-primary">
-              View all notifications
-            </DropdownMenuItem>
+           
           </DropdownMenuContent>
-        </DropdownMenu> */}
+        </DropdownMenu>
 
-        {/* <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Settings className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-white">
-            <DropdownMenuLabel>Settings</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Account Settings</DropdownMenuItem>
-            <DropdownMenuItem>System Preferences</DropdownMenuItem>
-            <DropdownMenuItem>Notifications</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu> */}
+
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -217,14 +202,14 @@ const Topbar: React.FC<TopbarProps> = ({
           <DropdownMenuContent align="end" className="bg-white">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {/* <DropdownMenuItem onClick={() => setIsProfileOpen(true)}>
+            <DropdownMenuItem onClick={() => setIsProfileOpen(true)} className="hover:text-blue-800 cursor-pointer">
               Profile
             </DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuSeparator /> */}
+          
+            <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={handleLogout}
-              className="text-health-danger focus:text-health-danger focus:bg-health-danger/10"
+              className="text-health-danger focus:text-health-danger focus:bg-health-danger/10 hover:text-red-700 cursor-pointer"
             >
               <LogOut className="h-4 w-4 mr-2" />
               Log out
@@ -234,11 +219,11 @@ const Topbar: React.FC<TopbarProps> = ({
       </div>
 
       {/* Profile Modal */}
-      {/* <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+      <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
         <DialogContent className="w-[95%] max-w-[425px] p-4 sm:p-6 h-auto max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-xl sm:text-2xl text-center sm:text-left">
-              Profile Settings
+              My Profile 
             </DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 sm:gap-6 py-4">
@@ -246,9 +231,9 @@ const Topbar: React.FC<TopbarProps> = ({
               <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-[#209fd9] flex items-center justify-center">
                 <User className="h-10 w-10 sm:h-12 sm:w-12 text-white" />
               </div>
-              <Button variant="outline" size="sm" className="w-full sm:w-auto">
+              {/* <Button variant="outline" size="sm" className="w-full sm:w-auto">
                 Change Photo
-              </Button>
+              </Button> */}
             </div>
             <div className="grid gap-4">
               <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
@@ -276,7 +261,7 @@ const Topbar: React.FC<TopbarProps> = ({
                   className="sm:col-span-3"
                 />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+              {/* <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
                 <Label htmlFor="password" className="sm:text-right">
                   Password
                 </Label>
@@ -289,18 +274,18 @@ const Topbar: React.FC<TopbarProps> = ({
                     Change Password <Lock className="h-4 w-4" />
                   </Button>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
-            <Button
+            {/* <Button
               variant="outline"
               onClick={() => setIsProfileOpen(false)}
               className="w-full sm:w-auto"
             >
               Cancel
-            </Button>
-            <Button
+            </Button> */}
+            {/* <Button
               onClick={() => {
                 toast({
                   title: "Success",
@@ -313,10 +298,10 @@ const Topbar: React.FC<TopbarProps> = ({
               className="w-full sm:w-auto"
             >
               Save Changes
-            </Button>
+            </Button> */}
           </DialogFooter>
         </DialogContent>
-      </Dialog> */}
+      </Dialog> 
 
       {/* Change Password Modal */}
       {/* <Dialog

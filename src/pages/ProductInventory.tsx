@@ -20,12 +20,14 @@ const ProductInventory = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [productsList, setProductsList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await fetch(
-          "https://apihair.txogavideo.in/api/v1/admin/product"
+          `${import.meta.env.VITE_BASE_URL}/api/v1/admin/product`
         );
         const data = await response.json();
         if (data.statusCode === 200) {
@@ -75,6 +77,15 @@ const ProductInventory = () => {
       })
     : [];
 
+  // Pagination calculations
+  const totalProducts = filteredProducts.length;
+  const totalPages = Math.ceil(totalProducts / rowsPerPage);
+
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
   if (loading) {
     return (
       <DashboardLayout>
@@ -104,7 +115,7 @@ const ProductInventory = () => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search by product name or SKU..."
-                  className="pl-10"
+                  className="px-10"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                 />
@@ -112,6 +123,39 @@ const ProductInventory = () => {
             </div>
           </CardHeader>
           <CardContent>
+            {/* Pagination Controls (Top) */}
+            <div className="flex items-center justify-between my-2">
+              <div className="flex items-center">
+                <span>Rows per page&nbsp;</span>
+                <select
+                  value={rowsPerPage}
+                  onChange={e => {
+                    setRowsPerPage(Number(e.target.value));
+                    setCurrentPage(1); // Reset to first page
+                  }}
+                  className="border rounded px-2 py-1"
+                >
+                  {[5, 10, 25, 50].map(num => (
+                    <option key={num} value={num}>
+                      {num}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <span>
+                  {totalProducts === 0
+                    ? "0"
+                    : `${(currentPage - 1) * rowsPerPage + 1}-${Math.min(
+                        currentPage * rowsPerPage,
+                        totalProducts
+                      )}`}{" "}
+                  of {totalProducts}
+                </span>
+              
+               
+              </div>
+            </div>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -124,67 +168,115 @@ const ProductInventory = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredProducts?.map(product => (
-                  <TableRow key={product._id}>
-                    <TableCell>{product.name}</TableCell>
-                    <TableCell>{product.category}</TableCell>
-                    <TableCell>₹{product.price}</TableCell>
-                    <TableCell>{product.stock}</TableCell>
-                    <TableCell>
-                      {product.productDisplay ? "Active" : "Inactive"}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEditProduct(product)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                          </svg>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-red-500 hover:text-red-600"
-                          onClick={() => handleDeleteProduct(product)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
-                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            <line x1="10" y1="11" x2="10" y2="17"></line>
-                            <line x1="14" y1="11" x2="14" y2="17"></line>
-                          </svg>
-                        </Button>
-                      </div>
+                {paginatedProducts?.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center">
+                      No products found.
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  paginatedProducts?.map(product => (
+                    <TableRow key={product._id}>
+                      <TableCell>{product.name}</TableCell>
+                      <TableCell>{product.category}</TableCell>
+                      <TableCell>₹{product.price}</TableCell>
+                      <TableCell>{product.stock}</TableCell>
+                      <TableCell>
+                        {product.productDisplay ? "Active" : "Inactive"}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEditProduct(product)}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-red-500 hover:text-red-600"
+                            onClick={() => handleDeleteProduct(product)}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M3 6h18"></path>
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                              <line x1="10" y1="11" x2="10" y2="17"></line>
+                              <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
+            {/* Pagination Controls (Bottom) */}
+            <div className="flex items-center justify-end space-x-2 py-4">
+              <div className="flex-1 text-sm text-muted-foreground">
+                {totalProducts} total products.
+              </div>
+              <div className="space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1 || totalPages === 0}
+                >
+                  First
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1 || totalPages === 0}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages || totalPages === 0}
+                >
+                  Next
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages || totalPages === 0}
+                >
+                  Last
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

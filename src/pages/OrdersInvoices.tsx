@@ -56,16 +56,20 @@ const OrdersInvoices = () => {
 
   // Filter orders based on search query and filters
   const filteredOrders = orders.filter(order => {
+    const query = searchQuery.toLowerCase();
+    const orderId = order._id?.toLowerCase() || ""; // Use _id for filtering
+    const customerName = order.userId?.fullname?.toLowerCase() || ""; // Use userId?.fullname for filtering
+
     return (
       (searchQuery === "" ||
-        order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        order.customerName.toLowerCase().includes(searchQuery.toLowerCase())) &&
+        orderId.includes(query) ||
+        customerName.includes(query)) &&
       (statusFilter === "" ||
         statusFilter === "all" ||
-        order.status === statusFilter) &&
+        order.deliveryStatus === statusFilter) && // Filter by deliveryStatus
       (dateFilter === "" ||
         dateFilter === "all" ||
-        order.date.includes(dateFilter))
+        order.createdAt?.includes(dateFilter))
     );
   });
 
@@ -74,7 +78,7 @@ const OrdersInvoices = () => {
     setError(null);
     try {
       const response = await fetch(
-        `https://apihair.txogavideo.in/api/v1/admin/getOrders`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/getOrders`,
         {
           method: "GET",
           headers: {
@@ -119,7 +123,7 @@ const OrdersInvoices = () => {
     };
     try {
       const response = await fetch(
-        `https://apihair.txogavideo.in/api/v1/payment/change-order-status`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/payment/change-order-status`,
         {
           method: "POST",
           headers: {
@@ -163,7 +167,7 @@ const OrdersInvoices = () => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search by order ID or customer name..."
-                  className="pl-10"
+                  className="px-10 bg-white"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                 />
@@ -171,7 +175,7 @@ const OrdersInvoices = () => {
               <div className="flex gap-2">
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Status" />
+                    <SelectValue placeholder="Delivery Status" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
                     <SelectItem value="all">All Status</SelectItem>
@@ -181,9 +185,7 @@ const OrdersInvoices = () => {
                     <SelectItem value="cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button variant="outline" size="icon">
-                  <Filter className="h-4 w-4" />
-                </Button>
+              
               </div>
             </div>
           </CardHeader>
