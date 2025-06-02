@@ -39,7 +39,7 @@ const ContactUs: React.FC = () => {
       }
 
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/contactDetails",
+        "http://localhost:5000/api/v1/admin/contactDetails",
         {
           method: "POST",
           headers: {

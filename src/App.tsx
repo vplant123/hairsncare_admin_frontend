@@ -2,7 +2,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Dashboard from "./pages/Dashboard";
 import UserManagement from "./pages/UserManagement";
@@ -41,7 +47,11 @@ import HairTestPage from "./pages/HairTestPage";
 import AdminDashboard from "./pages/admin-dashboard/AdminDashboard.jsx";
 
 // Updated ProtectedRoute component
-const ProtectedRoute = ({ requiredRoles, requiredPermissionKey = null, children }) => {
+const ProtectedRoute = ({
+  requiredRoles,
+  requiredPermissionKey = null,
+  children,
+}) => {
   const { isAuthenticated, role, permissions } = useAuth();
 
   if (!isAuthenticated) {
@@ -56,7 +66,7 @@ const ProtectedRoute = ({ requiredRoles, requiredPermissionKey = null, children 
   }
 
   // For subadmin role, check specific permissions if requiredPermissionKey is provided
-  if (role === 'subadmin' && requiredPermissionKey) {
+  if (role === "subadmin" && requiredPermissionKey) {
     if (!permissions || !permissions[requiredPermissionKey]) {
       // Redirect if subadmin doesn't have the required permission
       return <Navigate to="/dashboard" replace />;
@@ -70,287 +80,354 @@ const ProtectedRoute = ({ requiredRoles, requiredPermissionKey = null, children 
 const queryClient = new QueryClient();
 
 const App = () => (
-  <>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter basename="/">
-          <AuthProvider>
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute
-                    requiredRoles={["admin", "subadmin", "doctor"]}
-                   // No specific permission key for this redirect, role check is sufficient
-                  >
-                    <Navigate to="/dashboard" replace />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/signin" element={<SignIn />} />
-              <Route
-                path="/sign-in"
-                element={<Navigate to="/signin" replace />}
-              />
-              {/* TestResults might not need protection or specific roles/permissions */}
-              <Route path="/test-result/:id" element={<TestResults />} />
+  <BrowserRouter basename="/">
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin", "doctor"]}
+                >
+                  <Navigate to="/dashboard" replace />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/signin" element={<SignIn />} />
+            <Route
+              path="/sign-in"
+              element={<Navigate to="/signin" replace />}
+            />
+            {/* TestResults might not need protection or specific roles/permissions */}
+            <Route path="/test-result/:id" element={<TestResults />} />
 
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute
-                    requiredRoles={["admin", "subadmin", "doctor"]}
-                   // No specific permission key for dashboard, role check is sufficient
-                  >
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin", "doctor"]}
+                >
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
 
-              {/* Admin and Subadmin Access Only with specific permissions for subadmin */}
-              <Route
-                path="/users"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="patient">
-                    <PatientManagement />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/doctors"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="doctor">
-                    <DoctorManagement />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="add-doctor"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="doctor">
-                    <AddDoctor />
-                  </ProtectedRoute>
-                }
-              ></Route>
+            {/* Admin and Subadmin Access Only with specific permissions for subadmin */}
+            <Route
+              path="/users"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="patient"
+                >
+                  <PatientManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/doctors"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="doctor"
+                >
+                  <DoctorManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="add-doctor"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="doctor"
+                >
+                  <AddDoctor />
+                </ProtectedRoute>
+              }
+            ></Route>
 
-              {/* Admin and Doctor Access Only */}
-              {/* HairTest route needs clarification - is it for admin/subadmin or doctor? Assuming admin for now based on sidebar */}
-              <Route
-                path="/hair-test"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="hairTest">
-                    <HairTest />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/appoinment" // Note: Typo in path, should likely be /appointment
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "doctor"]}>
-                    <AppointmentManagement />
-                  </ProtectedRoute>
-                }
-              />
-              {/* PatientTestResult and related report routes might need more granular permission/role checks */}
-              <Route
-                path="/patient-test-result/:userId/:hairTestId/:testId"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin", "doctor"]} requiredPermissionKey="hairTest">
-                    <PatientTestResult />
-                  </ProtectedRoute>
-                }
-              />
-               <Route
-                path="/Prescription-Only/:userId/:appointmentId/:orderId"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin", "doctor"]} requiredPermissionKey="orders">
-                    <PatientTestResult /> {/* Assuming this page also handles Prescription-Only view */}
-                  </ProtectedRoute>
-                }
-              />
-              {/* These report generation routes likely need specific permissions */}
-              <Route
-                path="/generate-report/:userId/:hairTestId"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "doctor"]} requiredPermissionKey="reports">
-                    <GenerateReport />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/doctor/report/:id" 
-               element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin", "doctor"]} requiredPermissionKey="reports">
-                   <Report />
-                  </ProtectedRoute>
-                } /> 
-              <Route
-                path="/doctor-analyse-report/:id"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "doctor"]} requiredPermissionKey="reports">
-                    <DoctorAnalysis />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="management-report/:id"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "doctor"]} requiredPermissionKey="reports">
-                    <ManagementReport />
-                  </ProtectedRoute>
-                }
-              />
+            {/* Admin and Doctor Access Only */}
+            {/* HairTest route needs clarification - is it for admin/subadmin or doctor? Assuming admin for now based on sidebar */}
+            <Route
+              path="/hair-test"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="hairTest"
+                >
+                  <HairTest />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/appoinment" // Note: Typo in path, should likely be /appointment
+              element={
+                <ProtectedRoute requiredRoles={["admin", "doctor"]}>
+                  <AppointmentManagement />
+                </ProtectedRoute>
+              }
+            />
+            {/* PatientTestResult and related report routes might need more granular permission/role checks */}
+            <Route
+              path="/patient-test-result/:userId/:hairTestId/:testId"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin", "doctor"]}
+                  requiredPermissionKey="hairTest"
+                >
+                  <PatientTestResult />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/Prescription-Only/:userId/:appointmentId/:orderId"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin", "doctor"]}
+                  requiredPermissionKey="orders"
+                >
+                  <PatientTestResult />{" "}
+                  {/* Assuming this page also handles Prescription-Only view */}
+                </ProtectedRoute>
+              }
+            />
+            {/* These report generation routes likely need specific permissions */}
+            <Route
+              path="/generate-report/:userId/:hairTestId"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "doctor"]}
+                  requiredPermissionKey="reports"
+                >
+                  <GenerateReport />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/doctor/report/:id"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin", "doctor"]}
+                  requiredPermissionKey="reports"
+                >
+                  <Report />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/doctor-analyse-report/:id"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "doctor"]}
+                  requiredPermissionKey="reports"
+                >
+                  <DoctorAnalysis />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="management-report/:id"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "doctor"]}
+                  requiredPermissionKey="reports"
+                >
+                  <ManagementReport />
+                </ProtectedRoute>
+              }
+            />
 
-              {/* Admin Access Only with specific permissions for subadmin */}
-              <Route
-                path="/admins"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]} requiredPermissionKey="admin">
-                    <Admins />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/orders"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="orders">
-                    <OrdersInvoices />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/website"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="website">
-                    <ManageWebsite />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/reviews"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="reviews">
-                    <Reviews />
-                  </ProtectedRoute>
-                }
-              />
+            {/* Admin Access Only with specific permissions for subadmin */}
+            <Route
+              path="/admins"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin"]}
+                  requiredPermissionKey="admin"
+                >
+                  <Admins />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/orders"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="orders"
+                >
+                  <OrdersInvoices />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/website"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="website"
+                >
+                  <ManageWebsite />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reviews"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="reviews"
+                >
+                  <Reviews />
+                </ProtectedRoute>
+              }
+            />
 
-              {/* Product Routes with specific permissions for subadmin */}
-              <Route
-                path="/products"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="product">
-                    <ProductInventory />
-                  </ProtectedRoute>
-                }
-              />
-              {/* Add, Edit, Delete Product routes also need product permission */}
-               <Route
-                path="/products/add"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="product">
-                    <AddProduct />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/products/edit"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="product">
-                    <EditProduct />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/products/delete"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="product">
-                    <DeleteProduct />
-                  </ProtectedRoute>
-                }
-              />
+            {/* Product Routes with specific permissions for subadmin */}
+            <Route
+              path="/products"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="product"
+                >
+                  <ProductInventory />
+                </ProtectedRoute>
+              }
+            />
+            {/* Add, Edit, Delete Product routes also need product permission */}
+            <Route
+              path="/products/add"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="product"
+                >
+                  <AddProduct />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/products/edit"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="product"
+                >
+                  <EditProduct />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/products/delete"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="product"
+                >
+                  <DeleteProduct />
+                </ProtectedRoute>
+              }
+            />
 
-              {/* Other Routes with specific permissions for subadmin */}
-              <Route
-                path="/coupons"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="coupon">
-                    <Coupons />
-                  </ProtectedRoute>
-                }
-              />
-              {/* Invoice and AddInvoices likely need orders permission or a separate invoice permission */}
-              <Route
-                path="/invoice"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="orders">
-                    <Invoice />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/addinvoices"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="orders">
-                    <AddInvoices />
-                  </ProtectedRoute>
-                }
-              />
-              {/* AdminDashboard - Assuming this is a general dashboard for admins/subadmins/doctors? Need clarification. Protecting for all roles for now. */}
-              <Route path="/admin-dashboard" element={<ProtectedRoute requiredRoles={["admin", "subadmin", "doctor"]}><AdminDashboard /></ProtectedRoute>} />
+            {/* Other Routes with specific permissions for subadmin */}
+            <Route
+              path="/coupons"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="coupon"
+                >
+                  <Coupons />
+                </ProtectedRoute>
+              }
+            />
+            {/* Invoice and AddInvoices likely need orders permission or a separate invoice permission */}
+            <Route
+              path="/invoice"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="orders"
+                >
+                  <Invoice />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/addinvoices"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="orders"
+                >
+                  <AddInvoices />
+                </ProtectedRoute>
+              }
+            />
+            {/* AdminDashboard - Assuming this is a general dashboard for admins/subadmins/doctors? Need clarification. Protecting for all roles for now. */}
+            <Route
+              path="/admin-dashboard"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin", "doctor"]}
+                >
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
 
-              <Route
-                path="/contact"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin"]} requiredPermissionKey="contactus">
-                    <ContactUs />
-                  </ProtectedRoute>
-                }
-              />
-              {/* Appointments route needs clarification - is it for admin/subadmin or doctor? Assuming doctor for now based on sidebar. */}
-               <Route
-                path="/appointments"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "doctor"]}>
-                    <Appointments />
-                  </ProtectedRoute>
-                }
-              />
-              {/* Reports route needs clarification - Assuming it's linked to hair test/appointments? */}
-               <Route
-                path="/reports"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "subadmin", "doctor"]} requiredPermissionKey="reports">
-                    <Reports />
-                  </ProtectedRoute>
-                }
-              />
-               {/* Logs route likely for admin only */}
-               <Route
-                path="/logs"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <Logs />
-                  </ProtectedRoute>
-                }
-              />
-              {/* Prescriptions route likely for doctor/admin */}
-               <Route
-                path="/prescriptions"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "doctor"]}>
-                    <Prescriptions />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </>
+            <Route
+              path="/contact"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="contactus"
+                >
+                  <ContactUs />
+                </ProtectedRoute>
+              }
+            />
+            {/* Appointments route needs clarification - is it for admin/subadmin or doctor? Assuming doctor for now based on sidebar. */}
+            <Route
+              path="/appointments"
+              element={
+                <ProtectedRoute requiredRoles={["admin", "doctor"]}>
+                  <Appointments />
+                </ProtectedRoute>
+              }
+            />
+            {/* Reports route needs clarification - Assuming it's linked to hair test/appointments? */}
+
+            {/* Logs route likely for admin only */}
+            <Route
+              path="/logs"
+              element={
+                <ProtectedRoute requiredRoles={["admin"]}>
+                  <Logs />
+                </ProtectedRoute>
+              }
+            />
+            {/* Prescriptions route likely for doctor/admin */}
+            <Route
+              path="/prescriptions"
+              element={
+                <ProtectedRoute requiredRoles={["admin", "doctor"]}>
+                  <Prescriptions />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </AuthProvider>
+  </BrowserRouter>
 );
 
 export default App;

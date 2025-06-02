@@ -52,7 +52,7 @@ const DoctorManagement = () => {
   const handleFetchData = async () => {
     try {
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/all-doctor-Data",
+        "http://localhost:5000/api/v1/admin/all-doctor-Data",
         {
           method: "GET",
         }
@@ -99,7 +99,7 @@ const DoctorManagement = () => {
 
     try {
       const response = await fetch(
-        `https://apihair.txogavideo.in/api/v1/admin/delete-doctor`,
+        `http://localhost:5000/api/v1/admin/delete-doctor`,
         {
           method: "DELETE",
           headers: {
@@ -119,7 +119,7 @@ const DoctorManagement = () => {
       toast.success(`Deleted doctor ${doctorToDelete.name} successfully`);
 
       setDoctorsList((prev: any[]) =>
-        prev.filter(doc => doc._id !== doctorToDelete._id)
+        prev.filter((doc) => doc._id !== doctorToDelete._id)
       );
 
       setDeleteDialogOpen(false);
@@ -164,7 +164,7 @@ const DoctorManagement = () => {
                   placeholder="Search doctors..."
                   className="px-8"
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
@@ -175,13 +175,13 @@ const DoctorManagement = () => {
               <span>Rows per page&nbsp;</span>
               <select
                 value={rowsPerPage}
-                onChange={e => {
+                onChange={(e) => {
                   setRowsPerPage(Number(e.target.value));
                   setCurrentPage(1); // Reset to first page
                 }}
                 className="border rounded px-2 py-1"
               >
-                {[5, 10, 25, 50].map(num => (
+                {[5, 10, 25, 50].map((num) => (
                   <option key={num} value={num}>
                     {num}
                   </option>
@@ -282,7 +282,7 @@ const DoctorManagement = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
               >
                 Previous
@@ -290,7 +290,9 @@ const DoctorManagement = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages || totalPages === 0}
               >
                 Next

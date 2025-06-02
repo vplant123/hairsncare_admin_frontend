@@ -120,7 +120,7 @@ const PatientManagement = () => {
     setFilteredPatients(filtered);
   }, [searchQuery, patients]);
 
-  const fetchPatientDetails = async patientId => {
+  const fetchPatientDetails = async (patientId) => {
     try {
       setLoading(true);
       const response = await fetch(
@@ -158,7 +158,7 @@ const PatientManagement = () => {
     }
   };
 
-  const viewUserDetails = user => {
+  const viewUserDetails = (user) => {
     setSelectedUser(user);
     fetchPatientDetails(user._id);
   };
@@ -172,7 +172,7 @@ const PatientManagement = () => {
     });
   };
 
-  const handleDeactivateAccount = async userId => {
+  const handleDeactivateAccount = async (userId) => {
     // Add deactivate account logic here
     try {
       const response = await fetch(
@@ -213,14 +213,14 @@ const PatientManagement = () => {
     }
   };
 
-  const handleDownloadInvoice = orderId => {
+  const handleDownloadInvoice = (orderId) => {
     const element = document.getElementById(`invoice-${orderId}`);
     if (element) {
       html2pdf().from(element).save(`invoice-${orderId}.pdf`);
     }
   };
 
-  const handleDownloadPrescription = prescriptionId => {
+  const handleDownloadPrescription = (prescriptionId) => {
     const element = document.getElementById(`prescription-${prescriptionId}`);
     if (element) {
       const opt = {
@@ -254,7 +254,7 @@ const PatientManagement = () => {
         .then(() => {
           document.body.removeChild(clonedElement);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Error generating PDF:", err);
           document.body.removeChild(clonedElement);
         });
@@ -294,7 +294,7 @@ const PatientManagement = () => {
           .set(opt)
           .from(element)
           .save()
-          .catch(err => {
+          .catch((err) => {
             console.error("Error generating PDF:", err);
           });
       }
@@ -331,7 +331,7 @@ const PatientManagement = () => {
                   placeholder="Search patients..."
                   className="px-8"
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
@@ -342,13 +342,13 @@ const PatientManagement = () => {
               <span>Rows per page&nbsp;</span>
               <select
                 value={rowsPerPage}
-                onChange={e => {
+                onChange={(e) => {
                   setRowsPerPage(Number(e.target.value));
                   setCurrentPage(1); // Reset to first page
                 }}
                 className="border rounded px-2 py-1"
               >
-                {[5, 10, 25, 50].map(num => (
+                {[5, 10, 25, 50].map((num) => (
                   <option key={num} value={num}>
                     {num}
                   </option>
@@ -464,7 +464,7 @@ const PatientManagement = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
               >
                 Previous
@@ -473,7 +473,7 @@ const PatientManagement = () => {
                 variant="outline"
                 size="sm"
                 onClick={() =>
-                  setCurrentPage(prev => Math.min(prev + 1, totalPages))
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages || totalPages === 0}
               >
@@ -664,7 +664,7 @@ const PatientManagement = () => {
                                 </TableCell>
                               </TableRow>
                             ) : patientDetails?.hairTests?.length > 0 ? (
-                              patientDetails.hairTests.map(test => (
+                              patientDetails.hairTests.map((test) => (
                                 <TableRow key={test.id}>
                                   <TableCell className="text-xs sm:text-sm">
                                     {test.id}
@@ -710,9 +710,9 @@ const PatientManagement = () => {
                               <TableHead className="text-xs sm:text-sm">
                                 Status
                               </TableHead>
-                              <TableHead className="text-xs sm:text-sm text-right">
+                              {/* <TableHead className="text-xs sm:text-sm text-right">
                                 Actions
-                              </TableHead>
+                              </TableHead> */}
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -723,7 +723,7 @@ const PatientManagement = () => {
                                 </TableCell>
                               </TableRow>
                             ) : patientDetails?.orders?.length > 0 ? (
-                              patientDetails.orders.map(order => (
+                              patientDetails.orders.map((order) => (
                                 <React.Fragment key={order._id}>
                                   <TableRow>
                                     <TableCell className="text-xs sm:text-sm">
@@ -738,7 +738,7 @@ const PatientManagement = () => {
                                     <TableCell className="text-xs sm:text-sm">
                                       {order.status}
                                     </TableCell>
-                                    <TableCell className="text-right">
+                                    {/* <TableCell className="text-right">
                                       <Button
                                         variant="outline"
                                         size="sm"
@@ -752,7 +752,7 @@ const PatientManagement = () => {
                                           Download
                                         </span>
                                       </Button>
-                                    </TableCell>
+                                    </TableCell> */}
                                   </TableRow>
                                   {/* Hidden div for PDF generation */}
                                   <div
@@ -844,7 +844,7 @@ const PatientManagement = () => {
                           {loading ? (
                             <div className="text-center py-4">Loading...</div>
                           ) : patientDetails?.prescriptions?.length > 0 ? (
-                            patientDetails.prescriptions?.map(pres => (
+                            patientDetails.prescriptions?.map((pres) => (
                               <Card key={pres._id}>
                                 <CardHeader className="p-3 sm:p-4">
                                   <div className="flex justify-between items-center">
@@ -899,7 +899,7 @@ const PatientManagement = () => {
                                         (kit, kitIndex) => (
                                           <React.Fragment key={kitIndex}>
                                             {Object.keys(kit.medicines).map(
-                                              medicineName => {
+                                              (medicineName) => {
                                                 const medicine =
                                                   kit.medicines[medicineName];
                                                 return (
@@ -1002,8 +1002,8 @@ const PatientManagement = () => {
                     }}
                   >
                     {/* Logos (adjust paths and styling as needed) */}
-                     {/* Uncomment and adjust paths if you have these logos */}
-                     {/* <img
+                    {/* Uncomment and adjust paths if you have these logos */}
+                    {/* <img
                       className="rx-logo"
                       src="/RX.png"
                       alt="RX Logo"
@@ -1013,7 +1013,7 @@ const PatientManagement = () => {
                       className="logo-main"
                       src="/assets/img/logo.png"
                       alt="Main Logo"
-                      style={{ height: "50px", marginBottom: "10px" }}
+                      style={{ height: "60px", marginBottom: "10px" }}
                     />
                     <h1
                       style={{
@@ -1025,11 +1025,20 @@ const PatientManagement = () => {
                       MEDICAL PRESCRIPTION
                     </h1>
                     <p style={{ fontSize: "14px", color: "#555" }}>
-                      Date: {formatDateArrowStyle(currentPrescription?.createdAt || new Date())}
+                      Date:{" "}
+                      {formatDateArrowStyle(
+                        currentPrescription?.createdAt || new Date()
+                      )}
                     </p>
-                     <div style={{ fontSize: "14px", color: "#555", fontWeight: "bold" }}>
-                       Ref no: <span>{currentPrescription?._id || "N/A"}</span>
-                     </div>
+                    <div
+                      style={{
+                        fontSize: "14px",
+                        color: "#555",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Ref no: <span>{currentPrescription?._id || "N/A"}</span>
+                    </div>
                   </div>
 
                   {/* Patient Details */}
@@ -1058,21 +1067,25 @@ const PatientManagement = () => {
                       }}
                     >
                       <p>
-                        <strong>Patient Name:</strong> {selectedUser?.fullname || "N/A"}
+                        <strong>Patient Name:</strong>{" "}
+                        {selectedUser?.fullname || "N/A"}
                       </p>
                       <p>
-                        <strong>Patient ID:</strong> {selectedUser?._id || "N/A"}
+                        <strong>Patient ID:</strong>{" "}
+                        {selectedUser?._id || "N/A"}
                       </p>
-                       {/* Add age and gender if available in selectedUser data */}
-                       <p>
-                         <strong>Age:</strong> {selectedUser?.age || "N/A"}
-                       </p>
-                       <p>
-                         <strong>Gender:</strong> {selectedUser?.gender || "N/A"}
-                       </p>
-                         <p style={{gridColumn: 'span 2'}}> {/* Span two columns */}
-                          <strong>Phone:</strong> {selectedUser?.mobile || "N/A"}
-                        </p>
+                      {/* Add age and gender if available in selectedUser data */}
+                      <p>
+                        <strong>Age:</strong> {selectedUser?.age || "N/A"}
+                      </p>
+                      <p>
+                        <strong>Gender:</strong> {selectedUser?.gender || "N/A"}
+                      </p>
+                      <p style={{ gridColumn: "span 2" }}>
+                        {" "}
+                        {/* Span two columns */}
+                        <strong>Phone:</strong> {selectedUser?.mobile || "N/A"}
+                      </p>
                     </div>
                   </div>
 
@@ -1217,53 +1230,105 @@ const PatientManagement = () => {
                       </thead>
                       <tbody>
                         {/* Map through prescription medicines */}
-                        {currentPrescription?.test6?.medicines?.map((kit, kitIndex) => (
-                          <React.Fragment key={kitIndex}>
-                            {Object.keys(kit.medicines).map((medicineName, medicineIndex) => {
-                              const medicine = kit.medicines[medicineName];
-                              return (
-                                <tr key={medicineIndex}>
-                                  <td style={{ border: "1px solid #ddd", padding: "10px" }}>{medicineName || "N/A"}</td>
-                                  <td style={{ border: "1px solid #ddd", padding: "10px" }}>{medicine?.route || "N/A"}</td>
-                                  <td style={{ border: "1px solid #ddd", padding: "10px" }}>{medicine?.subCategory || "N/A"}</td>
-                                  <td style={{ border: "1px solid #ddd", padding: "10px" }}>{medicine?.quantity || "N/A"}</td>
-                                  <td style={{ border: "1px solid #ddd", padding: "10px" }}>{medicine?.frequency || "N/A"}</td>
-                                  <td style={{ border: "1px solid #ddd", padding: "10px" }}>{medicine?.duration || "N/A"}</td>
-                                </tr>
-                              );
-                            })}
-                          </React.Fragment>
-                        ))}
+                        {currentPrescription?.test6?.medicines?.map(
+                          (kit, kitIndex) => (
+                            <React.Fragment key={kitIndex}>
+                              {Object.keys(kit.medicines).map(
+                                (medicineName, medicineIndex) => {
+                                  const medicine = kit.medicines[medicineName];
+                                  return (
+                                    <tr key={medicineIndex}>
+                                      <td
+                                        style={{
+                                          border: "1px solid #ddd",
+                                          padding: "10px",
+                                        }}
+                                      >
+                                        {medicineName || "N/A"}
+                                      </td>
+                                      <td
+                                        style={{
+                                          border: "1px solid #ddd",
+                                          padding: "10px",
+                                        }}
+                                      >
+                                        {medicine?.route || "N/A"}
+                                      </td>
+                                      <td
+                                        style={{
+                                          border: "1px solid #ddd",
+                                          padding: "10px",
+                                        }}
+                                      >
+                                        {medicine?.subCategory || "N/A"}
+                                      </td>
+                                      <td
+                                        style={{
+                                          border: "1px solid #ddd",
+                                          padding: "10px",
+                                        }}
+                                      >
+                                        {medicine?.quantity || "N/A"}
+                                      </td>
+                                      <td
+                                        style={{
+                                          border: "1px solid #ddd",
+                                          padding: "10px",
+                                        }}
+                                      >
+                                        {medicine?.frequency || "N/A"}
+                                      </td>
+                                      <td
+                                        style={{
+                                          border: "1px solid #ddd",
+                                          padding: "10px",
+                                        }}
+                                      >
+                                        {medicine?.duration || "N/A"}
+                                      </td>
+                                    </tr>
+                                  );
+                                }
+                              )}
+                            </React.Fragment>
+                          )
+                        )}
                       </tbody>
                     </table>
-                     {/* Additional notes for medicines if available in data */}
-                     {/* Example: */}
-                     {/* {currentPrescription?.test6?.medicine?.option?.split('\n').map((line, index) => <div key={index} style={{ fontSize: "14px", marginTop: "5px" }}>{line}</div>)} */}
+                    {/* Additional notes for medicines if available in data */}
+                    {/* Example: */}
+                    {/* {currentPrescription?.test6?.medicine?.option?.split('\n').map((line, index) => <div key={index} style={{ fontSize: "14px", marginTop: "5px" }}>{line}</div>)} */}
                   </div>
 
                   {/* Doctor Info */}
-                   <div
-                     className="heading-container item2559"
-                     style={{
-                       display: "flex",
-                       justifyContent: "flex-end",
-                       marginTop: "30px",
-                     }}
-                   >
-                     <div>
-                       {/* Doctor's Signature (adjust path and styling as needed) */}
-                       <img
-                         className="img-sign"
-                         src="/Amit-Sir---Signature.png"
-                         alt="Doctor's Signature"
-                         style={{ height: "50px", marginBottom: "10px" }}
-                       />
-                       <h4 style={{ color: "#008CD7", fontWeight: "600", margin: 0 }}>
-                         Dr {currentPrescription?.doctor || "N/A"}
-                       </h4>
-                        {/* Add other doctor details if available in currentPrescription or patientDetails */}
-                        {/* Example: */}
-                         {/* <div style={{ fontSize: "14px", fontWeight: "600" }}>
+                  <div
+                    className="heading-container item2559"
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      marginTop: "30px",
+                    }}
+                  >
+                    <div>
+                      {/* Doctor's Signature (adjust path and styling as needed) */}
+                      <img
+                        className="img-sign"
+                        src="/Amit-Sir---Signature.png"
+                        alt="Doctor's Signature"
+                        style={{ height: "50px", marginBottom: "10px" }}
+                      />
+                      <h4
+                        style={{
+                          color: "#008CD7",
+                          fontWeight: "600",
+                          margin: 0,
+                        }}
+                      >
+                        {currentPrescription?.doctor || "N/A"}
+                      </h4>
+                      {/* Add other doctor details if available in currentPrescription or patientDetails */}
+                      {/* Example: */}
+                      {/* <div style={{ fontSize: "14px", fontWeight: "600" }}>
                            MBBS, MD, FCPS,DDV
                          </div>
                          <div style={{ fontSize: "14px", fontWeight: "600" }}>
@@ -1272,24 +1337,32 @@ const PatientManagement = () => {
                          <div style={{ fontSize: "14px", fontWeight: "600" }}>
                            Reg. No,- 06/07/2868
                          </div> */}
-                     </div>
-                   </div>
+                    </div>
+                  </div>
 
                   {/* Disclaimer */}
-                  <div className="dec-container" style={{ margin: "50px 0 0 0" }}>
+                  <div
+                    className="dec-container"
+                    style={{ margin: "50px 0 0 0" }}
+                  >
                     <p style={{ fontWeight: "bold" }}>Disclaimer</p>
                   </div>
-                  <div className="disclaimer" style={{ fontSize: "12px", color: "#777" }}>
+                  <div
+                    className="disclaimer"
+                    style={{ fontSize: "12px", color: "#777" }}
+                  >
                     <div>
-                      1. The information and advice provided here is provisional in nature
-                      as it is based on the limited information made available by the
-                      patient.
+                      1. The information and advice provided here is provisional
+                      in nature as it is based on the limited information made
+                      available by the patient.
                     </div>
                     <div>
-                      2. The information is confidential in nature and for recipients use
-                      only.
+                      2. The information is confidential in nature and for
+                      recipients use only.
                     </div>
-                    <div>3.The Prescription is generated on a Teleconsultation.</div>
+                    <div>
+                      3.The Prescription is generated on a Teleconsultation.
+                    </div>
                     <div>4. Not Valid for Medico-legal purpose.</div>
                   </div>
                 </div>

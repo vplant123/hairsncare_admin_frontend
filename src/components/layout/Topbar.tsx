@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -46,7 +46,7 @@ const Topbar: React.FC<TopbarProps> = ({
   isSidebarOpen,
   toggleButtonRef,
 }) => {
-  const { logout } = useAuth();
+  const { logout, userProfile } = useAuth();
   const navigate = useNavigate();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -54,17 +54,36 @@ const Topbar: React.FC<TopbarProps> = ({
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [profileData, setProfileData] = useState({
-    name: "Admin User",
-    email: "admin@example.com",
+    name: "",
+    email: "",
+    mobile: "",
     password: "",
     newPassword: "",
     confirmPassword: "",
   });
   const { toast } = useToast();
 
+  // Update profile data when userProfile changes
+  useEffect(() => {
+    if (userProfile) {
+      console.log("=== Updating Profile Data ===");
+      const newProfileData = {
+        name: userProfile.fullname || "",
+        email: userProfile.email || "",
+        mobile: userProfile.mobile || "",
+      };
+      console.log(JSON.stringify(newProfileData, null, 2));
+      
+      setProfileData(prev => ({
+        ...prev,
+        ...newProfileData
+      }));
+    }
+  }, [userProfile]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setProfileData(prev => ({ ...prev, [name]: value }));
+    setProfileData((prev) => ({ ...prev, [name]: value }));
   };
 
   const maskPassword = (password: string) => {
@@ -111,7 +130,7 @@ const Topbar: React.FC<TopbarProps> = ({
     });
 
     // Reset form and close modal
-    setProfileData(prev => ({
+    setProfileData((prev) => ({
       ...prev,
       password: "",
       newPassword: "",
@@ -181,11 +200,8 @@ const Topbar: React.FC<TopbarProps> = ({
               />
             </div>
             <DropdownMenuSeparator />
-           
           </DropdownMenuContent>
         </DropdownMenu>
-
-
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -194,18 +210,21 @@ const Topbar: React.FC<TopbarProps> = ({
                 <User className="h-4 w-4 text-white" />
               </div>
               <div className="hidden md:block text-left">
-                <p className="text-sm font-medium">Admin User</p>
-                <p className="text-xs text-muted-foreground">Administrator</p>
+                <p className="text-sm font-medium">{userProfile?.fullname || "User"}</p>
+                <p className="text-xs text-muted-foreground">{userProfile?.role || "User"}</p>
               </div>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-white">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel></DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setIsProfileOpen(true)} className="hover:text-blue-800 cursor-pointer">
-              Profile
+            <DropdownMenuItem
+              onClick={() => setIsProfileOpen(true)}
+              className="hover:text-blue-800 cursor-pointer"
+            >
+              My Profile
             </DropdownMenuItem>
-          
+
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={handleLogout}
@@ -223,22 +242,22 @@ const Topbar: React.FC<TopbarProps> = ({
         <DialogContent className="w-[95%] max-w-[425px] p-4 sm:p-6 h-auto max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-xl sm:text-2xl text-center sm:text-left">
-              My Profile 
+              My Profile
             </DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              View your profile information
+            </p>
           </DialogHeader>
           <div className="grid gap-4 sm:gap-6 py-4">
             <div className="flex flex-col items-center gap-4">
               <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-[#209fd9] flex items-center justify-center">
                 <User className="h-10 w-10 sm:h-12 sm:w-12 text-white" />
               </div>
-              {/* <Button variant="outline" size="sm" className="w-full sm:w-auto">
-                Change Photo
-              </Button> */}
             </div>
             <div className="grid gap-4">
               <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
                 <Label htmlFor="name" className="sm:text-right">
-                  Name
+                  Full Name
                 </Label>
                 <Input
                   id="name"
@@ -246,6 +265,7 @@ const Topbar: React.FC<TopbarProps> = ({
                   value={profileData.name}
                   onChange={handleInputChange}
                   className="sm:col-span-3"
+                  disabled
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
@@ -259,49 +279,39 @@ const Topbar: React.FC<TopbarProps> = ({
                   value={profileData.email}
                   onChange={handleInputChange}
                   className="sm:col-span-3"
+                  disabled
                 />
               </div>
-              {/* <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
-                <Label htmlFor="password" className="sm:text-right">
-                  Password
+              <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                <Label htmlFor="mobile" className="sm:text-right">
+                  Mobile
                 </Label>
-                <div className="sm:col-span-3">
-                  <Button
-                    variant="outline"
-                    className="w-full justify-between"
-                    onClick={() => setIsChangePasswordOpen(true)}
-                  >
-                    Change Password <Lock className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div> */}
+                <Input
+                  id="mobile"
+                  name="mobile"
+                  type="tel"
+                  value={profileData.mobile}
+                  onChange={handleInputChange}
+                  className="sm:col-span-3"
+                  disabled
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                <Label htmlFor="role" className="sm:text-right">
+                  Role
+                </Label>
+                <Input
+                  id="role"
+                  name="role"
+                  value={userProfile?.role || ""}
+                  className="sm:col-span-3"
+                  disabled
+                />
+              </div>
             </div>
           </div>
-          <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
-            {/* <Button
-              variant="outline"
-              onClick={() => setIsProfileOpen(false)}
-              className="w-full sm:w-auto"
-            >
-              Cancel
-            </Button> */}
-            {/* <Button
-              onClick={() => {
-                toast({
-                  title: "Success",
-                  description: "Profile updated successfully",
-                  className:
-                    "bg-health-success text-white border-health-success",
-                });
-                setIsProfileOpen(false);
-              }}
-              className="w-full sm:w-auto"
-            >
-              Save Changes
-            </Button> */}
-          </DialogFooter>
         </DialogContent>
-      </Dialog> 
+      </Dialog>
 
       {/* Change Password Modal */}
       {/* <Dialog
