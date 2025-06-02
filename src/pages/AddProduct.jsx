@@ -188,7 +188,7 @@ function AddProduct() {
 
     try {
       const imageResponse = await fetch(
-        `http://localhost:5000/api/v1/hair-tests/upload-image`,
+        `https://apihair.txogavideo.in/api/v1/hair-tests/upload-image`,
         {
           method: "POST",
           headers: {
@@ -303,7 +303,7 @@ function AddProduct() {
       // Send data to API
       console.log("Sending request to API...");
       const response = await fetch(
-        "http://localhost:5000/api/v1/admin/addproduct",
+        "https://apihair.txogavideo.in/api/v1/admin/addproduct",
         {
           method: isEditMode ? "PUT" : "POST",
           headers: {

@@ -56,7 +56,7 @@ const Appointments = () => {
         }
 
         const response = await fetch(
-          "http://localhost:5000/api/v1/doctor/get-all-appointment",
+          "https://apihair.txogavideo.in/api/v1/doctor/get-all-appointment",
           {
             headers: {
               Authorization: `Bearer ${token}`,

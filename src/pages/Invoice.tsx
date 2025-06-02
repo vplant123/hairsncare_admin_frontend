@@ -268,7 +268,7 @@ const Invoice = () => {
   const handleFetchData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/admin/getInvoices",
+        "https://apihair.txogavideo.in/api/v1/admin/getInvoices",
         {
           method: "POST",
           headers: {
