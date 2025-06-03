@@ -20,6 +20,8 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Trash2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { ClassNames } from "@emotion/react";
 
 // Calculate total for an item based on quantity, rate, gst, and discount
 const calculateItemTotal = item => {
@@ -46,12 +48,16 @@ const AddInvoice = () => {
   const [selectedDoctor, setSelectedDoctor] = useState("");
   const [productList, setProductList] = useState([]);
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // State for managing total amount (adapted from user's code)
+  const [totalAmt, setTotalAmt] = useState(0);
 
   // Fetch Doctor Data
   const handleDoctorData = async () => {
     try {
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/all-doctor-Data",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/all-doctor-Data`,
         { method: "GET" }
       );
       const data = await response.json();
@@ -64,7 +70,7 @@ const AddInvoice = () => {
   const handleProductData = async () => {
     try {
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/product",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/product`,
         { method: "GET" }
       );
       const data = await response.json();
@@ -79,67 +85,114 @@ const AddInvoice = () => {
     setSelectedDoctor(value); // Update the selected doctor ID
   };
 
-  const handleProductChange = (itemId, value) => {
-    console.log(value);
-    setInvoiceItems(prevItems =>
-      prevItems.map(item => {
-        if (item.id === itemId) {
-          return { ...item, description: value }; // Set the selected product's _id in description
-        }
-        return item;
-      })
-    );
+  // New handleItem logic based on user's code, refined for accuracy
+  const handleItemChange = (ind, value, fieldName) => {
+    console.log("====>>>", ind, value, fieldName);
+    const tempItems = invoiceItems?.map((item) => ({ ...item }));
+    const currentItem = tempItems[ind];
+
+    // Update the changed field
+    currentItem[fieldName] = parseFloat(value) || value; // Parse numbers, keep strings if not number
+
+    // Handle product selection: populate rate, gst, discount, and calculate discount percent
+    if (fieldName === "description") {
+      const selectedProduct = productList.find(p => p._id === value);
+      if (selectedProduct) {
+        currentItem["description"] = selectedProduct._id; // Store the product ID
+        currentItem["rate"] = parseFloat(selectedProduct.price || 0);
+        currentItem["gst"] = parseFloat(selectedProduct.gst || 0);
+        // Assuming product discount from API is an amount. Adjust if it's a percentage.
+        currentItem["discount"] = parseFloat(selectedProduct.discount || 0);
+        // Calculate discount percentage based on the populated discount amount and rate
+        currentItem["discountPercent"] = currentItem["rate"] > 0 ? ((currentItem["discount"] / currentItem["rate"]) * 100)?.toFixed(2) : 0;
+      } else {
+         // Reset values if product not found or selection cleared
+        currentItem["description"] = "";
+        currentItem["rate"] = 0;
+        currentItem["gst"] = 0;
+        currentItem["discount"] = 0;
+        currentItem["discountPercent"] = 0;
+      }
+    }
+
+    // Recalculate discount amount if discountPercent changes (applies after direct input or product select)
+    if (fieldName === "discountPercent" || fieldName === "rate") {
+       const rate = parseFloat(currentItem["rate"] || 0);
+       const discountPercent = parseFloat(currentItem["discountPercent"] || 0);
+       currentItem["discount"] = ((rate * discountPercent) / 100)?.toFixed(2);
+    }
+
+    // Recalculate discount percentage if discount amount changes (applies after direct input or product select)
+     if (fieldName === "discount" || fieldName === "rate") {
+         const rate = parseFloat(currentItem["rate"] || 0);
+         const discountAmount = parseFloat(currentItem["discount"] || 0);
+         currentItem["discountPercent"] = rate > 0 ? ((discountAmount / rate) * 100)?.toFixed(2) : 0;
+     }
+
+
+    // Recalculate total after any relevant field changes
+    const quantity = parseFloat(currentItem["quantity"] || 0);
+    const rate = parseFloat(currentItem["rate"] || 0);
+    const gst = parseFloat(currentItem["gst"] || 0);
+    const discountAmount = parseFloat(currentItem["discount"] || 0); // Use discount AMOUNT for total calculation
+
+    const subtotal = quantity * rate;
+    const discountedSubtotal = subtotal - discountAmount;
+    const gstValue = discountedSubtotal * (gst / 100);
+    const totalForItem = discountedSubtotal + gstValue;
+
+    currentItem["total"] = totalForItem?.toFixed(2);
+
+    setInvoiceItems(tempItems); // Update the state
+
+    // Recalculate grand total
+    let grandTotal = 0;
+    tempItems?.forEach((item) => {
+      grandTotal += parseFloat(item["total"] || 0);
+    });
+    setTotalAmt(grandTotal);
+  };
+
+  // New deleteItem logic based on user's code
+  const deleteItem = (ind) => {
+    const temp = invoiceItems?.filter((item, i) => i !== ind);
+     // Recalculate grand total after deletion
+    let grandTotal = 0;
+    temp?.forEach((ity) => {
+      grandTotal += parseFloat(ity["total"] || 0); // Ensure total is a number
+    });
+    setTotalAmt(grandTotal);
+    setInvoiceItems(temp);
   };
 
   // Add a new invoice item
   const addItem = () => {
     const newItem = {
       id: Date.now().toString(),
-      description: "", // Initially set to an empty string
+      description: "", // Initially set to an empty string (product ID)
       quantity: 1,
       rate: 0,
       gst: 0,
-      discount: 0,
-      discountAmount: 0,
+      discount: 0, // This will store discount amount
+      discountPercent: 0, // This will store discount percentage
       total: 0,
     };
     setInvoiceItems(prevItems => [...prevItems, newItem]);
   };
 
-  // Update an item in the invoice
-  const updateItem = (id, field, value) => {
-    setInvoiceItems(items =>
-      items.map(item => {
-        if (item.id === id) {
-          const updatedItem = { ...item, [field]: value };
-          const subtotal = updatedItem.quantity * updatedItem.rate;
-          updatedItem.discountAmount = subtotal * (updatedItem.discount / 100);
-          updatedItem.total = calculateItemTotal(updatedItem);
-          return updatedItem;
-        }
-        return item;
-      })
-    );
-  };
-
-  // Remove an item from the invoice
-  const removeItem = id => {
-    setInvoiceItems(items => items.filter(item => item.id !== id));
-  };
-
-  // Calculate the grand total of all items in the invoice
-  const calculateGrandTotal = () => {
-    return invoiceItems.reduce((sum, item) => sum + item.total, 0);
-  };
-
   // Prepare the invoice data and send it to the backend API
   const handleSave = async () => {
     if (!selectedDoctor) {
-      alert("Please select a doctor.");
+      toast({
+        title: "Warning",
+        description: "Please select a doctor before saving the invoice.",
+        variant: "destructive",
+        className: "bg-white text-black",
+      });
       return;
     }
 
-    const totalAmount = calculateGrandTotal();
+    const totalAmount = totalAmt;
     const orderId = `ORD-${
       new Date().toISOString().split("T")[0]
     }-${Math.random().toString(36).substr(2, 9)}`;
@@ -157,7 +210,7 @@ const AddInvoice = () => {
         rate: item.rate.toString(),
         gst: item.gst.toString(),
         discount: item.discount.toString(),
-        discountPercent: item.discount.toString(),
+        discountPercent: item.discountPercent.toString(),
         total: item.total.toString(),
       })),
       total: totalAmount,
@@ -178,7 +231,7 @@ const AddInvoice = () => {
     // Send invoice data to the backend API
     try {
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/addInvoice",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/addInvoice`,
         {
           method: "POST",
           headers: {
@@ -202,7 +255,7 @@ const AddInvoice = () => {
 
   // Save invoice and mark it as paid
   const handleSaveAndPaid = () => {
-    const grandTotal = calculateGrandTotal();
+    const grandTotal = totalAmt;
     setPaidAmount(grandTotal);
     console.log("Invoice saved and marked as paid");
   };
@@ -233,17 +286,25 @@ const AddInvoice = () => {
                   name="name"
                   placeholder="Enter name"
                   value={name}
-                  onChange={e => setName(e.target.value)}
+                  onChange={e => {
+                    const filteredValue = e.target.value.replace(
+                      /[^a-zA-Z\s]/g,
+                      ""
+                    ); // Remove numbers and symbols
+                    setName(filteredValue);
+                  }}
                 />
               </div>
               <div>
                 <Label htmlFor="mobile">Mobile</Label>
                 <Input
                   id="mobile"
-                  type="number"
                   placeholder="Enter mobile number"
                   value={mobile}
-                  onChange={e => setMobile(e.target.value)}
+                  onChange={e => {
+                    const filteredValue = e.target.value.replace(/\D/g, ""); // Remove non-digit characters
+                    setMobile(filteredValue);
+                  }}
                 />
               </div>
               <div>
@@ -308,13 +369,13 @@ const AddInvoice = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  invoiceItems.map(item => (
+                  invoiceItems.map((item, index) => (
                     <TableRow key={item.id}>
                       <TableCell>
                         <Select
                           value={item.description}
                           onValueChange={value =>
-                            handleProductChange(item.id, value)
+                            handleItemChange(index, value, "description")
                           }
                         >
                           <SelectTrigger id="product">
@@ -334,11 +395,7 @@ const AddInvoice = () => {
                           type="number"
                           value={item.quantity}
                           onChange={e =>
-                            updateItem(
-                              item.id,
-                              "quantity",
-                              Number(e.target.value)
-                            )
+                            handleItemChange(index, e.target.value, "quantity")
                           }
                           min="1"
                         />
@@ -348,9 +405,9 @@ const AddInvoice = () => {
                           type="number"
                           value={item.rate}
                           onChange={e =>
-                            updateItem(item.id, "rate", Number(e.target.value))
+                            handleItemChange(index, e.target.value, "rate")
                           }
-                          min="0"
+                          min="1"
                         />
                       </TableCell>
                       <TableCell>
@@ -358,33 +415,39 @@ const AddInvoice = () => {
                           type="number"
                           value={item.gst}
                           onChange={e =>
-                            updateItem(item.id, "gst", Number(e.target.value))
+                            handleItemChange(index, e.target.value, "gst")
                           }
-                          min="0"
+                          min="1"
+                          max="100"
                         />
                       </TableCell>
                       <TableCell>
                         <Input
                           type="number"
-                          value={item.discount}
+                          value={item.discountPercent}
                           onChange={e =>
-                            updateItem(
-                              item.id,
-                              "discount",
-                              Number(e.target.value)
+                            handleItemChange(
+                              index,
+                              e.target.value,
+                              "discountPercent"
                             )
                           }
-                          min="0"
+                          min="1"
                           max="100"
+                          placeholder="%"
                         />
                       </TableCell>
-                      <TableCell>{item.discountAmount.toFixed(2)}</TableCell>
-                      <TableCell>{item.total.toFixed(2)}</TableCell>
+                      <TableCell>
+                        {parseFloat(item.discount || 0).toFixed(2)}
+                      </TableCell>
+                      <TableCell>
+                        {parseFloat(item.total || 0).toFixed(2)}
+                      </TableCell>
                       <TableCell>
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => deleteItem(index)}
                           className="text-destructive hover:text-destructive hover:bg-destructive/10"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -408,9 +471,7 @@ const AddInvoice = () => {
             <div className="bg-gray-50 p-4 rounded-md w-full md:w-64">
               <div className="flex justify-between py-2">
                 <span className="font-medium">Grand Total:</span>
-                <span className="font-bold">
-                  {calculateGrandTotal().toFixed(2)}
-                </span>
+                <span className="font-bold">{totalAmt.toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-2">
                 <span className="font-medium">Paid Amount:</span>
@@ -419,7 +480,7 @@ const AddInvoice = () => {
               <div className="flex justify-between py-2 border-t border-gray-200 mt-2 pt-2">
                 <span className="font-medium">Due:</span>
                 <span className="font-bold">
-                  {(calculateGrandTotal() - paidAmount).toFixed(2)}
+                  {(totalAmt - paidAmount).toFixed(2)}
                 </span>
               </div>
             </div>

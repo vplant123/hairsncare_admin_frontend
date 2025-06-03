@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Calendar, Package, Users, MoreVertical } from "lucide-react";
+import { Calendar, Package, Users, MoreVertical, IndianRupee } from "lucide-react";
 import {
   CartesianGrid,
   ResponsiveContainer,
@@ -254,24 +254,18 @@ const Dashboard = () => {
       }
       try {
         const [patientsRes, ordersRes] = await Promise.all([
-          fetch(
-            "https://apihair.txogavideo.in/api/v1/admin/allpatient",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          ),
-          fetch(
-            "https://apihair.txogavideo.in/api/v1/admin/getOrders",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          ),
+          fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/admin/allpatient`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }),
+          fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/admin/getOrders`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }),
         ]);
 
         if (!patientsRes.ok)
@@ -331,27 +325,24 @@ const Dashboard = () => {
           title="Today's Hair Tests"
           value={todayHairTests.toLocaleString()}
           icon={<Calendar className="h-6 w-6" />}
-          trend={{ value: "12%", positive: true }}
         />
         <StatCard
           className="bg-white"
           title="Today's Orders with Hair Test"
           value={todayHairTestOrders.length.toLocaleString()}
           icon={<Users className="h-6 w-6" />}
-          trend={{ value: "4%", positive: true }}
         />
         <StatCard
           className="bg-white"
           title="Today's Orders Without Hair Test (Ecommerce)"
           value={todayEcommerceOrders.length.toLocaleString()}
           icon={<Package className="h-6 w-6" />}
-          trend={{ value: "2%", positive: false }}
         />
         <StatCard
           className="bg-white"
-          title="Total Sales (Rs.)"
-          value={totalSales.toLocaleString()}
-          trend={{ value: "8%", positive: true }}
+          title="Total Sales"
+          value={`₹ ${totalSales.toLocaleString()}`}
+          icon={<IndianRupee className="h-6 w-6" />}
         />
       </div>
 
@@ -374,29 +365,27 @@ const Dashboard = () => {
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="month" 
-                    tick={{ fontSize: 12 }}
-                    interval={0}
-                  />
-                  <YAxis 
+                  <XAxis dataKey="month" tick={{ fontSize: 12 }} interval={0} />
+                  <YAxis
                     yAxisId="left"
                     orientation="left"
                     tick={{ fontSize: 12 }}
-                    tickFormatter={(value) => value.toLocaleString()}
+                    tickFormatter={value => value.toLocaleString()}
                   />
-                  <YAxis 
+                  <YAxis
                     yAxisId="right"
                     orientation="right"
                     tick={{ fontSize: 12 }}
-                    tickFormatter={(value) => `Rs. ${value.toLocaleString()}`}
+                    tickFormatter={value => `Rs. ${value.toLocaleString()}`}
                   />
-                  <Tooltip 
+                  <Tooltip
                     content={({ active, payload, label }) => {
                       if (active && payload && payload.length) {
                         return (
                           <div className="bg-white p-3 rounded-lg shadow-lg border">
-                            <p className="font-semibold text-gray-800">{label}</p>
+                            <p className="font-semibold text-gray-800">
+                              {label}
+                            </p>
                             <p className="text-sm text-gray-600">
                               Orders: {payload[0].value.toLocaleString()}
                             </p>
@@ -410,17 +399,17 @@ const Dashboard = () => {
                     }}
                   />
                   <Legend />
-                  <Bar 
+                  <Bar
                     yAxisId="left"
-                    dataKey="orders" 
-                    fill="#1E40AF" 
+                    dataKey="orders"
+                    fill="#1E40AF"
                     name="Orders"
                     radius={[4, 4, 0, 0]}
                   />
-                  <Bar 
+                  <Bar
                     yAxisId="right"
-                    dataKey="sales" 
-                    fill="#3B82F6" 
+                    dataKey="sales"
+                    fill="#3B82F6"
                     name="Sales (Rs.)"
                     radius={[4, 4, 0, 0]}
                   />
@@ -468,11 +457,11 @@ const Dashboard = () => {
                 No product sales data available
               </div>
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
+              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+                <PieChart margin={{ top: 20, right: 80, left: 20, bottom: 20 }}>
                   <Pie
                     data={topProducts}
-                    cx="50%"
+                    cx="40%"
                     cy="50%"
                     labelLine={{ strokeWidth: 1, stroke: '#888888', strokeDasharray: "2 2" }}
                     outerRadius={60}
@@ -490,7 +479,7 @@ const Dashboard = () => {
                       />
                     ))}
                   </Pie>
-                  <Tooltip 
+                  <Tooltip
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         const name = payload[0].name;
@@ -509,9 +498,9 @@ const Dashboard = () => {
                       return null;
                     }}
                   />
-                  <Legend 
-                    layout="vertical" 
-                    verticalAlign="middle" 
+                  <Legend
+                    layout="vertical"
+                    verticalAlign="middle"
                     align="right"
                     wrapperStyle={{
                       paddingLeft: '20px',
@@ -545,9 +534,7 @@ const Dashboard = () => {
                   </span>
                 </div>
               ))}
-              <div className="flex justify-end">
-                <span className="text-xs text-muted-foreground">Today</span>
-              </div>
+             
             </div>
           </CardContent>
         </Card>
@@ -555,7 +542,7 @@ const Dashboard = () => {
         {/* Patients List */}
         <Card className="bg-white">
           <CardHeader className="border-b border-border">
-            <CardTitle>Users Activity</CardTitle>
+            <CardTitle>Users Login</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             {loading && (
@@ -614,7 +601,7 @@ const Dashboard = () => {
                           console.log(`More options for ${user._id}`)
                         }
                       >
-                        <MoreVertical className="w-5 h-5" />
+                       
                       </button>
                     </div>
                   ))}

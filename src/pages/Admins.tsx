@@ -30,12 +30,36 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 
+// Define a type for the admin data including _id
+interface AdminData {
+  _id?: string;
+  fullname: string;
+  email: string;
+  mobile: string;
+  password?: string;
+  role: string;
+  permission: {
+    hairTest: boolean;
+    doctor: boolean;
+    patient: boolean;
+    website: boolean;
+    coupon: boolean;
+    orders: boolean;
+    contactus: boolean;
+    product: boolean;
+    reviews: boolean;
+    admin: boolean;
+  };
+}
+
 const Admins = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [newAdmin, setNewAdmin] = useState({
+  const [isConfirmDeleteDialogOpen, setIsConfirmDeleteDialogOpen] = useState(false);
+  const [adminToDelete, setAdminToDelete] = useState<{ _id: string; fullname: string } | null>(null);
+  const [newAdmin, setNewAdmin] = useState<AdminData>({
     fullname: "",
     email: "",
     mobile: "",
@@ -72,7 +96,7 @@ const Admins = () => {
   const handleFetchData = async () => {
     try {
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/getAdmin",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/getAdmin`,
         {
           method: "POST",
         }
@@ -86,6 +110,7 @@ const Admins = () => {
         title: "Error",
         description: "Failed to fetch admin data.",
         variant: "destructive",
+        className: "bg-white",
       });
     }
   };
@@ -96,20 +121,20 @@ const Admins = () => {
 
   const handleInputChange = e => {
     const { name, value } = e.target;
-    
+
     // Special handling for mobile number input
     if (name === "mobile") {
       // Remove all characters except numbers and plus sign
-      const cleanedValue = value.replace(/[^\d+]/g, '');
+      const cleanedValue = value.replace(/[^\d+]/g, "");
       // Ensure only one plus sign at the start
-      const finalValue = cleanedValue.replace(/\+/g, (match, index) => 
-        index === 0 ? '+' : ''
+      const finalValue = cleanedValue.replace(/\+/g, (match, index) =>
+        index === 0 ? "+" : ""
       );
       setNewAdmin(prev => ({ ...prev, [name]: finalValue }));
     } else {
       setNewAdmin(prev => ({ ...prev, [name]: value }));
     }
-    
+
     setErrorMessages(prev =>
       prev.filter(err => !err.field || err.field !== name)
     );
@@ -130,18 +155,21 @@ const Admins = () => {
       ...prev,
       role,
       // Reset permissions if switching to admin role
-      permission: role === "admin" ? {
-        hairTest: true,
-        doctor: true,
-        patient: true,
-        website: true,
-        coupon: true,
-        orders: true,
-        contactus: true,
-        product: true,
-        reviews: true,
-        admin: true,
-      } : prev.permission
+      permission:
+        role === "admin"
+          ? {
+              hairTest: true,
+              doctor: true,
+              patient: true,
+              website: true,
+              coupon: true,
+              orders: true,
+              contactus: true,
+              product: true,
+              reviews: true,
+              admin: true,
+            }
+          : prev.permission,
     }));
   };
 
@@ -202,6 +230,7 @@ const Admins = () => {
   const handleEditAdmin = (adminData: any) => {
     setIsEditMode(true);
     setNewAdmin({
+      _id: adminData._id || "",
       fullname: adminData.fullname || "",
       email: adminData.email || "",
       mobile: adminData.mobile || "",
@@ -232,13 +261,14 @@ const Admins = () => {
           errorMessages[0]?.msg ||
           "Please fill in all required fields correctly.",
         variant: "destructive",
+        className: "bg-white",
       });
       return;
     }
 
     try {
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/addAdmin",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/addAdmin`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -247,33 +277,38 @@ const Admins = () => {
       );
       const data = await response.json();
 
-      if (data.statusCode === 200) {
+      // Check for success status codes (200 OK or 201 Created)
+      if (data.statusCode === 200 || data.statusCode === 201) {
         await handleFetchData();
         handleCloseDialog();
         toast({
           title: "Admin Added",
-          className:"bg-white",
           description: `${newAdmin.fullname} has been added as a ${newAdmin.role}`,
+          variant: "default", // Ensure success toast uses default variant
         });
       } else {
-        setErrorMessages([{ msg: data.message || "Failed to add admin." }]);
+        // Handle API errors
+        const errorMessage = data.message || "Failed to add admin.";
+        setErrorMessages([{ msg: errorMessage }]);
         toast({
           title: "Error",
-          description: data.message || "Failed to add admin.",
+          description: errorMessage,
           variant: "destructive",
-          className: "bg-red-200",
+          className: "bg-red-200", // Ensure error toast has red background
         });
       }
     } catch (error: any) {
+      // Handle network or unexpected errors
       console.error("Error while adding admin", error);
+      const errorMessage = error.message || "An unexpected error occurred.";
       setErrorMessages([
-        { msg: error.message || "An unexpected error occurred." },
+        { msg: errorMessage },
       ]);
       toast({
         title: "Error",
-        description: error.message || "An unexpected error occurred.",
+        description: errorMessage,
         variant: "destructive",
-        className: "bg-red-200",
+        className: "bg-red-200", // Ensure error toast has red background
       });
     }
   };
@@ -294,12 +329,13 @@ const Admins = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
+        const errorMessage = "Authorization token not found for update.";
         setErrorMessages([
-          { msg: "Authorization token not found for update." },
+          { msg: errorMessage },
         ]);
         toast({
           title: "Error",
-          description: "Authorization token not found.",
+          description: errorMessage,
           className: "bg-red-200",
           variant: "destructive",
         });
@@ -307,7 +343,7 @@ const Admins = () => {
       }
 
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/update-admin-profile",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/update-admin-profile`,
         {
           method: "PUT",
           headers: {
@@ -319,33 +355,38 @@ const Admins = () => {
       );
       const data = await response.json();
 
-      if (data.statusCode === 200) {
+      // Check for success status codes (200 OK or 201 Created)
+      if (data.statusCode === 200 || data.statusCode === 201) {
         await handleFetchData();
         handleCloseDialog();
         toast({
           title: "Admin Updated",
           description: `${newAdmin.fullname} has been updated successfully`,
+          variant: "default", // Ensure success toast uses default variant
         });
       } else {
-        setErrorMessages([{ msg: data.message || "Failed to update admin." }]);
+        // Handle API errors
+        const errorMessage = data.message || "Failed to update admin.";
+        setErrorMessages([{ msg: errorMessage }]);
         toast({
           title: "Error",
-          description: data.message || "Failed to update admin.",
+          description: errorMessage,
           variant: "destructive",
-          className: "bg-red-200",
+          className: "bg-red-200", // Ensure error toast has red background
         });
       }
     } catch (error: any) {
+      // Handle network or unexpected errors
       console.error("Error while updating admin", error);
+      const errorMessage = error.message || "An unexpected error occurred during update.";
       setErrorMessages([
-        { msg: error.message || "An unexpected error occurred during update." },
+        { msg: errorMessage },
       ]);
       toast({
         title: "Error",
-        description:
-          error.message || "An unexpected error occurred during update.",
+        description: errorMessage,
         variant: "destructive",
-        className: "bg-red-200",
+        className: "bg-red-200", // Ensure error toast has red background
       });
     }
   };
@@ -375,15 +416,75 @@ const Admins = () => {
     setErrorMessages([]);
   };
 
-  const handleDeleteAdmin = (id: string, fullname: string) => {
-    console.log("Deleting admin with ID:", id);
+  const handleConfirmDelete = (adminItem: { _id: string; fullname: string }) => {
+    setAdminToDelete(adminItem);
+    setIsConfirmDeleteDialogOpen(true);
+  };
 
-    toast({
-      title: "Admin Deleted",
-      description: `${fullname} has been removed from administrators`,
-      variant: "destructive",
-      className: "bg-white",
-    });
+  const handleActualDelete = async () => {
+    if (adminToDelete) {
+      console.log("Deleting admin with ID:", adminToDelete._id);
+      // Add your actual delete API call here
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          toast({
+            title: "Error",
+            description: "Authentication token missing.",
+            variant: "destructive",
+            className: "bg-red-200",
+          });
+          return;
+        }
+
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL}/api/v1/admin/delete-admin`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({adminId: adminToDelete._id }),
+          }
+        );
+
+        const data = await response.json();
+        console.log("Delete admin response:", data);
+
+        if (data.statusCode === 200) {
+          await handleFetchData(); // Refresh the admin list
+          toast({
+            title: "Admin Deleted",
+            description: data.message,
+            variant: "default",
+            className: "bg-green-200",
+          });
+        } else {
+           toast({
+            title: "Error",
+            description: data.message || "Failed to delete admin.",
+            variant: "destructive",
+            className: "bg-red-200",
+          });
+        }
+      } catch (error: any) {
+        console.error("Error while deleting admin", error);
+        toast({
+          title: "Error",
+          description: error || "An unexpected error occurred during deletion.",
+          variant: "destructive",
+          className: "bg-red-200",
+        });
+      } finally {
+        handleCloseConfirmDeleteDialog();
+      }
+    }
+  };
+
+  const handleCloseConfirmDeleteDialog = () => {
+    setIsConfirmDeleteDialogOpen(false);
+    setAdminToDelete(null);
   };
 
   const filteredAdmins = admin.filter(
@@ -466,36 +567,10 @@ const Admins = () => {
                     )}`}{" "}
                 of {totalAdmins}
               </span>
-              <button
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
-                className="px-2"
-              >
-                {"|<"}
-              </button>
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="px-2"
-              >
-                {"<"}
-              </button>
-              <button
-                onClick={() =>
-                  setCurrentPage(prev => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages}
-                className="px-2"
-              >
-                {">"}
-              </button>
-              <button
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
-                className="px-2"
-              >
-                {">|"}
-              </button>
+            
+             
+             
+             
             </div>
           </div>
 
@@ -548,9 +623,7 @@ const Admins = () => {
                           variant="outline"
                           size="sm"
                           className="text-red-500 hover:border-red-500"
-                          onClick={() =>
-                            handleDeleteAdmin(adminItem._id, adminItem.fullname)
-                          }
+                          onClick={() => handleConfirmDelete(adminItem)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -561,6 +634,47 @@ const Admins = () => {
               )}
             </TableBody>
           </Table>
+
+          {/* Pagination Controls (Bottom) */}
+          <div className="flex items-center justify-end space-x-2 py-4">
+            <div className="flex-1 text-sm text-muted-foreground">
+              {totalAdmins} total administrators.
+            </div>
+            <div className="space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1 || totalPages === 0}
+              >
+                First
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1 || totalPages === 0}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages || totalPages === 0}
+              >
+                Next
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages || totalPages === 0}
+              >
+                Last
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
@@ -573,7 +687,8 @@ const Admins = () => {
             <DialogDescription>
               {isEditMode
                 ? "Update the administrator details."
-                : "Fill in the details to add a new administrator to the system."}
+                : "Fill in the details to add a new administrator to the system."
+              }
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -760,6 +875,28 @@ const Admins = () => {
               className="w-full sm:w-auto"
             >
               {isEditMode ? "Update Administrator" : "Add Administrator"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirmation Dialog for Delete */}
+      <Dialog open={isConfirmDeleteDialogOpen} onOpenChange={setIsConfirmDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete administrator{" "}
+              <strong>{adminToDelete?.fullname}</strong>?
+            
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCloseConfirmDeleteDialog}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleActualDelete} className="bg-red-400 text-white">
+              Confirm Delete
             </Button>
           </DialogFooter>
         </DialogContent>

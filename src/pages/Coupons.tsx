@@ -233,7 +233,7 @@ const Coupons = () => {
       if (selectedDate < today) {
         toast({
           title: "Validation Error",
-          className:"bg-white",
+          className: "bg-white",
           description: "Validity Date must be today or a future date.",
           variant: "destructive",
           duration: 5000,
@@ -302,10 +302,10 @@ const Coupons = () => {
         validity: formData.validity,
         percent: Number(formData.percent),
         type: formData.type,
-        isActive: formData.isActive ?? true
+        isActive: formData.isActive ?? true,
       };
 
-      console.log('Creating coupon with payload:', payload);
+      console.log("Creating coupon with payload:", payload);
 
       const res = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/v1/admin/editCoupon`,
@@ -320,7 +320,7 @@ const Coupons = () => {
       );
 
       const data = await res.json();
-      console.log('Create coupon response:', data);
+      console.log("Create coupon response:", data);
 
       if (!res.ok) {
         throw new Error(data.message || `HTTP error! status: ${res.status}`);
@@ -340,10 +340,10 @@ const Coupons = () => {
         throw new Error(data.message || "Failed to create coupon");
       }
     } catch (error: any) {
-      console.error('Create coupon error details:', {
+      console.error("Create coupon error details:", {
         message: error.message,
         stack: error.stack,
-        response: error.response
+        response: error.response,
       });
       toast({
         title: "Error",
@@ -370,10 +370,10 @@ const Coupons = () => {
         validity: formData.validity,
         percent: Number(formData.percent),
         type: formData.type,
-        isActive: formData.isActive
+        isActive: formData.isActive,
       };
 
-      console.log('Editing coupon with payload:', payload);
+      console.log("Editing coupon with payload:", payload);
 
       const res = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/v1/admin/editCoupon`,
@@ -388,7 +388,7 @@ const Coupons = () => {
       );
 
       const data = await res.json();
-      console.log('Edit coupon response:', data);
+      console.log("Edit coupon response:", data);
 
       if (!res.ok) {
         throw new Error(data.message || `HTTP error! status: ${res.status}`);
@@ -407,10 +407,10 @@ const Coupons = () => {
         throw new Error(data.message || "Failed to update coupon");
       }
     } catch (error: any) {
-      console.error('Edit coupon error details:', {
+      console.error("Edit coupon error details:", {
         message: error.message,
         stack: error.stack,
-        response: error.response
+        response: error.response,
       });
       toast({
         title: "Error",
@@ -437,7 +437,7 @@ const Coupons = () => {
       if (!token) throw new Error("Authentication token not found");
 
       const res = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/deleteCoupon",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/deleteCoupon`,
         {
           method: "POST",
           headers: {
@@ -484,6 +484,25 @@ const Coupons = () => {
 
       const couponToToggle = coupons.find((c) => c._id === couponId);
       if (!couponToToggle) throw new Error("Coupon not found");
+
+      // Check if trying to activate an expired coupon
+      if (!couponToToggle.isActive) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day
+        const validityDate = new Date(couponToToggle.validity);
+        validityDate.setHours(0, 0, 0, 0); // Reset time to start of day
+
+        if (validityDate < today) {
+          toast({
+            title: "Error",
+            description: "Cannot activate expired coupon. Please update the validity date first.",
+            variant: "destructive",
+            className: "bg-red-50 border-red-200",
+            duration: 5000,
+          });
+          return;
+        }
+      }
 
       const updatedCoupon = {
         ...couponToToggle,
@@ -610,7 +629,7 @@ const Coupons = () => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search by coupon code..."
-                  className="pl-10"
+                  className="px-10"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -626,7 +645,7 @@ const Coupons = () => {
                     <SelectItem value="inactive">Inactive</SelectItem>
                   </SelectContent>
                 </Select>
-                <Select value={expiryFilter} onValueChange={setExpiryFilter}>
+                {/* <Select value={expiryFilter} onValueChange={setExpiryFilter}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Expiry" />
                   </SelectTrigger>
@@ -715,7 +734,6 @@ const Coupons = () => {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => openEditModal(coupon)}
-                                disabled={isExpired}
                               >
                                 <Pencil className="h-4 w-4" />
                               </Button>

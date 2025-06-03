@@ -41,7 +41,26 @@ const OrdersInvoices = () => {
   const [error, setError] = useState<string | null>(null);
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
   const [loader, setLoader] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
+   function formatDateArrowStyle(isoString) {
+     const date = new Date(isoString);
+
+     // Check if the date is invalid
+     if (isNaN(date.getTime())) {
+       return ""; // Return an empty string if the date is invalid
+     }
+
+     const day = date.getUTCDate().toString().padStart(2, "0");
+     const month = date.toLocaleString("en-US", {
+       month: "short",
+       timeZone: "UTC",
+     });
+     const year = date.getUTCFullYear();
+
+     return `${day} ${month} ${year}`;
+   }
   // Handle view order details
   const handleViewOrder = order => {
     setSelectedOrder(order);
@@ -56,25 +75,38 @@ const OrdersInvoices = () => {
 
   // Filter orders based on search query and filters
   const filteredOrders = orders.filter(order => {
+    const query = searchQuery.toLowerCase();
+    const orderId = order._id?.toLowerCase() || "";
+    const customerName = order.userId?.fullname?.toLowerCase() || "";
+
     return (
       (searchQuery === "" ||
-        order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        order.customerName.toLowerCase().includes(searchQuery.toLowerCase())) &&
+        orderId.includes(query) ||
+        customerName.includes(query)) &&
       (statusFilter === "" ||
         statusFilter === "all" ||
-        order.status === statusFilter) &&
+        order.deliveryStatus === statusFilter) &&
       (dateFilter === "" ||
         dateFilter === "all" ||
-        order.date.includes(dateFilter))
+        order.createdAt?.includes(dateFilter))
     );
   });
+
+  // Pagination calculations
+  const totalOrders = filteredOrders.length;
+  const totalPages = Math.ceil(totalOrders / rowsPerPage);
+
+  const paginatedOrders = filteredOrders.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
 
   const fetchOrders = async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(
-        `https://apihair.txogavideo.in/api/v1/admin/getOrders`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/getOrders`,
         {
           method: "GET",
           headers: {
@@ -119,7 +151,7 @@ const OrdersInvoices = () => {
     };
     try {
       const response = await fetch(
-        `https://apihair.txogavideo.in/api/v1/payment/change-order-status`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/payment/change-order-status`,
         {
           method: "POST",
           headers: {
@@ -163,7 +195,7 @@ const OrdersInvoices = () => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search by order ID or customer name..."
-                  className="pl-10"
+                  className="px-10 bg-white"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                 />
@@ -171,7 +203,7 @@ const OrdersInvoices = () => {
               <div className="flex gap-2">
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Status" />
+                    <SelectValue placeholder="Delivery Status" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
                     <SelectItem value="all">All Status</SelectItem>
@@ -181,9 +213,6 @@ const OrdersInvoices = () => {
                     <SelectItem value="cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button variant="outline" size="icon">
-                  <Filter className="h-4 w-4" />
-                </Button>
               </div>
             </div>
           </CardHeader>
@@ -204,8 +233,8 @@ const OrdersInvoices = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredOrders.length > 0 ? (
-                  filteredOrders.map(order => (
+                {paginatedOrders.length > 0 ? (
+                  paginatedOrders.map(order => (
                     <TableRow key={order._id}>
                       <TableCell className="font-medium">{order._id}</TableCell>
                       <TableCell>{order.orderType}</TableCell>
@@ -230,7 +259,9 @@ const OrdersInvoices = () => {
                           </SelectContent>
                         </Select>
                       </TableCell>
-                      <TableCell>{order.createdAt}</TableCell>
+                      <TableCell>
+                        {formatDateArrowStyle(order.createdAt)}
+                      </TableCell>
                       {/* <TableCell> */}
                       {/* <Badge
                           className={
@@ -293,6 +324,75 @@ const OrdersInvoices = () => {
                 )}
               </TableBody>
             </Table>
+
+            {/* Pagination Controls */}
+            <div className="flex items-center justify-between my-4">
+              <div className="flex items-center space-x-2">
+                <p className="text-sm text-muted-foreground">Rows per page</p>
+                <Select
+                  value={rowsPerPage.toString()}
+                  onValueChange={(value) => {
+                    setRowsPerPage(Number(value));
+                    setCurrentPage(1);
+                  }}
+                >
+                  <SelectTrigger className="h-8 w-[70px]">
+                    <SelectValue placeholder={rowsPerPage} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[5, 10, 25, 50].map((num) => (
+                      <SelectItem key={num} value={num.toString()}>
+                        {num}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center space-x-6 lg:space-x-8">
+                <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+                  Page {currentPage} of {totalPages}
+                </div>
+                <div className="flex items-center space-x-2">
+                  {/* <Button
+                    variant="outline"
+                    className="hidden h-8 w-8 p-0 lg:flex"
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                  >
+                    <span className="sr-only">Go to first page</span>
+                    {"<<"}
+                  </Button> */}
+                  <Button
+                    variant="outline"
+                    className="h-8 w-8 p-0"
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                  >
+                    <span className="sr-only">Go to previous page</span>
+                    {"<"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-8 w-8 p-0"
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                  >
+                    <span className="sr-only">Go to next page</span>
+                    {">"}
+                  </Button>
+                  {/* <Button
+                    variant="outline"
+                    className="hidden h-8 w-8 p-0 lg:flex"
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                  >
+                    <span className="sr-only">Go to last page</span>
+                    {">>"}
+                  </Button> */}
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
 

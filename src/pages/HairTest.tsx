@@ -84,6 +84,7 @@ const HairTest = () => {
   const [selectedDoctor, setSelectedDoctor] = useState("");
   const [hairTests, setHairTests] = useState([]);
   const [Orders, setOrders] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [doctorsList, setDoctorsList] = useState<any>();
   const [assignResponse, setAssignResponse] = useState({
@@ -110,14 +111,50 @@ const HairTest = () => {
     hairTestId: "",
   });
 
+  // Pagination state for All Hair Tests
+  const [allCurrentPage, setAllCurrentPage] = useState(1);
+  const [allRowsPerPage, setAllRowsPerPage] = useState(10);
+
+  // Pagination state for Pending Tests
+  const [pendingCurrentPage, setPendingCurrentPage] = useState(1);
+  const [pendingRowsPerPage, setPendingRowsPerPage] = useState(10);
+
   const pendingTests = hairTests.filter(
     test => test.status?.toLowerCase() === "pending"
+  );
+
+  // Filter hair tests based on search query for All tab
+  const filteredAllHairTests = hairTests.filter(test => {
+    const query = searchQuery.toLowerCase();
+    const name = test.personal?.name?.toLowerCase() || "";
+    const email = test.personal?.email?.toLowerCase() || "";
+    const phoneNumber = test.personal?.phoneNumber?.toLowerCase() || "";
+
+    return name.includes(query) || email.includes(query) || phoneNumber.includes(query);
+  });
+
+  // Pagination calculations for All Hair Tests
+  const totalAllHairTests = filteredAllHairTests.length;
+  const totalAllPages = Math.ceil(totalAllHairTests / allRowsPerPage);
+
+  const paginatedAllHairTests = filteredAllHairTests.slice(
+    (allCurrentPage - 1) * allRowsPerPage,
+    allCurrentPage * allRowsPerPage
+  );
+
+   // Pagination calculations for Pending Tests
+  const totalPendingTests = pendingTests.length;
+  const totalPendingPages = Math.ceil(totalPendingTests / pendingRowsPerPage);
+
+  const paginatedPendingTests = pendingTests.slice(
+    (pendingCurrentPage - 1) * pendingRowsPerPage,
+    pendingCurrentPage * pendingRowsPerPage
   );
 
   const handleFetchData = async () => {
     try {
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/hair-tests/getall",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/hair-tests/getall`,
         {
           method: "GET",
         }
@@ -133,7 +170,7 @@ const HairTest = () => {
   const handleFetchOrders = async () => {
     try {
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/getOrders",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/getOrders`,
         {
           method: "GET",
         }
@@ -178,7 +215,7 @@ const HairTest = () => {
 
       console.log("Making API call to send WhatsApp...");
       const response = await fetch(
-        `${BASE_URL}/admin/sendWhatsapp?userId=${userId}`,
+        `${import.meta.env.VITE_BASE_URL}/admin/sendWhatsapp?userId=${userId}`,
         {
           method: "POST",
           headers: {
@@ -229,7 +266,7 @@ const HairTest = () => {
   const handleFetchDoctor = async () => {
     try {
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/all-doctor-Data",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/all-doctor-Data`,
         {
           method: "GET",
         }
@@ -312,7 +349,7 @@ const HairTest = () => {
       console.log("Preparing API request with data:", requestData);
 
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/create-Followup-Appointment",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/create-Followup-Appointment`,
         {
           method: "POST",
           headers: {
@@ -405,7 +442,7 @@ const HairTest = () => {
 
     try {
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/assignAppointmentToDoctor",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/assignAppointmentToDoctor`,
         {
           method: "POST",
           headers: {
@@ -466,7 +503,7 @@ const HairTest = () => {
   const viewReport = async (testId, status) => {
     try {
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/hair-tests/getall",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/hair-tests/getall`,
         {
           method: "GET",
         }
@@ -487,7 +524,7 @@ const HairTest = () => {
   const viewOrderDetails = async orderId => {
     try {
       const response = await fetch(
-        `https://apihair.txogavideo.in/api/v1/admin/order-details`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/order-details`,
         {
           method: "POST",
           headers: {
@@ -524,7 +561,7 @@ const HairTest = () => {
 
     try {
       const response = await fetch(
-        `https://apihair.txogavideo.in/api/v1/admin/assignDoctorForPrescription`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/assignDoctorForPrescription`,
         {
           method: "POST",
           headers: {
@@ -627,11 +664,41 @@ const HairTest = () => {
                 <div className="flex items-center gap-2">
                   <div className="relative w-64">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input placeholder="Search tests..." className="pl-10" />
+                    <Input
+                      placeholder="Search tests..."
+                      className="px-10"
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                    />
                   </div>
-                  <Button variant="outline" size="icon">
-                    <Filter className="h-4 w-4" />
-                  </Button>
+                </div>
+              </div>
+
+              {/* Pagination Controls for All Hair Tests */}
+              <div className="flex flex-col sm:flex-row items-center justify-between my-4">
+                <div className="flex items-center gap-2 mb-4 sm:mb-0">
+                  <span className="text-sm font-medium">Rows per page:</span>
+                  <select
+                    value={allRowsPerPage}
+                    onChange={e => {
+                      setAllRowsPerPage(Number(e.target.value));
+                      setAllCurrentPage(1); // Reset to first page
+                    }}
+                    className="border rounded px-2 py-1 text-sm"
+                  >
+                    {[5, 10, 25, 50].map(num => (
+                      <option key={num} value={num}>
+                        {num}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-center gap-1 text-md">
+                   <span className="mr-4 ">
+                     {allCurrentPage} of {totalAllPages}
+                  </span>
+                
+                   
                 </div>
               </div>
 
@@ -648,7 +715,7 @@ const HairTest = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {hairTests.map(test => (
+                  {paginatedAllHairTests.map(test => (
                     <TableRow key={test._id}>
                       <TableCell className="font-medium">
                         {test.personal?.name || "N/A"}
@@ -730,6 +797,49 @@ const HairTest = () => {
                   ))}
                 </TableBody>
               </Table>
+
+              {/* Pagination Controls (Bottom) for All Hair Tests */}
+              <div className="flex items-center justify-end space-x-2 py-4">
+                <div className="flex-1 text-sm text-muted-foreground">
+                  {totalAllHairTests} total results.
+                </div>
+                <div className="space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setAllCurrentPage(1)}
+                    disabled={allCurrentPage === 1 || totalAllPages === 0}
+                  >
+                    First
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setAllCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={allCurrentPage === 1 || totalAllPages === 0}
+                  >
+                    Previous
+                  </Button>
+                   <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      setAllCurrentPage(prev => Math.min(prev + 1, totalAllPages))
+                    }
+                    disabled={allCurrentPage === totalAllPages || totalAllPages === 0}
+                  >
+                    Next
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setAllCurrentPage(totalAllPages)}
+                    disabled={allCurrentPage === totalAllPages || totalAllPages === 0}
+                  >
+                    Last
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -758,6 +868,62 @@ const HairTest = () => {
                 </div>
               </div>
 
+              {/* Pagination Controls (Top) for Pending Tests - Reverted to native buttons by user */} 
+               <div className="flex flex-col sm:flex-row items-center justify-between my-4">
+                <div className="flex items-center gap-2 mb-4 sm:mb-0">
+                  <span className="text-sm font-medium">Rows per page:</span>
+                  <select
+                    value={pendingRowsPerPage}
+                    onChange={e => {
+                      setPendingRowsPerPage(Number(e.target.value));
+                      setPendingCurrentPage(1); // Reset to first page
+                    }}
+                    className="border rounded px-2 py-1 text-sm"
+                  >
+                    {[5, 10, 25, 50].map(num => (
+                      <option key={num} value={num}>
+                        {num}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-center gap-1 text-sm">
+                   <span className="mr-4 font-medium">
+                    {pendingCurrentPage} of {totalPendingPages}
+                  </span>
+                  <button
+                    onClick={() => setPendingCurrentPage(1)}
+                    disabled={pendingCurrentPage === 1}
+                    className="px-3 py-1 border rounded-l-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+                  >
+                    First
+                  </button>
+                  <button
+                    onClick={() => setPendingCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={pendingCurrentPage === 1}
+                    className="px-3 py-1 border-t border-b border-r-0 rounded-none disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+                  >
+                    Previous
+                  </button>
+                   <button
+                    onClick={() =>
+                      setPendingCurrentPage(prev => Math.min(prev + 1, totalPendingPages))
+                    }
+                    disabled={pendingCurrentPage === totalPendingPages}
+                    className="px-3 py-1 border-t border-b border-l-0 rounded-none disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+                  >
+                    Next
+                  </button>
+                  <button
+                    onClick={() => setPendingCurrentPage(totalPendingPages)}
+                    disabled={pendingCurrentPage === totalPendingPages}
+                    className="px-3 py-1 border rounded-r-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+                  >
+                    Last
+                  </button>
+                </div>
+              </div>
+
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -770,7 +936,7 @@ const HairTest = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {pendingTests.map(test => (
+                  {paginatedPendingTests.map(test => (
                     <TableRow key={test._id}>
                       <TableCell className="font-medium">
                         {test.personal?.name || "N/A"}
@@ -821,6 +987,49 @@ const HairTest = () => {
                   ))}
                 </TableBody>
               </Table>
+
+              {/* Pagination Controls (Bottom) for Pending Tests */}
+              <div className="flex items-center justify-end space-x-2 py-4">
+                <div className="flex-1 text-sm text-muted-foreground">
+                  {totalPendingTests} total results.
+                </div>
+                <div className="space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPendingCurrentPage(1)}
+                    disabled={pendingCurrentPage === 1 || totalPendingPages === 0}
+                  >
+                    First
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPendingCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={pendingCurrentPage === 1 || totalPendingPages === 0}
+                  >
+                    Previous
+                  </Button>
+                   <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      setPendingCurrentPage(prev => Math.min(prev + 1, totalPendingPages))
+                    }
+                    disabled={pendingCurrentPage === totalPendingPages || totalPendingPages === 0}
+                  >
+                    Next
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPendingCurrentPage(totalPendingPages)}
+                    disabled={pendingCurrentPage === totalPendingPages || totalPendingPages === 0}
+                  >
+                    Last
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -933,15 +1142,15 @@ const HairTest = () => {
         onOpenChange={setIsCompletedModalOpen}
       >
         <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="sticky top-0 bg-white z-10 pb-4">
-            <DialogTitle>Completed Test Report</DialogTitle>
-            <DialogDescription>
-              View and manage completed test report
-            </DialogDescription>
-          </DialogHeader>
-
           {selectedTest && (
             <div className="space-y-6 overflow-y-auto">
+              <DialogHeader className="sticky top-0 z-10 pb-4">
+                <DialogTitle>Completed Test Report</DialogTitle>
+                <DialogDescription>
+                  View and manage completed test report
+                </DialogDescription>
+              </DialogHeader>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Patient Name</label>
@@ -1065,7 +1274,7 @@ const HairTest = () => {
                       className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
                       onClick={() =>
                         window.open(
-                          `http://localhost:5173/doctor-analyse-report/${selectedTest.appointments[0]._id}`,
+                          `https://report.txogavideo.in/doctor-analyse-report/${selectedTest.appointments[0]._id}`,
                           "_blank"
                         )
                       }
@@ -1078,7 +1287,7 @@ const HairTest = () => {
                       className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
                       onClick={() =>
                         window.open(
-                          `http://localhost:5173/management-report/${selectedTest.appointments[0]._id}`,
+                          `https://report.txogavideo.in/management-report/${selectedTest.appointments[0]._id}`,
                           "_blank"
                         )
                       }
@@ -1091,7 +1300,7 @@ const HairTest = () => {
                       className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
                       onClick={() =>
                         window.open(
-                          `http://localhost:5173/doctor/report/${selectedTest.appointments[0]._id}`,
+                          `https://report.txogavideo.in/doctor/report/${selectedTest.appointments[0]._id}`,
                           "_blank"
                         )
                       }
@@ -1110,23 +1319,37 @@ const HairTest = () => {
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
                 )}
-              </div>
+                <div className="flex flex-col sm:flex-row justify-end gap-3  mt-4 sticky bottom-0  ">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsCompletedModalOpen(false)}
+                    className="w-full sm:w-auto px-6 hover:bg-gray-50 hover:text-gray-600 transition-colors duration-200"
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    className="w-full sm:w-auto bg-primary hover:bg-health-primary/90 text-white px-6 transition-colors duration-200 flex items-center justify-center gap-2"
+                    onClick={() => {
+                      const baseUrl = "https://report.txogavideo.in";
+                      const path = "patient-test-result";
+                      const userId = selectedTest?.userId?._id;
+                      const appointmentId = selectedTest?.appointments?.[0]?._id;
+                      const testId = selectedTest?._id;
 
-              <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 sticky bottom-0 bg-white pt-4 border-t">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsCompletedModalOpen(false)}
-                  className="w-full sm:w-auto px-6 hover:bg-gray-50 hover:text-gray-600 transition-colors duration-200"
-                >
-                  Close
-                </Button>
-                <Button
-                  className="w-full sm:w-auto bg-primary hover:bg-health-primary/90 text-white px-6 transition-colors duration-200 flex items-center justify-center gap-2"
-                  onClick={() => navigate(`/test-result/${selectedTest._id}`)}
-                >
-                  <Eye className="h-4 w-4" />
-                  View Test Report
-                </Button>
+                      if (userId && testId && appointmentId) {
+                        window.open(
+                          `${baseUrl}/${path}/${userId},${appointmentId},${testId}`,
+                          "_blank"
+                        );
+                      } else {
+                        toast.error("Missing required data for this report.");
+                      }
+                    }}
+                  >
+                    <Eye className="h-4 w-4" />
+                    View Test Report
+                  </Button>
+                </div>
               </div>
             </div>
           )}

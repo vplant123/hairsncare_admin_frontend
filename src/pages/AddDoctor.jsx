@@ -16,6 +16,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 
+// Define regex patterns
+const regexPatterns = {
+  name: /^[a-zA-Z\s]{3,}$/, // Name: letters, spaces, min 3 chars
+  email: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/, // Standard email
+  phone: /^(\+\d{0,4})?\d*$/, // Phone: optional + and country code, digits (allows partial input)
+  experience: /^[0-9]*$/, // Experience: only digits (allows empty and partial input)
+};
+
 const AddDoctor = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,7 +48,10 @@ const AddDoctor = () => {
 
   const [profileImage, setProfileImage] = useState(null);
   const [awardsImages, setAwardsImages] = useState([]);
+  const [profileImagePreview, setProfileImagePreview] = useState(null);
+  const [awardsImagesPreviews, setAwardsImagesPreviews] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({}); // State to hold field-specific errors
 
   useEffect(() => {
     if (isEdit && doctorData) {
@@ -60,16 +71,67 @@ const AddDoctor = () => {
         isSpec: doctorData.isSpec || false,
       });
       setProfileImage(doctorData.image);
-      if (doctorData?.awards) setAwardsImages(doctorData.awards);
+      setProfileImagePreview(doctorData.image);
+      if (doctorData?.awards) {
+        setAwardsImages(doctorData.awards);
+        setAwardsImagesPreviews(doctorData.awards);
+      }
     }
   }, [isEdit, doctorData]);
 
   const handleInputChange = e => {
     const { name, value } = e.target;
+    let cleanedValue = value;
+
+    // Filter input based on field and regex
+    if (name === 'phone') {
+      // Allow digits, and a leading plus sign
+      cleanedValue = value.replace(/[^\d+]/g, '').replace(/^(\+.*)\+/g, '$1');
+       if (cleanedValue.length > 1 && cleanedValue[0] !== '+') cleanedValue = cleanedValue.replace(/\+/g, ''); // Ensure only one leading + if present
+
+    } else if (name === 'experience') {
+      // Allow only digits
+      cleanedValue = value.replace(/[^0-9]/g, '');
+    } else if (name === 'name' || name === 'degree' || name === 'language') {
+       // Don't allow numbers for these fields
+       cleanedValue = value.replace(/[0-9]/g, '');
+    }
+
+    // Update form data with the potentially cleaned value
     setFormData(prev => ({
       ...prev,
-      [name]: value,
+      [name]: cleanedValue,
     }));
+
+    // Validate the cleaned value using regex if a pattern exists
+    if (regexPatterns[name]) {
+      // Use a stricter test for final validation/error display
+      const finalTest = name === 'phone' ? /^(\+\d{1,4})?\d{10,}$/ : // Phone: optional + and country code, min 10 digits for final validation
+                        name === 'experience' ? /^[0-9]+$/ : // Experience: only digits, must have at least one
+                        regexPatterns[name]; // Use defined regex for others
+
+      if (cleanedValue && !finalTest.test(cleanedValue)) {
+        // Set specific error message if validation fails
+        setFieldErrors(prev => ({
+          ...prev,
+          [name]: `Invalid ${name}.`,
+        }));
+      } else {
+        // Clear the error for this field if validation passes or is empty
+        setFieldErrors(prev => {
+          const newState = { ...prev };
+          delete newState[name];
+          return newState;
+        });
+      }
+    } else {
+       // Clear the error if there's no specific regex for this field (e.g., Textarea)
+       setFieldErrors(prev => {
+         const newState = { ...prev };
+         delete newState[name];
+         return newState;
+       });
+    }
   };
 
   const handleCheckboxChange = field => checked => {
@@ -82,11 +144,17 @@ const AddDoctor = () => {
   const handleImageUpload = (e, type) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (type === "profile") {
-        setProfileImage(file);
-      } else if (type === "awards") {
-        setAwardsImages([...awardsImages, file]);
-      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (type === "profile") {
+          setProfileImage(file);
+          setProfileImagePreview(reader.result);
+        } else if (type === "awards") {
+          setAwardsImages([...awardsImages, file]);
+          setAwardsImagesPreviews([...awardsImagesPreviews, reader.result]);
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -95,7 +163,7 @@ const AddDoctor = () => {
     formData.append("image", file);
 
     const imageResponse = await fetch(
-      `https://apihair.txogavideo.in/api/v1/hair-tests/upload-image`,
+      `${import.meta.env.VITE_BASE_URL}/api/v1/hair-tests/upload-image`,
       {
         method: "POST",
         headers: {
@@ -119,6 +187,37 @@ const AddDoctor = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     console.log("Form submission started");
+
+    // Perform final validation before submitting
+    const errors = {};
+    // Stricter regex for final validation
+    const finalRegexPatterns = {
+       name: /^[a-zA-Z\s]{3,}$/,
+       email: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
+       phone: /^(\+\d{1,4})?\d{10,}$/,
+       experience: /^[0-9]+$/,
+    };
+
+    Object.keys(finalRegexPatterns).forEach(fieldName => {
+      if (formData[fieldName] && !finalRegexPatterns[fieldName].test(formData[fieldName])) {
+        errors[fieldName] = `Invalid ${fieldName}.`;
+      }
+    });
+
+    // Also check required fields that might not have regex (e.g., description, qualification)
+    if (!formData.description.trim()) errors.description = "Description is required.";
+    if (!formData.qualification.trim()) errors.qualification = "Qualifications are required.";
+    // Add other required fields without specific regex here if any
+
+    setFieldErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      console.log("Validation errors detected:", errors);
+      toast.error("Please fix the errors in the form.");
+      setIsSubmitting(false); // Ensure button is not stuck on 'Saving...'
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -179,7 +278,7 @@ const AddDoctor = () => {
 
       console.log("Final payload to send:", payload);
 
-      const baseUrl = "https://apihair.txogavideo.in/api/v1/admin";
+      const baseUrl = `${import.meta.env.VITE_BASE_URL}/api/v1/admin`;
       const url = isEdit ? `${baseUrl}/edit-doctor` : `${baseUrl}/addDoctor`;
       console.log("API URL:", url);
 
@@ -260,6 +359,9 @@ const AddDoctor = () => {
                     onChange={handleInputChange}
                     required
                   />
+                   {fieldErrors.name && (
+                     <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>
+                   )}
                 </div>
 
                 <div>
@@ -270,11 +372,11 @@ const AddDoctor = () => {
                     accept="image/*"
                     onChange={e => handleImageUpload(e, "profile")}
                   />
-                  {isEdit && doctorData?.image && (
+                  {(profileImagePreview || (isEdit && doctorData?.image)) && (
                     <div className="mt-2">
                       <img
-                        src={doctorData.image}
-                        alt="Current profile"
+                        src={profileImagePreview || doctorData?.image}
+                        alt="Profile preview"
                         className="w-20 h-20 object-cover rounded"
                       />
                     </div>
@@ -286,10 +388,14 @@ const AddDoctor = () => {
                   <Input
                     id="phone"
                     name="phone"
+                    type="tel"
                     value={formData.phone}
                     onChange={handleInputChange}
                     required
                   />
+                   {fieldErrors.phone && (
+                     <p className="text-red-500 text-sm mt-1">{fieldErrors.phone}</p>
+                   )}
                 </div>
 
                 <div>
@@ -302,6 +408,9 @@ const AddDoctor = () => {
                     onChange={handleInputChange}
                     required
                   />
+                   {fieldErrors.email && (
+                     <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>
+                   )}
                 </div>
 
                 <div>
@@ -345,10 +454,14 @@ const AddDoctor = () => {
                   <Input
                     id="experience"
                     name="experience"
+                    type="number"
                     value={formData.experience}
                     onChange={handleInputChange}
                     required
                   />
+                   {fieldErrors.experience && (
+                     <p className="text-red-500 text-sm mt-1">{fieldErrors.experience}</p>
+                   )}
                 </div>
 
                 <div>
@@ -384,6 +497,9 @@ const AddDoctor = () => {
                 onChange={handleInputChange}
                 required
               />
+               {fieldErrors.description && (
+                 <p className="text-red-500 text-sm mt-1">{fieldErrors.description}</p>
+               )}
             </div>
 
             <div className="my-2">
@@ -395,6 +511,9 @@ const AddDoctor = () => {
                 onChange={handleInputChange}
                 required
               />
+               {fieldErrors.qualification && (
+                 <p className="text-red-500 text-sm mt-1">{fieldErrors.qualification}</p>
+               )}
             </div>
 
             <div className="my-2">
@@ -405,13 +524,13 @@ const AddDoctor = () => {
                 accept="image/*"
                 onChange={e => handleImageUpload(e, "awards")}
               />
-              {isEdit && doctorData?.awards && (
-                <div className="mt-2 gap-3 flex">
-                  {doctorData?.awards.map((award, index) => (
+              {(awardsImagesPreviews.length > 0 || (isEdit && doctorData?.awards?.length > 0)) && (
+                <div className="mt-2 flex flex-wrap gap-3">
+                  {(awardsImagesPreviews.length > 0 ? awardsImagesPreviews : doctorData?.awards)?.map((award, index) => (
                     <img
                       key={index}
                       src={award}
-                      alt={`Award ${index}`}
+                      alt={`Award preview ${index + 1}`}
                       className="w-20 h-20 object-cover rounded"
                     />
                   ))}
@@ -451,8 +570,8 @@ const AddDoctor = () => {
                 {isSubmitting
                   ? "Saving..."
                   : isEdit
-                  ? "Update Doctor"
-                  : "Add Doctor"}
+                    ? "Update Doctor"
+                    : "Add Doctor"}
               </Button>
             </div>
           </form>

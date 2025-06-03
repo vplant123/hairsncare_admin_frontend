@@ -67,7 +67,7 @@ const PatientManagement = () => {
     const date = new Date(isoString);
 
     // Check if the date is invalid
-    if (isNaN(date)) {
+    if (isNaN(date.getTime())) {
       return ""; // Return an empty string if the date is invalid
     }
 
@@ -86,7 +86,7 @@ const PatientManagement = () => {
     const fetchPatients = async () => {
       try {
         const res = await fetch(
-          "https://apihair.txogavideo.in/api/v1/admin/allpatient",
+          `${import.meta.env.VITE_BASE_URL}/api/v1/admin/allpatient`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -110,22 +110,21 @@ const PatientManagement = () => {
 
   const token = localStorage.getItem("token");
   // Filter patients
-  // useEffect(() => {
-  //   const filtered = patients.filter(
-  //     (patient: any) =>
-  //       patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //       patient.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //       patient.phone.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //       patient.age?.toString().includes(searchQuery.toLowerCase())
-  //   );
-  //   setFilteredPatients(filtered);
-  // }, [searchQuery, patients]);
+  useEffect(() => {
+    const filtered = patients.filter(
+      (patient: any) =>
+        patient.fullname?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        patient.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        patient.mobile?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredPatients(filtered);
+  }, [searchQuery, patients]);
 
   const fetchPatientDetails = async (patientId) => {
     try {
       setLoading(true);
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/get-patient-Data",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/get-patient-Data`,
         {
           method: "POST",
           headers: {
@@ -177,7 +176,7 @@ const PatientManagement = () => {
     // Add deactivate account logic here
     try {
       const response = await fetch(
-        `https://apihair.txogavideo.in/api/v1/admin/deleteuser?userId=${userId}`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/deleteuser?userId=${userId}`,
         {
           method: "DELETE",
           headers: {
@@ -335,7 +334,6 @@ const PatientManagement = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-            
             </div>
           </div>
 
@@ -367,36 +365,6 @@ const PatientManagement = () => {
                     )}`}{" "}
                 of {totalPatients}
               </span>
-              <button
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
-                className="px-2"
-              >
-                {"|<"}
-              </button>
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="px-2"
-              >
-                {"<"}
-              </button>
-              <button
-                onClick={() =>
-                  setCurrentPage(prev => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages}
-                className="px-2"
-              >
-                {">"}
-              </button>
-              <button
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
-                className="px-2"
-              >
-                {">|"}
-              </button>
             </div>
           </div>
 
@@ -410,7 +378,6 @@ const PatientManagement = () => {
                   <TableHead>Orders</TableHead>
                   <TableHead>Order Amount</TableHead>
                   <TableHead>Com HairTest</TableHead>
-                  <TableHead>Amt Hair Test</TableHead>
                   <TableHead>Last Login</TableHead>
                   {/* <TableHead>Cart</TableHead> */}
                   {/* <TableHead className="text-right">Actions</TableHead> */}
@@ -440,11 +407,11 @@ const PatientManagement = () => {
                       <TableCell>{patient.email}</TableCell>
                       <TableCell>{patient.mobile}</TableCell>
                       <TableCell>{patient.orders}</TableCell>
-                      <TableCell>{patient.orderAmount}</TableCell>
+                      <TableCell>₹ {patient.orderAmount}</TableCell>
                       <TableCell>
                         {patient.completedHairTest ? "Yes" : "No"}
                       </TableCell>
-                      <TableCell>{patient.hairTestAmount}</TableCell>
+
                       <TableCell>
                         {formatDateArrowStyle(patient.lastLogin)}
                       </TableCell>
@@ -897,7 +864,6 @@ const PatientManagement = () => {
                                       }
                                       className="flex items-center gap-1"
                                     >
-                                      <Download className="h-3 w-3" />
                                       <span className="hidden sm:inline">
                                         View
                                       </span>
@@ -1014,15 +980,16 @@ const PatientManagement = () => {
             </div>
             {currentPrescription && (
               <ScrollArea className="flex-1 px-3 sm:px-4 md:px-6 py-3 sm:py-4 overflow-y-auto">
-                {/* Content copied from the hidden div for PDF generation */}
+                {/* Content for PDF generation */}
                 <div
                   id={`prescription-view-content-${currentPrescription._id}`}
+                  className="report-container page-break-2"
                   style={{
                     padding: "20px",
                     fontFamily: "Arial, sans-serif",
-                    border: "1px solid #ccc", // Added border for visual structure
-                    maxWidth: "800px", // Max width for better formatting
-                    margin: "auto", // Center the content
+                    border: "1px solid #ccc",
+                    maxWidth: "800px",
+                    margin: "auto",
                   }}
                 >
                   {/* Header */}
@@ -1030,7 +997,7 @@ const PatientManagement = () => {
                     style={{
                       textAlign: "center",
                       marginBottom: "20px",
-                      borderBottom: "1px solid #eee", // Separator
+                      borderBottom: "1px solid #eee",
                       paddingBottom: "10px",
                     }}
                   >
@@ -1095,7 +1062,7 @@ const PatientManagement = () => {
                       style={{
                         display: "grid",
                         gridTemplateColumns: "1fr 1fr",
-                        gap: "10px", // Reduced gap
+                        gap: "10px",
                         fontSize: "14px",
                       }}
                     >
@@ -1123,7 +1090,7 @@ const PatientManagement = () => {
                   </div>
 
                   {/* Doctor's Note / Provisional Diagnosis */}
-                  {currentPrescription.doctorsNote && (
+                  {currentPrescription?.doctorsNote && (
                     <div
                       style={{
                         marginBottom: "20px",
@@ -1147,7 +1114,7 @@ const PatientManagement = () => {
                   )}
 
                   {/* Lab Tests (if available in data) */}
-                  {currentPrescription.labTests &&
+                  {currentPrescription?.labTests &&
                     currentPrescription.labTests.length > 0 && (
                       <div
                         style={{
@@ -1194,7 +1161,7 @@ const PatientManagement = () => {
                       style={{
                         width: "100%",
                         borderCollapse: "collapse",
-                        border: "1px solid #ddd", // Lighter border
+                        border: "1px solid #ddd",
                       }}
                     >
                       <thead>
@@ -1202,9 +1169,9 @@ const PatientManagement = () => {
                           <th
                             style={{
                               border: "1px solid #ddd",
-                              padding: "10px", // Increased padding
+                              padding: "10px",
                               textAlign: "left",
-                              backgroundColor: "#f2f2f2", // Light grey background
+                              backgroundColor: "#f2f2f2",
                             }}
                           >
                             Medicine Name
@@ -1425,7 +1392,7 @@ const PatientManagement = () => {
         </DialogContent>
       </Dialog>
 
-      {/* <AddPatientModal
+      {/* <AddPatientModalff
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={handleAddPatient}
