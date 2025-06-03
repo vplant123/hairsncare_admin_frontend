@@ -25,7 +25,7 @@ const DeleteProduct = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/admin/deleteproduct`,
+        `https://apihair.txogavideo.in/api/v1/admin/deleteproduct`,
         {
           method: "DELETE",
           headers: {

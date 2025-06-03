@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef } from "react";
+ import React, { useState, useEffect, forwardRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils"; // utility for conditional classes
 import {
@@ -39,7 +39,6 @@ const routesByRole = {
     { path: "/orders", label: "Orders" },
     { path: "/products", label: "Products" },
     { path: "/website", label: "Manage Website" },
-    { path: "/blogs", label: "Blogs" },
     { path: "/coupons", label: "Coupons" },
     // { path: "/appointments", label: "Appointments" },
     // { path: "/reports", label: "Reports" },
@@ -80,7 +79,7 @@ const icons = {
   "/admins": UserCog,
   "/orders": ShoppingCart,
   "/reviews": Star,
-  "/blogs": FileText,
+
   "/website": Globe,
   "/products": ShoppingBag,
   "/coupons": Tag,
@@ -149,7 +148,7 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(({ isMobileOpen = false
               <img
                 src="/lovable-uploads/logo.png"
                 alt="Logo"
-                className="h-12"
+                className="h-12 ms-4"
               />
             ) : (
               <Stethoscope className="h-8 w-8 text-health-primary" />

@@ -39,7 +39,8 @@ const DoctorManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [doctorToDelete, setDoctorToDelete] = useState<any>(null);
-  const [doctorsList, setDoctorsList] = useState<any>();
+  const [doctorsList, setDoctorsList] = useState<any>([]);
+  const [filteredDoctors, setFilteredDoctors] = useState<any>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -51,7 +52,7 @@ const DoctorManagement = () => {
   const handleFetchData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/admin/all-doctor-Data",
+        "https://apihair.txogavideo.in/api/v1/admin/all-doctor-Data",
         {
           method: "GET",
         }
@@ -67,6 +68,18 @@ const DoctorManagement = () => {
   useEffect(() => {
     handleFetchData();
   }, []);
+
+  // Filter doctors based on search query
+  useEffect(() => {
+    const filtered = doctorsList.filter(
+      (doctor: any) =>
+        doctor.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        doctor.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        doctor.phone?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredDoctors(filtered);
+    setCurrentPage(1); // Reset to first page on search
+  }, [searchQuery, doctorsList]);
 
   const handleEditDoctor = (doctor: any) => {
     navigate("/add-doctor", {
@@ -86,7 +99,7 @@ const DoctorManagement = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/admin/delete-doctor`,
+        `https://apihair.txogavideo.in/api/v1/admin/delete-doctor`,
         {
           method: "DELETE",
           headers: {
@@ -116,10 +129,10 @@ const DoctorManagement = () => {
     }
   };
 
-  const totalDoctors = doctorsList?.length || 0;
+  const totalDoctors = filteredDoctors.length || 0;
   const totalPages = Math.ceil(totalDoctors / rowsPerPage);
 
-  const paginatedDoctors = doctorsList?.slice(
+  const paginatedDoctors = filteredDoctors.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
@@ -185,36 +198,6 @@ const DoctorManagement = () => {
                     )}`}{" "}
                 of {totalDoctors}
               </span>
-              <button
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
-                className="px-2"
-              >
-                {"|<"}
-              </button>
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="px-2"
-              >
-                {"<"}
-              </button>
-              <button
-                onClick={() =>
-                  setCurrentPage(prev => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages}
-                className="px-2"
-              >
-                {">"}
-              </button>
-              <button
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
-                className="px-2"
-              >
-                {">|"}
-              </button>
             </div>
           </div>
 
@@ -230,13 +213,14 @@ const DoctorManagement = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedDoctors
-                ?.filter((doctor: any) =>
-                  doctor.name
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase().trim())
-                )
-                .map((doctor: any) => (
+              {paginatedDoctors.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center">
+                    No doctors found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                paginatedDoctors.map((doctor: any) => (
                   <TableRow key={doctor._id}>
                     <TableCell className="font-medium">{doctor.name}</TableCell>
                     <TableCell>{doctor.degree}</TableCell>
@@ -276,7 +260,8 @@ const DoctorManagement = () => {
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                ))
+              )}
             </TableBody>
           </Table>
 

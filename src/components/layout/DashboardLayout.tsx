@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
+import { Toaster } from "@/components/ui/toaster";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -45,6 +46,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         />
         <main className="flex-1 p-6 overflow-y-auto">{children}</main>
       </div>
+      <Toaster />
     </div>
   );
 };

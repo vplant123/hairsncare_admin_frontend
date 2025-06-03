@@ -31,7 +31,6 @@ import NotFound from "./pages/NotFound";
 import HairTest from "./pages/HairTest";
 import Admins from "./pages/Admins";
 import Reviews from "./pages/Reviews";
-import Blogs from "./pages/Blogs";
 import SignIn from "./pages/Singin";
 import Invoice from "./pages/Invoice";
 import ContactUs from "./pages/ContactUs";

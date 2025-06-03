@@ -24,7 +24,7 @@ import { toast } from "@/components/ui/use-toast";
 const AppointmentManagement = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
-   const [selectedTest, setSelectedTest] = useState(null);
+  const [selectedTest, setSelectedTest] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -60,7 +60,7 @@ const AppointmentManagement = () => {
         }
 
         const response = await fetch(
-          "http://localhost:5000/api/v1/doctor/get-all-appointment",
+          "https://apihair.txogavideo.in/api/v1/doctor/get-all-appointment",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -96,7 +96,7 @@ const AppointmentManagement = () => {
   }, []); // Empty dependency array means this effect runs once on mount
 
   // Filter appointments based on search query
-  const filteredAppointments = appointments.filter(appointment =>
+  const filteredAppointments = appointments.filter((appointment) =>
     // Check if userId and fullname exist before accessing
     appointment.userId?.fullname
       .toLowerCase()
@@ -132,7 +132,7 @@ const AppointmentManagement = () => {
                   placeholder="Search appointments..."
                   className="px-10"
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
@@ -144,13 +144,13 @@ const AppointmentManagement = () => {
               <span>Rows per page&nbsp;</span>
               <select
                 value={rowsPerPage}
-                onChange={e => {
+                onChange={(e) => {
                   setRowsPerPage(Number(e.target.value));
                   setCurrentPage(1); // Reset to first page
                 }}
                 className="border rounded px-2 py-1"
               >
-                {[5, 10, 25, 50].map(num => (
+                {[5, 10, 25, 50].map((num) => (
                   <option key={num} value={num}>
                     {num}
                   </option>
@@ -167,15 +167,15 @@ const AppointmentManagement = () => {
                     )}`}{" "}
                 of {totalAppointments}
               </span>
-              <button
+              {/* <button
                 onClick={() => setCurrentPage(1)}
                 disabled={currentPage === 1}
                 className="px-2"
               >
                 {"|<"}
-              </button>
+              </button> */}
               <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 className="px-2"
               >
@@ -183,20 +183,20 @@ const AppointmentManagement = () => {
               </button>
               <button
                 onClick={() =>
-                  setCurrentPage(prev => Math.min(prev + 1, totalPages))
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
                 className="px-2"
               >
                 {">"}
               </button>
-              <button
+              {/* <button
                 onClick={() => setCurrentPage(totalPages)}
                 disabled={currentPage === totalPages}
                 className="px-2"
               >
                 {">|"}
-              </button>
+              </button> */}
             </div>
           </div>
 
@@ -234,7 +234,7 @@ const AppointmentManagement = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paginatedAppointments.map(appointment => (
+                  paginatedAppointments.map((appointment) => (
                     <TableRow key={appointment._id}>
                       <TableCell className="font-medium">
                         {appointment.userId?.fullname || "N/A"}
@@ -281,23 +281,16 @@ const AppointmentManagement = () => {
                                 : "bg-blue-500 text-white"
                             }
                             onClick={() => {
-                              if (
-                                appointment.appointmentType ===
-                                  "prescription" &&
-                                !appointment.followupOf
-                              ) {
-                                // Add your generate report logic here
-                                toast({
-                                  title: "Generate Report",
-                                  description:
-                                    "Report generation functionality will be implemented here",
-                                });
-                                return;
-                              }
+                              const userId = appointment.userId?._id;
+                              const appointmentId = appointment._id;
                               const testId =
-                                appointment.followupOf ||
-                                appointment.hairTestId;
-                              if (!appointment.userId?._id || !testId) {
+                                appointment.appointmentType ===
+                                "prescription_only"
+                                  ? appointment.orderId
+                                  : appointment.followupOf ||
+                                    appointment.hairTestId;
+
+                              if (!userId || !testId) {
                                 toast({
                                   variant: "destructive",
                                   title: "Error",
@@ -306,8 +299,16 @@ const AppointmentManagement = () => {
                                 });
                                 return;
                               }
+
+                              const baseUrl = "https://report.txogavideo.in";
+                              const path =
+                                appointment.appointmentType ===
+                                "prescription_only"
+                                  ? "Prescription-Only"
+                                  : "patient-test-result";
+
                               window.open(
-                                `http://localhost:5173/patient-test-result/${appointment.userId?._id},${appointment._id},${appointment.hairTestId}`,
+                                `${baseUrl}/${path}/${userId},${appointmentId},${testId}`,
                                 "_blank"
                               );
                             }}
@@ -315,9 +316,14 @@ const AppointmentManagement = () => {
                             {appointment?.status === "completed"
                               ? "View"
                               : appointment.appointmentType ===
-                                    "prescription" && !appointment.followupOf
-                                ? "Generate Report"
-                                : "Test"}
+                                  "prescription_only"
+                                ? "Prescribe"
+                                : appointment.appointmentType ===
+                                    "hairTest_with_prescription"
+                                  ? "Test & Prescribe"
+                                  : appointment.followupOf
+                                    ? "Followup"
+                                    : "Test Again"}
                           </Button>
                         ) : (
                           "N/A"

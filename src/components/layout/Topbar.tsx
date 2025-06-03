@@ -201,7 +201,7 @@ const Topbar: React.FC<TopbarProps> = ({
             </div>
             <DropdownMenuSeparator />
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -228,7 +228,7 @@ const Topbar: React.FC<TopbarProps> = ({
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={handleLogout}
-              className="text-health-danger focus:text-health-danger focus:bg-health-danger/10"
+              className="text-health-danger focus:text-health-danger focus:bg-health-danger/10 hover:text-red-700 cursor-pointer"
             >
               <LogOut className="h-4 w-4 mr-2" />
               Log out
@@ -238,7 +238,7 @@ const Topbar: React.FC<TopbarProps> = ({
       </div>
 
       {/* Profile Modal */}
-      {/* <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+      <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
         <DialogContent className="w-[95%] max-w-[425px] p-4 sm:p-6 h-auto max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-xl sm:text-2xl text-center sm:text-left">
