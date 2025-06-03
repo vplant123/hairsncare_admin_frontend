@@ -324,13 +324,13 @@ const Invoice = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-6 w-full">
+      <div className="w-full">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Invoices</h1>
           <Button onClick={() => navigate("/addinvoices")}>Add Invoice</Button>
         </div>
 
-        <div className="overflow-x-auto rounded-lg shadow bg-white">
+        <div className="overflow-x-auto rounded-lg shadow bg-white p-6">
           <Table>
             <TableHeader>
               <TableRow>

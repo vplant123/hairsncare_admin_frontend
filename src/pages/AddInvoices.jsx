@@ -20,6 +20,8 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Trash2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { ClassNames } from "@emotion/react";
 
 // Calculate total for an item based on quantity, rate, gst, and discount
 const calculateItemTotal = item => {
@@ -46,6 +48,10 @@ const AddInvoice = () => {
   const [selectedDoctor, setSelectedDoctor] = useState("");
   const [productList, setProductList] = useState([]);
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // State for managing total amount (adapted from user's code)
+  const [totalAmt, setTotalAmt] = useState(0);
 
   // State for managing total amount (adapted from user's code)
   const [totalAmt, setTotalAmt] = useState(0);
@@ -180,7 +186,12 @@ const AddInvoice = () => {
   // Prepare the invoice data and send it to the backend API
   const handleSave = async () => {
     if (!selectedDoctor) {
-      alert("Please select a doctor.");
+      toast({
+        title: "Warning",
+        description: "Please select a doctor before saving the invoice.",
+        variant: "destructive",
+        className: "bg-white text-black",
+      });
       return;
     }
 

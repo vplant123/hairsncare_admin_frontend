@@ -519,7 +519,7 @@ const EditProduct = () => {
                     />
                   </div>
                 </div>
-              ))}
+              ))}  <br />
               <Button onClick={addBenefit} className="mt-2">
                 Add Benefit
               </Button>
@@ -564,7 +564,7 @@ const EditProduct = () => {
                     />
                   </div>
                 </div>
-              ))}
+              ))} <br />
               <Button onClick={addIngredient} className="mt-2">
                 Add Ingredient
               </Button>
@@ -605,7 +605,7 @@ const EditProduct = () => {
                     />
                   </div>
                 </div>
-              ))}
+              ))} <br />
               <Button onClick={addFaq} className="mt-2">
                 Add FAQ
               </Button>
@@ -647,7 +647,7 @@ const EditProduct = () => {
                     className="hover:border-primary transition-colors"
                   />
                 </div>
-              ))}
+              ))} <br />
               <Button onClick={addKit} className="mt-2">
                 Add Kit Item
               </Button>
@@ -677,7 +677,7 @@ const EditProduct = () => {
                     className="hover:border-primary transition-colors"
                   />
                 </div>
-              ))}
+              ))} <br />
               <Button onClick={addFilter} className="mt-2">
                 Add Filter
               </Button>
@@ -934,28 +934,60 @@ const EditProduct = () => {
                 onChange={handleImageUpload}
                 className="hover:border-primary transition-colors cursor-pointer"
               />
+              
+              {/* Selected Images Preview */}
               {imageFiles.length > 0 && (
-                <div className="mt-2">
-                  <p>Selected Images:</p>
-                  <ul className="list-disc pl-5">
+                <div className="mt-4">
+                  <h3 className="text-sm font-medium mb-2">Selected Images:</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {imageFiles.map((file, index) => (
-                      <li key={index}>{file.name}</li>
+                      <div key={index} className="relative group">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`Selected ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-md"
+                        />
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => {
+                            setImageFiles(prev => prev.filter((_, i) => i !== index));
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               )}
+
+              {/* Existing Images Preview */}
               {src.length > 0 && (
-                <div className="mt-2">
-                  <p>Existing Images:</p>
-                  <ul className="list-disc pl-5">
+                <div className="mt-4">
+                  <h3 className="text-sm font-medium mb-2">Existing Images:</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {src.map((url, index) => (
-                      <li key={index}>
-                        <a href={url} target="_blank" rel="noopener noreferrer">
-                          Image {index + 1}
-                        </a>
-                      </li>
+                      <div key={index} className="relative group">
+                        <img
+                          src={url}
+                          alt={`Existing ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-md"
+                        />
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => {
+                            setSrc(prev => prev.filter((_, i) => i !== index));
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               )}
             </div>

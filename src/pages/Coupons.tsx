@@ -485,6 +485,25 @@ const Coupons = () => {
       const couponToToggle = coupons.find((c) => c._id === couponId);
       if (!couponToToggle) throw new Error("Coupon not found");
 
+      // Check if trying to activate an expired coupon
+      if (!couponToToggle.isActive) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day
+        const validityDate = new Date(couponToToggle.validity);
+        validityDate.setHours(0, 0, 0, 0); // Reset time to start of day
+
+        if (validityDate < today) {
+          toast({
+            title: "Error",
+            description: "Cannot activate expired coupon. Please update the validity date first.",
+            variant: "destructive",
+            className: "bg-red-50 border-red-200",
+            duration: 5000,
+          });
+          return;
+        }
+      }
+
       const updatedCoupon = {
         ...couponToToggle,
         isActive: !couponToToggle.isActive,

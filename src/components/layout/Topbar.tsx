@@ -201,7 +201,7 @@ const Topbar: React.FC<TopbarProps> = ({
             </div>
             <DropdownMenuSeparator />
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -167,13 +167,13 @@ const AppointmentManagement = () => {
                     )}`}{" "}
                 of {totalAppointments}
               </span>
-              <button
+              {/* <button
                 onClick={() => setCurrentPage(1)}
                 disabled={currentPage === 1}
                 className="px-2"
               >
                 {"|<"}
-              </button>
+              </button> */}
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
@@ -190,13 +190,13 @@ const AppointmentManagement = () => {
               >
                 {">"}
               </button>
-              <button
+              {/* <button
                 onClick={() => setCurrentPage(totalPages)}
                 disabled={currentPage === totalPages}
                 className="px-2"
               >
                 {">|"}
-              </button>
+              </button> */}
             </div>
           </div>
 

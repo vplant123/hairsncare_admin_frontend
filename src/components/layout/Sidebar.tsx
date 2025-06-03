@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef } from "react";
+ import React, { useState, useEffect, forwardRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils"; // utility for conditional classes
 import {
@@ -148,7 +148,7 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(({ isMobileOpen = false
               <img
                 src="/lovable-uploads/logo.png"
                 alt="Logo"
-                className="h-12"
+                className="h-12 ms-4"
               />
             ) : (
               <Stethoscope className="h-8 w-8 text-health-primary" />

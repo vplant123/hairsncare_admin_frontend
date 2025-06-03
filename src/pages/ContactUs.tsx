@@ -11,9 +11,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 interface ContactRow {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   phone: string;
@@ -24,6 +31,8 @@ interface ContactRow {
 const ContactUs: React.FC = () => {
   const [rows, setRows] = useState<ContactRow[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [contactToDelete, setContactToDelete] = useState<string | null>(null);
 
   const fetchContactDetails = async () => {
     setIsLoading(true);
@@ -39,7 +48,7 @@ const ContactUs: React.FC = () => {
       }
 
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/contactDetails",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/contactDetails`,
         {
           method: "POST",
           headers: {
@@ -61,6 +70,7 @@ const ContactUs: React.FC = () => {
         title: "Error",
         description: "Failed to fetch contact details. Please try again.",
         variant: "destructive",
+        className: "bg-white",
       });
     } finally {
       setIsLoading(false);
@@ -71,20 +81,71 @@ const ContactUs: React.FC = () => {
     fetchContactDetails();
   }, []);
 
-  const deleteRow = async (id: string) => {
+  const handleDeleteClick = (id: string) => {
+    setContactToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!contactToDelete) return;
+
     try {
-      // Add your delete API call here if needed
-      setRows(rows => rows.filter(row => row.id !== id));
-      toast({
-        title: "Success",
-        description: "Contact deleted successfully.",
-      });
-    } catch (error) {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast({
+          title: "Authentication Error",
+          description: "Please login to continue.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/deleteContact`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: contactToDelete }),
+        }
+      );
+      console.log(contactToDelete);
+      const data = await response.json();
+      console.log("Delete response:", data);
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to delete contact");
+      }
+
+      if (data.success) {
+        // Remove the deleted contact from the state
+        setRows(prevRows =>
+          prevRows.filter(row => row._id !== contactToDelete)
+        );
+
+        toast({
+          title: "Success",
+          description: "Contact deleted successfully.",
+          className: "bg-white",
+        });
+        fetchContactDetails();
+      } else {
+        throw new Error(data.message || "Failed to delete contact");
+      }
+    } catch (error: any) {
+      console.error("Error deleting contact:", error);
       toast({
         title: "Error",
-        description: "Failed to delete contact. Please try again.",
+        description:
+          error.message || "Failed to delete contact. Please try again.",
         variant: "destructive",
+        className: "bg-white",
       });
+    } finally {
+      setDeleteDialogOpen(false);
+      setContactToDelete(null);
     }
   };
 
@@ -116,17 +177,17 @@ const ContactUs: React.FC = () => {
                 </TableRow>
               ) : rows.length ? (
                 rows.map(row => (
-                  <TableRow key={row.id}>
+                  <TableRow key={row._id}>
                     <TableCell>{row.name}</TableCell>
                     <TableCell>{row.email}</TableCell>
                     <TableCell>{row.phone}</TableCell>
-                    <TableCell>{row.msg}</TableCell>
+                    <TableCell>{row.message}</TableCell>
                     <TableCell>{row.method}</TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => deleteRow(row.id)}
+                        onClick={() => handleDeleteClick(row._id)}
                         className="text-destructive hover:text-destructive hover:bg-destructive/10"
                         aria-label="Delete"
                       >
@@ -148,6 +209,41 @@ const ContactUs: React.FC = () => {
             </TableBody>
           </Table>
         </div>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-semibold text-red-600">
+                Delete Contact
+              </DialogTitle>
+            </DialogHeader>
+            <div className="py-6 text-center">
+              <p className="text-lg font-medium mb-2">
+                Are you sure you want to delete this contact?
+              </p>
+            </div>
+            <DialogFooter className="flex justify-center gap-4 sm:justify-center">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setDeleteDialogOpen(false);
+                  setContactToDelete(null);
+                }}
+                className="w-24"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={confirmDelete}
+                className="w-24 bg-red-500 hover:bg-red-600  text-white"
+              >
+                Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );
