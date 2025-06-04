@@ -73,17 +73,17 @@ const Topbar: React.FC<TopbarProps> = ({
         mobile: userProfile.mobile || "",
       };
       console.log(JSON.stringify(newProfileData, null, 2));
-      
+
       setProfileData(prev => ({
         ...prev,
-        ...newProfileData
+        ...newProfileData,
       }));
     }
   }, [userProfile]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setProfileData((prev) => ({ ...prev, [name]: value }));
+    setProfileData(prev => ({ ...prev, [name]: value }));
   };
 
   const maskPassword = (password: string) => {
@@ -130,7 +130,7 @@ const Topbar: React.FC<TopbarProps> = ({
     });
 
     // Reset form and close modal
-    setProfileData((prev) => ({
+    setProfileData(prev => ({
       ...prev,
       password: "",
       newPassword: "",
@@ -165,10 +165,6 @@ const Topbar: React.FC<TopbarProps> = ({
             <Menu className="h-5 w-5" />
           )}
         </Button>
-
-        {/* Desktop Search */}
-
-        {/* Mobile Search Icon */}
       </div>
 
       <div className="flex items-center space-x-4">
@@ -201,7 +197,7 @@ const Topbar: React.FC<TopbarProps> = ({
             </div>
             <DropdownMenuSeparator />
           </DropdownMenuContent>
-        </DropdownMenu> */}
+        </DropdownMenu>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -210,8 +206,12 @@ const Topbar: React.FC<TopbarProps> = ({
                 <User className="h-4 w-4 text-white" />
               </div>
               <div className="hidden md:block text-left">
-                <p className="text-sm font-medium">{userProfile?.fullname || "User"}</p>
-                <p className="text-xs text-muted-foreground">{userProfile?.role || "User"}</p>
+                <p className="text-sm font-medium">
+                  {userProfile?.fullname || "User"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {userProfile?.role || "User"}
+                </p>
               </div>
             </Button>
           </DropdownMenuTrigger>
