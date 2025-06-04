@@ -53,9 +53,6 @@ const AddInvoice = () => {
   // State for managing total amount (adapted from user's code)
   const [totalAmt, setTotalAmt] = useState(0);
 
-  // State for managing total amount (adapted from user's code)
-  const [totalAmt, setTotalAmt] = useState(0);
-
   // Fetch Doctor Data
   const handleDoctorData = async () => {
     try {
@@ -91,7 +88,7 @@ const AddInvoice = () => {
   // New handleItem logic based on user's code, refined for accuracy
   const handleItemChange = (ind, value, fieldName) => {
     console.log("====>>>", ind, value, fieldName);
-    const tempItems = invoiceItems?.map((item) => ({ ...item }));
+    const tempItems = invoiceItems?.map(item => ({ ...item }));
     const currentItem = tempItems[ind];
 
     // Update the changed field
@@ -107,9 +104,14 @@ const AddInvoice = () => {
         // Assuming product discount from API is an amount. Adjust if it's a percentage.
         currentItem["discount"] = parseFloat(selectedProduct.discount || 0);
         // Calculate discount percentage based on the populated discount amount and rate
-        currentItem["discountPercent"] = currentItem["rate"] > 0 ? ((currentItem["discount"] / currentItem["rate"]) * 100)?.toFixed(2) : 0;
+        currentItem["discountPercent"] =
+          currentItem["rate"] > 0
+            ? ((currentItem["discount"] / currentItem["rate"]) * 100)?.toFixed(
+                2
+              )
+            : 0;
       } else {
-         // Reset values if product not found or selection cleared
+        // Reset values if product not found or selection cleared
         currentItem["description"] = "";
         currentItem["rate"] = 0;
         currentItem["gst"] = 0;
@@ -120,18 +122,18 @@ const AddInvoice = () => {
 
     // Recalculate discount amount if discountPercent changes (applies after direct input or product select)
     if (fieldName === "discountPercent" || fieldName === "rate") {
-       const rate = parseFloat(currentItem["rate"] || 0);
-       const discountPercent = parseFloat(currentItem["discountPercent"] || 0);
-       currentItem["discount"] = ((rate * discountPercent) / 100)?.toFixed(2);
+      const rate = parseFloat(currentItem["rate"] || 0);
+      const discountPercent = parseFloat(currentItem["discountPercent"] || 0);
+      currentItem["discount"] = ((rate * discountPercent) / 100)?.toFixed(2);
     }
 
     // Recalculate discount percentage if discount amount changes (applies after direct input or product select)
-     if (fieldName === "discount" || fieldName === "rate") {
-         const rate = parseFloat(currentItem["rate"] || 0);
-         const discountAmount = parseFloat(currentItem["discount"] || 0);
-         currentItem["discountPercent"] = rate > 0 ? ((discountAmount / rate) * 100)?.toFixed(2) : 0;
-     }
-
+    if (fieldName === "discount" || fieldName === "rate") {
+      const rate = parseFloat(currentItem["rate"] || 0);
+      const discountAmount = parseFloat(currentItem["discount"] || 0);
+      currentItem["discountPercent"] =
+        rate > 0 ? ((discountAmount / rate) * 100)?.toFixed(2) : 0;
+    }
 
     // Recalculate total after any relevant field changes
     const quantity = parseFloat(currentItem["quantity"] || 0);
@@ -150,18 +152,18 @@ const AddInvoice = () => {
 
     // Recalculate grand total
     let grandTotal = 0;
-    tempItems?.forEach((item) => {
+    tempItems?.forEach(item => {
       grandTotal += parseFloat(item["total"] || 0);
     });
     setTotalAmt(grandTotal);
   };
 
   // New deleteItem logic based on user's code
-  const deleteItem = (ind) => {
+  const deleteItem = ind => {
     const temp = invoiceItems?.filter((item, i) => i !== ind);
-     // Recalculate grand total after deletion
+    // Recalculate grand total after deletion
     let grandTotal = 0;
-    temp?.forEach((ity) => {
+    temp?.forEach(ity => {
       grandTotal += parseFloat(ity["total"] || 0); // Ensure total is a number
     });
     setTotalAmt(grandTotal);
