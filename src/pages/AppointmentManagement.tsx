@@ -277,8 +277,8 @@ const AppointmentManagement = () => {
                             size="sm"
                             className={
                               appointment?.status === "completed"
-                                ? "bg-green-500 text-white"
-                                : "bg-blue-500 text-white"
+                                ? "bg-green-500 text-white hover:bg-green-600"
+                                : "bg-blue-500 text-white hover:bg-blue-600"
                             }
                             onClick={() => {
                               const userId = appointment.userId?._id;
@@ -300,12 +300,14 @@ const AppointmentManagement = () => {
                                 return;
                               }
 
-                              const baseUrl = "https://report.txogavideo.in";
+                              const baseUrl = "http://localhost:5174";
                               const path =
                                 appointment.appointmentType ===
                                 "prescription_only"
                                   ? "Prescription-Only"
-                                  : "patient-test-result";
+                                  : appointment.followupOf
+                                    ? "followup/patient-test-result"
+                                    : "patient-test-result";
 
                               window.open(
                                 `${baseUrl}/${path}/${userId},${appointmentId},${testId}`,
