@@ -62,7 +62,7 @@ const EditProduct = () => {
 
     try {
       const imageResponse = await fetch(
-        `https://apihair.txogavideo.in/api/v1/hair-tests/upload-image`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/hair-tests/upload-image`,
         {
           method: "POST",
           headers: {
@@ -312,7 +312,7 @@ const EditProduct = () => {
 
       // Send the product data as JSON
       const response = await fetch(
-        `https://apihair.txogavideo.in/api/v1/admin/update-product`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/update-product`,
         {
           method: "PUT",
           headers: {

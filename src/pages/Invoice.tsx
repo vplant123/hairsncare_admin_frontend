@@ -268,7 +268,7 @@ const Invoice = () => {
   const handleFetchData = async () => {
     try {
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/getInvoices",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/getInvoices`,
         {
           method: "POST",
           headers: {

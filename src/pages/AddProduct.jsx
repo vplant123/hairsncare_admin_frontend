@@ -200,7 +200,7 @@ function AddProduct() {
 
     try {
       const imageResponse = await fetch(
-        `https://apihair.txogavideo.in/api/v1/hair-tests/upload-image`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/hair-tests/upload-image`,
         {
           method: "POST",
           headers: {
@@ -315,7 +315,7 @@ function AddProduct() {
       // Send data to API
       console.log("Sending request to API...");
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/addproduct",
+          `${import.meta.env.VITE_BASE_URL}/api/v1/admin/addproduct`,
         {
           method: isEditMode ? "PUT" : "POST",
           headers: {

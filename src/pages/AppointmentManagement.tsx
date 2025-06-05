@@ -60,7 +60,7 @@ const AppointmentManagement = () => {
         }
 
         const response = await fetch(
-          "https://apihair.txogavideo.in/api/v1/doctor/get-all-appointment",
+          `${import.meta.env.VITE_BASE_URL}/api/v1/doctor/get-all-appointment`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -258,13 +258,14 @@ const AppointmentManagement = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            className={
-                              appointment.status === "completed"
-                                ? "bg-green-500 text-white"
-                                : "bg-yellow-500 text-white"
-                            }
+                            className="w-24 h-8 text-xs font-medium"
+                            style={{
+                              backgroundColor: appointment.status === "completed" ? "#22c55e" : "#eab308",
+                              color: "white",
+                              border: "none"
+                            }}
                           >
-                            {appointment.status}
+                            {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
                           </Button>
                         ) : (
                           "N/A"
@@ -275,11 +276,12 @@ const AppointmentManagement = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            className={
-                              appointment?.status === "completed"
-                                ? "bg-green-500 text-white hover:bg-green-600"
-                                : "bg-blue-500 text-white hover:bg-blue-600"
-                            }
+                            className="w-32 h-8 text-xs font-medium"
+                            style={{
+                              backgroundColor: appointment?.status === "completed" ? "#22c55e" : "#3b82f6",
+                              color: "white",
+                              border: "none"
+                            }}
                             onClick={() => {
                               const userId = appointment.userId?._id;
                               const appointmentId = appointment._id;
@@ -300,7 +302,7 @@ const AppointmentManagement = () => {
                                 return;
                               }
 
-                              const baseUrl = "http://localhost:5174";
+                              const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
                               const path =
                                 appointment.appointmentType ===
                                 "prescription_only"
@@ -325,7 +327,7 @@ const AppointmentManagement = () => {
                                   ? "Test & Prescribe"
                                   : appointment.followupOf
                                     ? "Followup"
-                                    : "Test Again"}
+                                    : "Test "}
                           </Button>
                         ) : (
                           "N/A"

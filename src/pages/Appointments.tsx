@@ -56,7 +56,7 @@ const Appointments = () => {
         }
 
         const response = await fetch(
-          "https://apihair.txogavideo.in/api/v1/doctor/get-all-appointment",
+          `${import.meta.env.VITE_BASE_URL}/api/v1/doctor/get-all-appointment`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

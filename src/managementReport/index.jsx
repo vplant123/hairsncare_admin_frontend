@@ -60,7 +60,7 @@ export default function ManagementReport(props) {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `https://apihair.txogavideo.in/api/v1/doctor/getPrescription?appointmentId=${params.id}`
+          `${import.meta.env.VITE_BASE_URL}/api/v1/doctor/getPrescription?appointmentId=${params.id}`
         );
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);

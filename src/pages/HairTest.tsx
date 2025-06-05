@@ -1337,7 +1337,7 @@ const HairTest = () => {
                       className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
                       onClick={() =>
                         window.open(
-                          `https://report.txogavideo.in/doctor-analyse-report/${selectedTest.appointments[0]._id}`,
+                          `${import.meta.env.VITE_FRONTEND_URL}/doctor-analyse-report/${selectedTest.appointments[0]._id}`,
                           "_blank"
                         )
                       }
@@ -1350,7 +1350,7 @@ const HairTest = () => {
                       className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
                       onClick={() =>
                         window.open(
-                          `https://report.txogavideo.in/management-report/${selectedTest.appointments[0]._id}`,
+                          `${import.meta.env.VITE_FRONTEND_URL}/management-report/${selectedTest.appointments[0]._id}`,
                           "_blank"
                         )
                       }
@@ -1363,7 +1363,7 @@ const HairTest = () => {
                       className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
                       onClick={() =>
                         window.open(
-                          `https://report.txogavideo.in/doctor/report/${selectedTest.appointments[0]._id}`,
+                          `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${selectedTest.appointments[0]._id}`,
                           "_blank"
                         )
                       }
@@ -1393,7 +1393,7 @@ const HairTest = () => {
                   <Button
                     className="w-full sm:w-auto bg-primary hover:bg-health-primary/90 text-white px-6 transition-colors duration-200 flex items-center justify-center gap-2"
                     onClick={() => {
-                      const baseUrl = "https://report.txogavideo.in";
+                      const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
                       const path = "patient-test-result";
                       const userId = selectedTest?.userId?._id;
                       const appointmentId =
@@ -1897,7 +1897,10 @@ const HairTest = () => {
       </Dialog>
 
       {/* Prescription Modal */}
-      <Dialog open={isPrescriptionModalOpen} onOpenChange={setIsPrescriptionModalOpen}>
+      <Dialog
+        open={isPrescriptionModalOpen}
+        onOpenChange={setIsPrescriptionModalOpen}
+      >
         <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Prescription Details</DialogTitle>
@@ -1912,11 +1915,18 @@ const HairTest = () => {
                 <div>
                   <div className="font-bold text-sm py-2">PRESCRIPTION</div>
                   <div className="mt-1 space-y-0.5 leading-relaxed">
-                    <div className="text-xs">Order ID: {selectedPrescription._id}</div>
                     <div className="text-xs">
-                      Order Date: {new Date(selectedPrescription.createdAt).toLocaleDateString()}
+                      Order ID: {selectedPrescription._id}
                     </div>
-                    <div className="text-xs">Name: {selectedPrescription.userId?.fullname || "N/A"}</div>
+                    <div className="text-xs">
+                      Order Date:{" "}
+                      {new Date(
+                        selectedPrescription.createdAt
+                      ).toLocaleDateString()}
+                    </div>
+                    <div className="text-xs">
+                      Name: {selectedPrescription.userId?.fullname || "N/A"}
+                    </div>
                   </div>
                 </div>
                 <div className="text-right">
@@ -1944,7 +1954,9 @@ const HairTest = () => {
                   <thead className="bg-gray-100">
                     <tr>
                       <th className="py-1 border font-semibold">SL.</th>
-                      <th className="py-1 border font-semibold">MEDICINE NAME</th>
+                      <th className="py-1 border font-semibold">
+                        MEDICINE NAME
+                      </th>
                       <th className="py-1 border font-semibold">BATCH NO</th>
                       {/* <th className="py-1 border font-semibold">EXPIRY DATE</th> */}
                       {/* <th className="py-1 border font-semibold">HSN CODE</th> */}
@@ -1962,19 +1974,33 @@ const HairTest = () => {
                         className={`text-center ${idx % 2 === 0 ? "bg-white" : "bg-gray-100"}`}
                       >
                         <td className="border px-2 py-2">{idx + 1}</td>
-                        <td className="border px-2 py-2">{products.item.name || ""}</td>
-                        <td className="border px-2 py-2">{products.item.batchNo || ""}</td>
+                        <td className="border px-2 py-2">
+                          {products.item.name || ""}
+                        </td>
+                        <td className="border px-2 py-2">
+                          {products.item.batchNo || ""}
+                        </td>
                         {/* <td className="border px-2 py-2">
                           {products.item.expiryDate ? new Date(products.item.expiryDate).toLocaleDateString() : ""}
                         </td> */}
                         {/* <td className="border px-2 py-2">{products.item.hsnCode || ""}</td> */}
-                        <td className="border px-2 py-2">{products.item.quantity || 1}</td>
-                        <td className="border px-2 py-2">{products.item.gst || 0}%</td>
-                        <td className="border px-2 py-2">₹ {products.item.price || 0}</td>
-                        <td className="border px-2 py-2">₹ {products.item.discount || 0}</td>
                         <td className="border px-2 py-2">
-                          ₹ {(
-                            ((products.item.quantity || 1) * (products.item.price || 0)) - 
+                          {products.item.quantity || 1}
+                        </td>
+                        <td className="border px-2 py-2">
+                          {products.item.gst || 0}%
+                        </td>
+                        <td className="border px-2 py-2">
+                          ₹ {products.item.price || 0}
+                        </td>
+                        <td className="border px-2 py-2">
+                          ₹ {products.item.discount || 0}
+                        </td>
+                        <td className="border px-2 py-2">
+                          ₹{" "}
+                          {(
+                            (products.item.quantity || 1) *
+                              (products.item.price || 0) -
                             (products.item.discount || 0)
                           ).toFixed(2)}
                         </td>
@@ -1988,23 +2014,38 @@ const HairTest = () => {
               <div className="flex flex-col md:flex-row justify-between mt-10 gap-2">
                 <div>
                   <div className="text-xs">
-                    Payment Type: <span className="font-semibold">{selectedPrescription.mode || "N/A"}</span>
+                    Payment Type:{" "}
+                    <span className="font-semibold">
+                      {selectedPrescription.mode || "N/A"}
+                    </span>
                   </div>
-                  <div className="mt-1 text-xs">Note: Inclusive of all Taxes</div>
+                  <div className="mt-1 text-xs">
+                    Note: Inclusive of all Taxes
+                  </div>
                 </div>
                 <div className="bg-gray-50 p-2 rounded-md w-full md:w-64 mt-2 md:mt-0 text-xs">
                   <div className="flex justify-between py-1">
                     <span className="font-medium">Total Amount</span>
-                    <span className="font-bold">₹ {selectedPrescription.totalAmount?.toFixed(2) || "0.00"}</span>
+                    <span className="font-bold">
+                      ₹ {selectedPrescription.totalAmount?.toFixed(2) || "0.00"}
+                    </span>
                   </div>
                   <div className="flex justify-between py-1">
                     <span className="font-medium">Delivery Charges</span>
-                    <span className="font-bold">₹ {selectedPrescription.deliveryCharges?.toFixed(2) || "0.00"}</span>
+                    <span className="font-bold">
+                      ₹{" "}
+                      {selectedPrescription.deliveryCharges?.toFixed(2) ||
+                        "0.00"}
+                    </span>
                   </div>
                   <div className="flex justify-between py-1 border-t border-gray-200 mt-1 pt-1">
                     <span className="font-medium">Final Amount</span>
                     <span className="font-bold">
-                      ₹ {(selectedPrescription.totalAmount + (selectedPrescription.deliveryCharges || 0)).toFixed(2)}
+                      ₹{" "}
+                      {(
+                        selectedPrescription.totalAmount +
+                        (selectedPrescription.deliveryCharges || 0)
+                      ).toFixed(2)}
                     </span>
                   </div>
                 </div>
