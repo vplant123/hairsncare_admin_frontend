@@ -168,7 +168,7 @@ const Topbar: React.FC<TopbarProps> = ({
       </div>
 
       <div className="flex items-center space-x-4">
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
@@ -197,7 +197,7 @@ const Topbar: React.FC<TopbarProps> = ({
             </div>
             <DropdownMenuSeparator />
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

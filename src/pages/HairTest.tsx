@@ -130,7 +130,11 @@ const HairTest = () => {
     const email = test.personal?.email?.toLowerCase() || "";
     const phoneNumber = test.personal?.phoneNumber?.toLowerCase() || "";
 
-    return name.includes(query) || email.includes(query) || phoneNumber.includes(query);
+    return (
+      name.includes(query) ||
+      email.includes(query) ||
+      phoneNumber.includes(query)
+    );
   });
 
   // Pagination calculations for All Hair Tests
@@ -142,7 +146,7 @@ const HairTest = () => {
     allCurrentPage * allRowsPerPage
   );
 
-   // Pagination calculations for Pending Tests
+  // Pagination calculations for Pending Tests
   const totalPendingTests = pendingTests.length;
   const totalPendingPages = Math.ceil(totalPendingTests / pendingRowsPerPage);
 
@@ -150,6 +154,9 @@ const HairTest = () => {
     (pendingCurrentPage - 1) * pendingRowsPerPage,
     pendingCurrentPage * pendingRowsPerPage
   );
+
+  const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
+  const [selectedPrescription, setSelectedPrescription] = useState(null);
 
   const handleFetchData = async () => {
     try {
@@ -618,6 +625,30 @@ const HairTest = () => {
     }
   };
 
+  const handleViewPrescription = async (orderId) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/order-details`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ orderId }),
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        setSelectedPrescription(data.data.order);
+        setIsPrescriptionModalOpen(true);
+      }
+    } catch (error) {
+      console.error("Error fetching prescription details:", error);
+      toast.error("Error fetching prescription details");
+    }
+  };
+
   return (
     <DashboardLayout>
       <Toaster />
@@ -694,11 +725,9 @@ const HairTest = () => {
                   </select>
                 </div>
                 <div className="flex items-center gap-1 text-md">
-                   <span className="mr-4 ">
-                     {allCurrentPage} of {totalAllPages}
+                  <span className="mr-4 ">
+                    {allCurrentPage} of {totalAllPages}
                   </span>
-                
-                   
                 </div>
               </div>
 
@@ -815,18 +844,24 @@ const HairTest = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setAllCurrentPage(prev => Math.max(prev - 1, 1))}
+                    onClick={() =>
+                      setAllCurrentPage(prev => Math.max(prev - 1, 1))
+                    }
                     disabled={allCurrentPage === 1 || totalAllPages === 0}
                   >
                     Previous
                   </Button>
-                   <Button
+                  <Button
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setAllCurrentPage(prev => Math.min(prev + 1, totalAllPages))
+                      setAllCurrentPage(prev =>
+                        Math.min(prev + 1, totalAllPages)
+                      )
                     }
-                    disabled={allCurrentPage === totalAllPages || totalAllPages === 0}
+                    disabled={
+                      allCurrentPage === totalAllPages || totalAllPages === 0
+                    }
                   >
                     Next
                   </Button>
@@ -834,7 +869,9 @@ const HairTest = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => setAllCurrentPage(totalAllPages)}
-                    disabled={allCurrentPage === totalAllPages || totalAllPages === 0}
+                    disabled={
+                      allCurrentPage === totalAllPages || totalAllPages === 0
+                    }
                   >
                     Last
                   </Button>
@@ -868,8 +905,8 @@ const HairTest = () => {
                 </div>
               </div>
 
-              {/* Pagination Controls (Top) for Pending Tests - Reverted to native buttons by user */} 
-               <div className="flex flex-col sm:flex-row items-center justify-between my-4">
+              {/* Pagination Controls (Top) for Pending Tests - Reverted to native buttons by user */}
+              <div className="flex flex-col sm:flex-row items-center justify-between my-4">
                 <div className="flex items-center gap-2 mb-4 sm:mb-0">
                   <span className="text-sm font-medium">Rows per page:</span>
                   <select
@@ -888,24 +925,24 @@ const HairTest = () => {
                   </select>
                 </div>
                 <div className="flex items-center gap-1 text-sm">
-                   <span className="mr-4 font-medium">
+                  <span className="mr-4 font-medium">
                     {pendingCurrentPage} of {totalPendingPages}
                   </span>
-                  <button
+                  {/* <button
                     onClick={() => setPendingCurrentPage(1)}
                     disabled={pendingCurrentPage === 1}
                     className="px-3 py-1 border rounded-l-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
                   >
                     First
-                  </button>
-                  <button
+                  </button> */}
+                  {/* <button
                     onClick={() => setPendingCurrentPage(prev => Math.max(prev - 1, 1))}
                     disabled={pendingCurrentPage === 1}
                     className="px-3 py-1 border-t border-b border-r-0 rounded-none disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
                   >
                     Previous
-                  </button>
-                   <button
+                  </button> */}
+                  {/* <button
                     onClick={() =>
                       setPendingCurrentPage(prev => Math.min(prev + 1, totalPendingPages))
                     }
@@ -913,14 +950,14 @@ const HairTest = () => {
                     className="px-3 py-1 border-t border-b border-l-0 rounded-none disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
                   >
                     Next
-                  </button>
-                  <button
+                  </button> */}
+                  {/* <button
                     onClick={() => setPendingCurrentPage(totalPendingPages)}
                     disabled={pendingCurrentPage === totalPendingPages}
                     className="px-3 py-1 border rounded-r-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
                   >
                     Last
-                  </button>
+                  </button> */}
                 </div>
               </div>
 
@@ -998,25 +1035,36 @@ const HairTest = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => setPendingCurrentPage(1)}
-                    disabled={pendingCurrentPage === 1 || totalPendingPages === 0}
+                    disabled={
+                      pendingCurrentPage === 1 || totalPendingPages === 0
+                    }
                   >
                     First
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setPendingCurrentPage(prev => Math.max(prev - 1, 1))}
-                    disabled={pendingCurrentPage === 1 || totalPendingPages === 0}
+                    onClick={() =>
+                      setPendingCurrentPage(prev => Math.max(prev - 1, 1))
+                    }
+                    disabled={
+                      pendingCurrentPage === 1 || totalPendingPages === 0
+                    }
                   >
                     Previous
                   </Button>
-                   <Button
+                  <Button
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setPendingCurrentPage(prev => Math.min(prev + 1, totalPendingPages))
+                      setPendingCurrentPage(prev =>
+                        Math.min(prev + 1, totalPendingPages)
+                      )
                     }
-                    disabled={pendingCurrentPage === totalPendingPages || totalPendingPages === 0}
+                    disabled={
+                      pendingCurrentPage === totalPendingPages ||
+                      totalPendingPages === 0
+                    }
                   >
                     Next
                   </Button>
@@ -1024,7 +1072,10 @@ const HairTest = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => setPendingCurrentPage(totalPendingPages)}
-                    disabled={pendingCurrentPage === totalPendingPages || totalPendingPages === 0}
+                    disabled={
+                      pendingCurrentPage === totalPendingPages ||
+                      totalPendingPages === 0
+                    }
                   >
                     Last
                   </Button>
@@ -1065,6 +1116,7 @@ const HairTest = () => {
                     <TableHead>Delivery Status</TableHead>
                     <TableHead>Total Amount</TableHead>
                     <TableHead>Order Date</TableHead>
+                    <TableHead>View Prescription</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -1115,6 +1167,17 @@ const HairTest = () => {
                         {order.createdAt
                           ? new Date(order.createdAt).toLocaleDateString()
                           : "N/A"}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center gap-1 text-health-primary"
+                          onClick={() => handleViewPrescription(order._id)}
+                        >
+                          <Eye className="h-3 w-3" />
+                          <span>View Prescription</span>
+                        </Button>
                       </TableCell>
                       <TableCell>
                         <Button
@@ -1333,7 +1396,8 @@ const HairTest = () => {
                       const baseUrl = "https://report.txogavideo.in";
                       const path = "patient-test-result";
                       const userId = selectedTest?.userId?._id;
-                      const appointmentId = selectedTest?.appointments?.[0]?._id;
+                      const appointmentId =
+                        selectedTest?.appointments?.[0]?._id;
                       const testId = selectedTest?._id;
 
                       if (userId && testId && appointmentId) {
@@ -1829,6 +1893,128 @@ const HairTest = () => {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Prescription Modal */}
+      <Dialog open={isPrescriptionModalOpen} onOpenChange={setIsPrescriptionModalOpen}>
+        <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Prescription Details</DialogTitle>
+            <DialogDescription>
+              View prescription information for the order
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedPrescription && (
+            <div className="space-y-6">
+              <div className="flex flex-col md:flex-row justify-between mb-2 gap-2">
+                <div>
+                  <div className="font-bold text-sm py-2">PRESCRIPTION</div>
+                  <div className="mt-1 space-y-0.5 leading-relaxed">
+                    <div className="text-xs">Order ID: {selectedPrescription._id}</div>
+                    <div className="text-xs">
+                      Order Date: {new Date(selectedPrescription.createdAt).toLocaleDateString()}
+                    </div>
+                    <div className="text-xs">Name: {selectedPrescription.userId?.fullname || "N/A"}</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="font-bold text-sm py-2">VPLANT CHEMIST</div>
+                  <div className="max-w-xs text-xs leading-relaxed">
+                    OFFICE NO. 101/A (PART 1), FIRST FLOOR, KANE PLAZA,
+                    <br />
+                    MIND SPACE OFF. MALAD LINK ROAD,
+                    <br />
+                    MALAD WEST, Tal : MALAD WEST ( MUMBAI -ZONE6 )<br />
+                    Pin : 400064
+                    <br />
+                    Email : infor@hairsncares.com
+                    <br />
+                    Website: www.hairsncares.com
+                    <br />
+                    LICENSE No. : MH-MZ6-537527
+                  </div>
+                </div>
+              </div>
+
+              {/* Prescription Table */}
+              <div className="border rounded overflow-x-auto mt-6">
+                <table className="min-w-full text-xs md:text-xs">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="py-1 border font-semibold">SL.</th>
+                      <th className="py-1 border font-semibold">MEDICINE NAME</th>
+                      <th className="py-1 border font-semibold">BATCH NO</th>
+                      {/* <th className="py-1 border font-semibold">EXPIRY DATE</th> */}
+                      {/* <th className="py-1 border font-semibold">HSN CODE</th> */}
+                      <th className="py-1 border font-semibold">QTY.</th>
+                      <th className="py-1 border font-semibold">GST</th>
+                      <th className="py-1 border font-semibold">PRICE</th>
+                      <th className="py-1 border font-semibold">DISCOUNT</th>
+                      <th className="py-1 border font-semibold">AMOUNT</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedPrescription.products?.map((products, idx) => (
+                      <tr
+                        key={products._id || idx}
+                        className={`text-center ${idx % 2 === 0 ? "bg-white" : "bg-gray-100"}`}
+                      >
+                        <td className="border px-2 py-2">{idx + 1}</td>
+                        <td className="border px-2 py-2">{products.item.name || ""}</td>
+                        <td className="border px-2 py-2">{products.item.batchNo || ""}</td>
+                        {/* <td className="border px-2 py-2">
+                          {products.item.expiryDate ? new Date(products.item.expiryDate).toLocaleDateString() : ""}
+                        </td> */}
+                        {/* <td className="border px-2 py-2">{products.item.hsnCode || ""}</td> */}
+                        <td className="border px-2 py-2">{products.item.quantity || 1}</td>
+                        <td className="border px-2 py-2">{products.item.gst || 0}%</td>
+                        <td className="border px-2 py-2">₹ {products.item.price || 0}</td>
+                        <td className="border px-2 py-2">₹ {products.item.discount || 0}</td>
+                        <td className="border px-2 py-2">
+                          ₹ {(
+                            ((products.item.quantity || 1) * (products.item.price || 0)) - 
+                            (products.item.discount || 0)
+                          ).toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Payment Summary */}
+              <div className="flex flex-col md:flex-row justify-between mt-10 gap-2">
+                <div>
+                  <div className="text-xs">
+                    Payment Type: <span className="font-semibold">{selectedPrescription.mode || "N/A"}</span>
+                  </div>
+                  <div className="mt-1 text-xs">Note: Inclusive of all Taxes</div>
+                </div>
+                <div className="bg-gray-50 p-2 rounded-md w-full md:w-64 mt-2 md:mt-0 text-xs">
+                  <div className="flex justify-between py-1">
+                    <span className="font-medium">Total Amount</span>
+                    <span className="font-bold">₹ {selectedPrescription.totalAmount?.toFixed(2) || "0.00"}</span>
+                  </div>
+                  <div className="flex justify-between py-1">
+                    <span className="font-medium">Delivery Charges</span>
+                    <span className="font-bold">₹ {selectedPrescription.deliveryCharges?.toFixed(2) || "0.00"}</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-t border-gray-200 mt-1 pt-1">
+                    <span className="font-medium">Final Amount</span>
+                    <span className="font-bold">
+                      ₹ {(selectedPrescription.totalAmount + (selectedPrescription.deliveryCharges || 0)).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 text-center font-semibold text-xs md:text-sm">
+                Thank you for choosing our services.
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </DashboardLayout>

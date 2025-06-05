@@ -13,8 +13,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
+// import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 
 // Define regex patterns
 const regexPatterns = {
@@ -22,6 +23,7 @@ const regexPatterns = {
   email: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/, // Standard email
   phone: /^(\+\d{0,4})?\d*$/, // Phone: optional + and country code, digits (allows partial input)
   experience: /^[0-9]*$/, // Experience: only digits (allows empty and partial input)
+  password: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, // Password: min 8 chars, at least one letter and one number
 };
 
 const AddDoctor = () => {
@@ -29,11 +31,13 @@ const AddDoctor = () => {
   const location = useLocation();
   const isEdit = location.state?.isEdit;
   const doctorData = location.state?.doctor;
+  const fileInputRef = React.useRef(null); // Add ref for file input
 
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     email: "",
+    password: "",
     address: "",
     degree: "",
     specialist: "",
@@ -52,6 +56,7 @@ const AddDoctor = () => {
   const [awardsImagesPreviews, setAwardsImagesPreviews] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({}); // State to hold field-specific errors
+  const [showPassword, setShowPassword] = useState(false); // Add state for password visibility
 
   useEffect(() => {
     if (isEdit && doctorData) {
@@ -59,6 +64,7 @@ const AddDoctor = () => {
         name: doctorData.name || "",
         phone: doctorData.phone || "",
         email: doctorData.email || "",
+        password: "",
         address: doctorData.address || "",
         degree: doctorData.degree || "",
         specialist: doctorData.specialist || "",
@@ -196,6 +202,7 @@ const AddDoctor = () => {
        email: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
        phone: /^(\+\d{1,4})?\d{10,}$/,
        experience: /^[0-9]+$/,
+       password: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/,
     };
 
     Object.keys(finalRegexPatterns).forEach(fieldName => {
@@ -209,11 +216,23 @@ const AddDoctor = () => {
     if (!formData.qualification.trim()) errors.qualification = "Qualifications are required.";
     // Add other required fields without specific regex here if any
 
+    // Add password validation for new doctors
+    if (!isEdit && !formData.password) {
+      errors.password = "Password is required for new doctors";
+    } else if (formData.password && !finalRegexPatterns.password.test(formData.password)) {
+      errors.password = "Password must be at least 8 characters long and contain at least one letter and one number";
+    }
+
     setFieldErrors(errors);
 
     if (Object.keys(errors).length > 0) {
       console.log("Validation errors detected:", errors);
-      toast.error("Please fix the errors in the form.");
+      toast({
+        title: "Validation Error",
+        description: "Please fix the errors in the form.",
+        variant: "destructive",
+        className:"bg-white"
+      });
       setIsSubmitting(false); // Ensure button is not stuck on 'Saving...'
       return;
     }
@@ -293,28 +312,71 @@ const AddDoctor = () => {
 
       console.log("Response status:", response.status);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Response error text:", errorText);
-        throw new Error(
-          `Server responded with status: ${response.status} - ${errorText}`
-        );
+      // Check if response is HTML or JSON
+      const rawResponse = await response.text();
+      let responseData;
+      
+      try {
+        responseData = JSON.parse(rawResponse);
+      } catch (err) {
+        console.error("Error parsing response:", err);
+        // If parsing fails but status is ok, consider it a success
+        if (response.ok) {
+          toast({
+            title: "Success",
+            description: isEdit ? "Doctor updated successfully!" : "Doctor added successfully!",
+           className:"bg-white"
+          });
+          // Navigate to doctor management with state to trigger refresh
+          navigate("/doctors", { 
+            state: { 
+              refresh: true,
+              message: isEdit ? "Doctor updated successfully!" : "Doctor added successfully!"
+            }
+          });
+          return;
+        }
+        throw new Error("Invalid server response");
       }
 
-      const responseData = await response.json();
+      if (!response.ok) {
+        throw new Error(responseData.message || "Failed to save doctor profile");
+      }
+
       console.log("Response data:", responseData);
 
-      toast.success(
-        isEdit ? "Doctor updated successfully!" : "Doctor added successfully!"
-      );
-      console.log("Navigation to doctor management");
-      navigate("/doctors");
+      toast({
+        title: "Success",
+        description: isEdit ? "Doctor updated successfully!" : "Doctor added successfully!",
+        classNames:"bg-white"
+      });
+      // Navigate to doctor management with state to trigger refresh
+      navigate("/doctors", { 
+        state: { 
+          refresh: true,
+          message: isEdit ? "Doctor updated successfully!" : "Doctor added successfully!"
+        }
+      });
+
     } catch (err) {
       console.error("Submission error caught:", err);
-      toast.error(err.message || "Submission failed. Please try again.");
+      toast({
+        title: "Error",
+        description: err.message || "Failed to save doctor profile. Please try again.",
+        variant: "destructive",
+        className:"bg-white"
+      });
     } finally {
       setIsSubmitting(false);
       console.log("Form submission ended, setIsSubmitting(false)");
+    }
+  };
+
+  const handleRemoveProfileImage = () => {
+    setProfileImage(null);
+    setProfileImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // Clear the file input
     }
   };
 
@@ -359,9 +421,11 @@ const AddDoctor = () => {
                     onChange={handleInputChange}
                     required
                   />
-                   {fieldErrors.name && (
-                     <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>
-                   )}
+                  {fieldErrors.name && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {fieldErrors.name}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -371,14 +435,36 @@ const AddDoctor = () => {
                     type="file"
                     accept="image/*"
                     onChange={e => handleImageUpload(e, "profile")}
+                    ref={fileInputRef}
                   />
                   {(profileImagePreview || (isEdit && doctorData?.image)) && (
-                    <div className="mt-2">
+                    <div className="mt-2 relative inline-block">
                       <img
                         src={profileImagePreview || doctorData?.image}
                         alt="Profile preview"
                         className="w-20 h-20 object-cover rounded"
                       />
+                      <button
+                        type="button"
+                        onClick={handleRemoveProfileImage}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                        title="Remove image"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
                     </div>
                   )}
                 </div>
@@ -393,9 +479,11 @@ const AddDoctor = () => {
                     onChange={handleInputChange}
                     required
                   />
-                   {fieldErrors.phone && (
-                     <p className="text-red-500 text-sm mt-1">{fieldErrors.phone}</p>
-                   )}
+                  {fieldErrors.phone && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {fieldErrors.phone}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -408,20 +496,54 @@ const AddDoctor = () => {
                     onChange={handleInputChange}
                     required
                   />
-                   {fieldErrors.email && (
-                     <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>
-                   )}
+                  {fieldErrors.email && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {fieldErrors.email}
+                    </p>
+                  )}
                 </div>
 
                 <div>
-                  <Label htmlFor="address">Address</Label>
-                  <Input
-                    id="address"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    required
-                  />
+                  <Label htmlFor="password">
+                    Password {!isEdit && "(Required)"}
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      required={!isEdit}
+                      placeholder={
+                        isEdit
+                          ? "Leave blank to keep current password"
+                          : "Enter password"
+                      }
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                  {fieldErrors.password && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {fieldErrors.password}
+                    </p>
+                  )}
+                  {!isEdit && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      Password must be at least 8 characters long and contain at
+                      least one letter and one number
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -457,11 +579,15 @@ const AddDoctor = () => {
                     type="number"
                     value={formData.experience}
                     onChange={handleInputChange}
+                    min={1}
+                    max={100}
                     required
                   />
-                   {fieldErrors.experience && (
-                     <p className="text-red-500 text-sm mt-1">{fieldErrors.experience}</p>
-                   )}
+                  {fieldErrors.experience && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {fieldErrors.experience}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -487,7 +613,16 @@ const AddDoctor = () => {
                 </div>
               </div>
             </div>
-
+            <div>
+              <Label htmlFor="address">Address</Label>
+              <Input
+                id="address"
+                name="address"
+                value={formData.address}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
             <div className="my-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
@@ -497,9 +632,11 @@ const AddDoctor = () => {
                 onChange={handleInputChange}
                 required
               />
-               {fieldErrors.description && (
-                 <p className="text-red-500 text-sm mt-1">{fieldErrors.description}</p>
-               )}
+              {fieldErrors.description && (
+                <p className="text-red-500 text-sm mt-1">
+                  {fieldErrors.description}
+                </p>
+              )}
             </div>
 
             <div className="my-2">
@@ -511,9 +648,11 @@ const AddDoctor = () => {
                 onChange={handleInputChange}
                 required
               />
-               {fieldErrors.qualification && (
-                 <p className="text-red-500 text-sm mt-1">{fieldErrors.qualification}</p>
-               )}
+              {fieldErrors.qualification && (
+                <p className="text-red-500 text-sm mt-1">
+                  {fieldErrors.qualification}
+                </p>
+              )}
             </div>
 
             <div className="my-2">
@@ -524,9 +663,13 @@ const AddDoctor = () => {
                 accept="image/*"
                 onChange={e => handleImageUpload(e, "awards")}
               />
-              {(awardsImagesPreviews.length > 0 || (isEdit && doctorData?.awards?.length > 0)) && (
+              {(awardsImagesPreviews.length > 0 ||
+                (isEdit && doctorData?.awards?.length > 0)) && (
                 <div className="mt-2 flex flex-wrap gap-3">
-                  {(awardsImagesPreviews.length > 0 ? awardsImagesPreviews : doctorData?.awards)?.map((award, index) => (
+                  {(awardsImagesPreviews.length > 0
+                    ? awardsImagesPreviews
+                    : doctorData?.awards
+                  )?.map((award, index) => (
                     <img
                       key={index}
                       src={award}

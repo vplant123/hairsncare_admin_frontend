@@ -30,7 +30,7 @@ import { Edit, Eye, Trash2, Search, UserPlus, Filter, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { Checkbox } from "@/components/ui/checkbox";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 
 const DoctorManagement = () => {
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ const DoctorManagement = () => {
   const handleFetchData = async () => {
     try {
       const response = await fetch(
-        "https://apihair.txogavideo.in/api/v1/admin/all-doctor-Data",
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/all-doctor-Data`,
         {
           method: "GET",
         }
@@ -99,7 +99,7 @@ const DoctorManagement = () => {
 
     try {
       const response = await fetch(
-        `https://apihair.txogavideo.in/api/v1/admin/delete-doctor`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/delete-doctor`,
         {
           method: "DELETE",
           headers: {
@@ -116,7 +116,11 @@ const DoctorManagement = () => {
         throw new Error("Failed to delete doctor");
       }
 
-      toast.success(`Deleted doctor ${doctorToDelete.name} successfully`);
+      toast({
+        title: "Success",
+        description: `Deleted doctor ${doctorToDelete.name} successfully`,
+        className: "bg-white"
+      });
 
       setDoctorsList((prev: any[]) =>
         prev.filter((doc) => doc._id !== doctorToDelete._id)
@@ -125,7 +129,12 @@ const DoctorManagement = () => {
       setDeleteDialogOpen(false);
       setDoctorToDelete(null);
     } catch (error: any) {
-      toast.error(error.message || "Error deleting doctor");
+      toast({
+        title: "Error",
+        description: error.message || "Error deleting doctor",
+        variant: "destructive",
+        className: "bg-white"
+      });
     }
   };
 
@@ -360,7 +369,7 @@ const DoctorManagement = () => {
                         <div className="p-2.5 border rounded-md bg-gray-50/50 flex justify-center">
                           <img
                             src={
-                              selectedUser.profileImage ||
+                              selectedUser.image ||
                               "/placeholder-doctor.jpg"
                             }
                             alt={selectedUser.name}

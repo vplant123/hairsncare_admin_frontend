@@ -102,7 +102,7 @@ function AddProduct() {
     const newErrors = {};
 
     // Required fields per schema
-    const requiredFields = ["name", "price", "description"];
+    const requiredFields = ["name", "price", "description", "expiryDate"];
     requiredFields.forEach(field => {
       if (!formData[field] || formData[field].trim() === "") {
         newErrors[field] = `${field
@@ -110,6 +110,18 @@ function AddProduct() {
           .toLowerCase()} is required`;
       }
     });
+
+    // Validate expiry date
+    if (formData.expiryDate) {
+      const selectedDate = new Date(formData.expiryDate);
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+
+      if (selectedDate < tomorrow) {
+        newErrors.expiryDate = "Expiry date must be at least tomorrow";
+      }
+    }
 
     // Optional fields with validation
     if (formData.price && (isNaN(formData.price) || formData.price <= 0)) {
@@ -372,7 +384,7 @@ function AddProduct() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 bg-white">
+      <div className="space-y-6 bg-white overflow-x-auto">
         <Card>
           <CardHeader>
             <CardTitle>{isEditMode ? "Edit Product" : "Add Product"}</CardTitle>
@@ -477,7 +489,12 @@ function AddProduct() {
                     type="date"
                     value={formData.expiryDate}
                     onChange={e => handleChange(e, "expiryDate")}
+                    min={new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0]}
+                    required
                   />
+                  {errors.expiryDate && (
+                    <p className="text-red-500 text-sm">{errors.expiryDate}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label>Batch No</Label>

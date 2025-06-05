@@ -322,6 +322,10 @@ const Invoice = () => {
     setSelectedInvoice(null);
   };
 
+  function formatNumberToTwoDecimals(number) {
+    return Number(number).toFixed(2);
+  }
+
   return (
     <DashboardLayout>
       <div className="w-full">
@@ -362,9 +366,9 @@ const Invoice = () => {
                     <TableCell>{invoice.name}</TableCell>
                     <TableCell>{invoice.mobile}</TableCell>
                     <TableCell>{invoice?.doctor?.name || "-"}</TableCell>
-                    <TableCell>{invoice.totalAmount}</TableCell>
-                    <TableCell>{invoice.paidAmt}</TableCell>
-                    <TableCell>{invoice.dues}</TableCell>
+                    <TableCell>₹ {formatNumberToTwoDecimals(invoice.totalAmount)}</TableCell>
+                    <TableCell>₹ {formatNumberToTwoDecimals(invoice.paidAmt)}</TableCell>
+                    <TableCell>₹ {formatNumberToTwoDecimals(invoice.dues)}</TableCell>
                     <TableCell>{invoice.paymentMode}</TableCell>
                     <TableCell>{invoice.orderId}</TableCell>
                     <TableCell>{formatDateArrowStyle(invoice.date)}</TableCell>

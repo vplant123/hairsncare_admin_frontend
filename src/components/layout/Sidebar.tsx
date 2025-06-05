@@ -1,4 +1,4 @@
- import React, { useState, useEffect, forwardRef } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils"; // utility for conditional classes
 import {
@@ -115,6 +115,9 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(({ isMobileOpen = false
       return (
         location.pathname === "/invoice" || location.pathname === "/addinvoices"
       );
+    }
+    if (path === "/doctors") {
+      return location.pathname === "/doctors" || location.pathname === "/add-doctor";
     }
     return location.pathname === path;
   };
