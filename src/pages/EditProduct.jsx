@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { X } from "lucide-react";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const EditProduct = () => {
   const navigate = useNavigate();
@@ -55,6 +57,27 @@ const EditProduct = () => {
   );
   const [imageFiles, setImageFiles] = useState([]); // Store selected image files
 
+  // Add Quill modules configuration
+  const quillModules = {
+    toolbar: [
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      [{ indent: '-1' }, { indent: '+1' }],
+      [{ align: [] }],
+      ['link', 'image'],
+      ['clean'],
+    ],
+  };
+
+  const quillFormats = [
+    'header',
+    'bold', 'italic', 'underline', 'strike',
+    'list', 'bullet', 'indent',
+    'link', 'image',
+    'align',
+  ];
+
   // Function to upload a single image
   const uploadImage = async file => {
     const formData = new FormData();
@@ -92,162 +115,6 @@ const EditProduct = () => {
       setImageFiles(prev => [...prev, ...newImages]);
     }
   };
-
-  //   const handleSaveEdit = async () => {
-
-  //     setLoading(true);
-  //     try {
-  //       const token = localStorage.getItem("token");
-  //       if (!token) {
-  //         throw new Error("Please login to continue.");
-  //       }
-  //       console.log("Token found:", token);
-
-  //       if (!product._id) {
-  //         throw new Error("Product ID is missing.");
-  //       }
-  //       console.log("Product ID verified:", product._id);
-
-  //       // Upload images if any
-  //       let imageUrls = [...src];
-  //       if (imageFiles.length > 0) {
-  //         console.log(`Uploading ${imageFiles.length} image(s)...`);
-  //         const uploadPromises = imageFiles.map((file) => uploadImage(file));
-  //         const newImageUrls = await Promise.all(uploadPromises);
-  //         imageUrls = [...imageUrls, ...newImageUrls];
-  //         console.log("Image URLs:", imageUrls);
-  //       } else {
-  //         console.log("No new images to upload");
-  //       }
-
-  //       // Prepare updated product
-  //       const updatedProduct = {
-  //         _id: product._id,
-  //         newName: product.name,
-  //         newPrice: product.price,
-  //         newDescription: product.description,
-  //         category: product.category,
-  //         subCategory: product.subCategory,
-  //         gst: product.gst,
-  //         expiryDate: product.expiryDate,
-  //         batchNo: product.batchNo,
-  //         mfgName: product.mfgName,
-  //         weight: product.weight,
-  //         height: product.height,
-  //         width: product.width,
-  //         metaTitle: product.seoMetaTitle,
-  //         metaDesc: product.seoMetaDesc,
-  //         metaSlug: product.slug,
-  //         metaCanonical: product.canonical,
-  //         productDisplay: product.productDisplay,
-  //         benefits: benefits.filter((b) => b.title || b.desc),
-  //         ingredient: ingredients.filter((i) => i.title || i.desc),
-  //         faq: faq.filter((f) => f.title || f.desc),
-  //         highlights,
-  //         longDes,
-  //         stock: product.stock,
-  //         discount: product.discount,
-  //         filter,
-  //         kit,
-  //         src: imageUrls, // Use uploaded image URLs
-  //       };
-
-  //       // Log the entire product object
-  //       console.log("Product data being sent:", updatedProduct);
-
-  //       // Log individual fields
-  //       console.log("Product ID:", updatedProduct._id);
-  //       console.log("Product Name:", updatedProduct.newName);
-  //       console.log("Category:", updatedProduct.category);
-  //       console.log("Price:", updatedProduct.newPrice);
-  //       console.log("Description:", updatedProduct.newDescription);
-  //       console.log("Long Description:", updatedProduct.longDes);
-  //       console.log("Ingredients:", updatedProduct.ingredient);
-  //       console.log("Benefits:", updatedProduct.benefits);
-  //       console.log("FAQ:", updatedProduct.faq);
-  //       console.log("Highlights:", updatedProduct.highlights);
-  //       console.log("Stock:", updatedProduct.stock);
-  //       console.log("Discount:", updatedProduct.discount);
-  //       console.log("Sub Category:", updatedProduct.subCategory);
-  //       console.log("Filter:", updatedProduct.filter);
-  //       console.log("GST:", updatedProduct.gst);
-  //       console.log("Expiry Date:", updatedProduct.expiryDate);
-  //       console.log("Batch No:", updatedProduct.batchNo);
-  //       console.log("Manufacturer Name:", updatedProduct.mfgName);
-  //       console.log("Weight:", updatedProduct.weight);
-  //       console.log("Height:", updatedProduct.height);
-  //       console.log("Width:", updatedProduct.width);
-  //       console.log("Slug:", updatedProduct.metaSlug);
-  //       console.log("Canonical URL:", updatedProduct.metaCanonical);
-  //       console.log("SEO Meta Title:", updatedProduct.metaTitle);
-  //       console.log("SEO Meta Description:", updatedProduct.metaDesc);
-  //       console.log("Product Display:", updatedProduct.productDisplay);
-  //       console.log("Kit:", updatedProduct.kit);
-  //       console.log("Src:", updatedProduct.src);
-  //       console.log(
-  //         "Image Files:",
-  //         imageFiles.map((file) => file.name)
-  //       );
-
-  //       // Log headers
-  //       console.log("Request Headers:", {
-  //         Authorization: `Bearer ${token}`,
-  //       });
-
-  //       // Log API endpoint
-  //       console.log(
-  //         "API Endpoint:",
-  //         "https://apihair.txogavideo.in/api/v1/admin/update-product"
-  //       );
-
-  //       // Prepare FormData
-  //       const formData = new FormData();
-  //       formData.append("product", JSON.stringify(updatedProduct));
-
-  //       // Log FormData contents
-  //       console.log("FormData product JSON:", JSON.stringify(updatedProduct));
-
-  //       const response = await fetch(
-  //         `https://apihair.txogavideo.in/api/v1/admin/update-product`,
-  //         {
-  //           method: "PUT",
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //             "Content-Type": "application/json",
-  //           },
-  //           body: formData,
-  //         }
-  //       );
-
-  //       // Log response details
-  //       console.log("Response Status:", response.status);
-  //       console.log("Response Headers:", [...response.headers.entries()]);
-
-  //       const data = await response.json();
-  //       console.log("Response Data:", data);
-
-  //       if (data.success) {
-  //         toast({
-  //           title: "Product Updated",
-  //           description: `${updatedProduct.newName} has been updated successfully.`,
-  //         });
-  //         navigate("/products");
-  //       } else {
-  //         throw new Error(data.message || "Failed to update product");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error updating product:", error);
-  //       toast({
-  //         title: "Error",
-  //         description: error.message || "Failed to update product",
-  //         variant: "destructive",
-  //       });
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  // Handlers for structured fields
 
   const handleSaveEdit = async () => {
     setLoading(true);
@@ -345,6 +212,7 @@ const EditProduct = () => {
         title: "Error",
         description: error.message || "Failed to update product",
         variant: "destructive",
+        className:"bg-white"
       });
     } finally {
       setLoading(false);
@@ -447,11 +315,13 @@ const EditProduct = () => {
                 type="number"
                 min="0"
                 value={product?.price || ""}
-                onChange={e =>
-                  setProduct({ ...product, price: e.target.value })
-                }
+                onChange={e => setProduct({ ...product, price: e.target.value })}
+                placeholder="Enter price"
                 className="hover:border-primary transition-colors"
               />
+              {!product?.price && (
+                <p className="text-red-500 text-sm">Price is required</p>
+              )}
             </div>
 
             {/* Description */}
@@ -473,11 +343,17 @@ const EditProduct = () => {
               <Label className="text-sm font-medium hover:text-primary transition-colors">
                 Long Description
               </Label>
-              <Textarea
-                value={longDes}
-                onChange={e => setLongDes(e.target.value)}
-                className="hover:border-primary transition-colors"
-              />
+              <div className="mt-2">
+                <ReactQuill
+                  value={longDes}
+                  onChange={(content) => setLongDes(content)}
+                  theme="snow"
+                  placeholder="Type long description here..."
+                  modules={quillModules}
+                  formats={quillFormats}
+                  className="bg-white"
+                />
+              </div>
             </div>
 
             {/* Benefits */}
@@ -510,13 +386,16 @@ const EditProduct = () => {
                   </div>
                   <div>
                     <Label>Description</Label>
-                    <Textarea
-                      value={benefit.desc}
-                      onChange={e =>
-                        updateBenefit(index, "desc", e.target.value)
-                      }
-                      className="hover:border-primary transition-colors"
-                    />
+                    <div className="mt-2">
+                      <ReactQuill
+                        value={benefit.desc}
+                        onChange={(content) => updateBenefit(index, "desc", content)}
+                        modules={quillModules}
+                        formats={quillFormats}
+                        theme="snow"
+                        className="bg-white"
+                      />
+                    </div>
                   </div>
                 </div>
               ))}  <br />

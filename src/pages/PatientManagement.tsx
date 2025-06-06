@@ -96,8 +96,14 @@ const PatientManagement = () => {
         );
         console.log("response pat:", res);
         const data = await res.json();
-        setPatients(data?.data || []);
-        setFilteredPatients(data?.data || []);
+        // Sort patients by lastLogin date in descending order
+        const sortedPatients = (data?.data || []).sort((a, b) => {
+          const dateA = new Date(a.lastLogin || 0);
+          const dateB = new Date(b.lastLogin || 0);
+          return dateB.getTime() - dateA.getTime();
+        });
+        setPatients(sortedPatients);
+        setFilteredPatients(sortedPatients);
       } catch (err) {
         console.error(err);
         setError("Failed to load patients");

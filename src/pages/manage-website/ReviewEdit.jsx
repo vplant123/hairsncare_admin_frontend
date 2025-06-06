@@ -86,43 +86,47 @@ function ReviewEdit({ section3, setSection3 }) {
   };
 
   return (
-    <div className="row d-flex" style={{ marginTop: "50px" }}>
+    <div className="row " style={{ marginTop: "50px" }}>
       {section3?.map?.((item, index) => (
-        <div key={index} className="animate__animated animate__fadeInUp col-4">
-          <div key={item?._id} className="review-loop">
-            <img src={item?.img} alt={item?.name} />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={e => handleImageUpload(e, "img", index)}
-              style={{ width: "95px" }}
-            />
-            <div className="review-person-name">
-              {item?.name}
+        <div key={index} className="col-md-3 col-sm-6 mb-4">
+          <div key={item?._id} className="review-loop h-100">
+            <div className="text-center mb-3">
+              <img src={item?.img} alt={item?.name} className="mb-2" style={{ maxWidth: "100px", height: "auto" }} />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={e => handleImageUpload(e, "img", index)}
+                className="form-control"
+              />
+            </div>
+            <div className="review-person-name mb-2">
               <input
                 type="text"
                 defaultValue={item?.name}
                 onChange={e => handleImageUpload(e, "name", index)}
-                className="heading-input"
+                className="heading-input form-control"
+                placeholder="Enter name"
               />
             </div>
 
-            <div>Rating : </div>
-            <input
-              type="text"
-              defaultValue={item?.rating}
-              onChange={e => handleImageUpload(e, "rating", index)}
-              className="heading-input"
-            />
-
-            <div className="review-person-msg">
-              {item?.desc}
-
+            <div className="mb-2">
+              <label className="d-block mb-1">Rating:</label>
               <input
                 type="text"
+                defaultValue={item?.rating}
+                onChange={e => handleImageUpload(e, "rating", index)}
+                className="heading-input form-control"
+                placeholder="Enter rating"
+              />
+            </div>
+
+            <div className="review-person-msg mb-2">
+              <textarea
                 defaultValue={item?.desc}
                 onChange={e => handleImageUpload(e, "desc", index)}
-                className="heading-input"
+                className="heading-input form-control"
+                placeholder="Enter review message"
+                rows="3"
               />
             </div>
 
@@ -133,13 +137,12 @@ function ReviewEdit({ section3, setSection3 }) {
                 style={{ width: "20px" }}
               />
               <span style={{ color: "#999999", margin: "0 0 0 10px" }}>
-                {item?.time}
-
                 <input
                   type="text"
                   defaultValue={item?.time}
                   onChange={e => handleImageUpload(e, "time", index)}
-                  className="heading-input"
+                  className="heading-input form-control"
+                  placeholder="Enter time"
                 />
               </span>
             </div>

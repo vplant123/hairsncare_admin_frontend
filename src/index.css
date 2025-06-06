@@ -157,3 +157,29 @@
     @apply bg-red-100 text-red-800;
   }
 }
+
+/* React Quill Editor Styles */
+.quill {
+  height: 200px;
+  margin-bottom: 50px;
+}
+
+.ql-container {
+  height: calc(100% - 42px);
+  font-size: 16px;
+}
+
+.ql-editor {
+  min-height: 150px;
+}
+
+.ql-toolbar {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  background-color: #f8fafc;
+}
+
+.ql-container {
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}

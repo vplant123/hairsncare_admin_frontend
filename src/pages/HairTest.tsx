@@ -625,7 +625,7 @@ const HairTest = () => {
     }
   };
 
-  const handleViewPrescription = async (orderId) => {
+  const handleViewPrescription = async orderId => {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/v1/admin/order-details`,
@@ -1100,9 +1100,6 @@ const HairTest = () => {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input placeholder="Search orders..." className="pl-10" />
                   </div>
-                  <Button variant="outline" size="icon">
-                    <Filter className="h-4 w-4" />
-                  </Button>
                 </div>
               </div>
 
@@ -1112,8 +1109,9 @@ const HairTest = () => {
                     <TableHead>Order ID</TableHead>
                     <TableHead>User Name</TableHead>
                     <TableHead>Order Type</TableHead>
-                    <TableHead>Status</TableHead>
+                    {/* <TableHead>Status</TableHead> */}
                     <TableHead>Delivery Status</TableHead>
+                    <TableHead>Appointment Status</TableHead>
                     <TableHead>Total Amount</TableHead>
                     <TableHead>Order Date</TableHead>
                     <TableHead>View Prescription</TableHead>
@@ -1128,7 +1126,7 @@ const HairTest = () => {
                       </TableCell>
                       <TableCell>{order.userId?.fullname || "N/A"}</TableCell>
                       <TableCell>{order.orderType || "N/A"}</TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         <span
                           className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
                             order.status?.toLowerCase() === "pending"
@@ -1140,22 +1138,51 @@ const HairTest = () => {
                         >
                           {order.status || "Unknown"}
                         </span>
+                      </TableCell> */}
+                      <TableCell>
+                        <span
+                          className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
+                            order.deliveryStatus?.toLowerCase() === "pending"
+                              ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
+                              : order.deliveryStatus?.toLowerCase() ===
+                                  "delivered"
+                                ? "bg-green-50 text-green-700 border border-green-200"
+                                : order.deliveryStatus?.toLowerCase() ===
+                                    "canceled"
+                                  ? "bg-red-50 text-red-700 border border-red-200"
+                                  : "bg-blue-50 text-blue-700 border border-blue-200"
+                          }`}
+                        >
+                          {/* <span className={`w-2 h-2 rounded-full mr-2 ${
+                            order.deliveryStatus?.toLowerCase() === "pending"
+                              ? "bg-yellow-500"
+                              : order.deliveryStatus?.toLowerCase() === "delivered"
+                                ? "bg-green-500"
+                                : order.deliveryStatus?.toLowerCase() === "canceled"
+                                  ? "bg-red-500"
+                                  : "bg-blue-500"
+                          }`}></span> */}
+                          {order.deliveryStatus ? order.deliveryStatus.charAt(0).toUpperCase() + order.deliveryStatus.slice(1) : "Unknown"}
+                        </span>
                       </TableCell>
                       <TableCell>
                         <span
-                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            order.deliveryStatus?.toLowerCase() === "pending"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : order.deliveryStatus?.toLowerCase() ===
-                                  "delivered"
-                                ? "bg-green-100 text-green-700"
-                                : order.deliveryStatus?.toLowerCase() ===
+                          className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
+                            order.prescriptionDetails?.[0]?.appointment?.status?.toLowerCase() ===
+                            "assigned"
+                              ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
+                              : order.prescriptionDetails?.[0]?.appointment?.status?.toLowerCase() ===
+                                  "completed"
+                                ? "bg-green-50 text-green-700 border border-green-200"
+                                : order.prescriptionDetails?.[0]?.appointment?.status?.toLowerCase() ===
                                     "canceled"
-                                  ? "bg-red-100 text-red-700"
-                                  : "bg-blue-100 text-blue-700"
+                                  ? "bg-red-50 text-red-700 border border-red-200"
+                                  : "bg-blue-50 text-blue-700 border border-blue-200"
                           }`}
                         >
-                          {order.deliveryStatus || "Unknown"}
+                          {order.prescriptionDetails?.[0]?.appointment?.status 
+                            ? order.prescriptionDetails[0].appointment.status.charAt(0).toUpperCase() + order.prescriptionDetails[0].appointment.status.slice(1)
+                            : "No Appointment"}
                         </span>
                       </TableCell>
                       <TableCell>
@@ -1172,10 +1199,10 @@ const HairTest = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="flex items-center gap-1 text-health-primary"
+                          className="w-[140px] h-[32px] flex items-center justify-center gap-1 text-health-primary hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors"
                           onClick={() => handleViewPrescription(order._id)}
                         >
-                          <Eye className="h-3 w-3" />
+                          <Eye className="h-3.5 w-3.5" />
                           <span>View Prescription</span>
                         </Button>
                       </TableCell>
@@ -1183,10 +1210,10 @@ const HairTest = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="flex items-center gap-1 text-health-primary"
+                          className="w-[140px] h-[32px] flex items-center justify-center gap-1 text-health-primary hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors"
                           onClick={() => viewOrderDetails(order._id)}
                         >
-                          <Eye className="h-3 w-3" />
+                          <Eye className="h-3.5 w-3.5" />
                           <span>View Order</span>
                         </Button>
                       </TableCell>
@@ -1358,6 +1385,7 @@ const HairTest = () => {
                       <FileText className="h-4 w-4" />
                       Generate Management Report
                     </Button>
+
                     <Button
                       variant="outline"
                       className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
@@ -1371,6 +1399,7 @@ const HairTest = () => {
                       <FileText className="h-4 w-4" />
                       Generate Prescription
                     </Button>
+
                     <Button
                       variant="outline"
                       className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
@@ -2056,6 +2085,19 @@ const HairTest = () => {
               </div>
             </div>
           )}
+          <Button
+            variant="outline"
+            className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
+            onClick={() =>
+              window.open(
+                `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${selectedPrescription?.prescriptionDetails?.appointment?._id}`,
+                "_blank"
+              )
+            }
+          >
+            <FileText className="h-4 w-4" />
+            Generate Prescription
+          </Button>
         </DialogContent>
       </Dialog>
     </DashboardLayout>

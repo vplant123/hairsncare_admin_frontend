@@ -66,13 +66,13 @@ const Topbar: React.FC<TopbarProps> = ({
   // Update profile data when userProfile changes
   useEffect(() => {
     if (userProfile) {
-      console.log("=== Updating Profile Data ===");
+      // console.log("=== Updating Profile Data ===");
       const newProfileData = {
         name: userProfile.fullname || "",
         email: userProfile.email || "",
         mobile: userProfile.mobile || "",
       };
-      console.log(JSON.stringify(newProfileData, null, 2));
+      // console.log(JSON.stringify(newProfileData, null, 2));
 
       setProfileData(prev => ({
         ...prev,
