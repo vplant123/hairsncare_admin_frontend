@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { X } from "lucide-react";
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const EditProduct = () => {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ const EditProduct = () => {
   const [loading, setLoading] = useState(false);
   const [benefits, setBenefits] = useState(
     Array.isArray(product.benefits)
-      ? product.benefits.map(b => ({
+      ? product.benefits.map((b) => ({
           title: b.title || "",
           desc: b.desc || "",
         }))
@@ -34,7 +34,7 @@ const EditProduct = () => {
   );
   const [ingredients, setIngredients] = useState(
     Array.isArray(product.ingredient)
-      ? product.ingredient.map(i => ({
+      ? product.ingredient.map((i) => ({
           title: i.title || "",
           desc: i.desc || "",
         }))
@@ -42,7 +42,7 @@ const EditProduct = () => {
   );
   const [faq, setFaq] = useState(
     Array.isArray(product.faq)
-      ? product.faq.map(f => ({
+      ? product.faq.map((f) => ({
           title: f.title || "",
           desc: f.desc || "",
         }))
@@ -50,39 +50,136 @@ const EditProduct = () => {
   );
   const [highlights, setHighlights] = useState(product.highlights || "");
   const [longDes, setLongDes] = useState(product.longDes || "");
+  const [shortDes, setShortDes] = useState(product.shortDes || "");
+  const [benefitsMain, setBenefitsMain] = useState(product.benefitsMain || "");
+  const [ingredientMain, setIngredientMain] = useState(
+    product.ingredientMain || ""
+  );
   const [kit, setKit] = useState(Array.isArray(product.kit) ? product.kit : []);
   const [src, setSrc] = useState(Array.isArray(product.src) ? product.src : []);
   const [filter, setFilter] = useState(
     Array.isArray(product.filter) ? product.filter : []
   );
-  const [imageFiles, setImageFiles] = useState([]); // Store selected image files
+  const [imageFiles, setImageFiles] = useState([]);
+  const [errors, setErrors] = useState({});
 
-  // Add Quill modules configuration
   const quillModules = {
     toolbar: [
       [{ header: [1, 2, 3, 4, 5, 6, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ list: 'ordered' }, { list: 'bullet' }],
-      [{ indent: '-1' }, { indent: '+1' }],
+      ["bold", "italic", "underline", "strike"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ indent: "-1" }, { indent: "+1" }],
       [{ align: [] }],
-      ['link', 'image'],
-      ['clean'],
+      ["link", "image"],
+      ["clean"],
     ],
   };
 
   const quillFormats = [
-    'header',
-    'bold', 'italic', 'underline', 'strike',
-    'list', 'bullet', 'indent',
-    'link', 'image',
-    'align',
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image",
+    "align",
   ];
 
-  // Function to upload a single image
-  const uploadImage = async file => {
+  const isValid = () => {
+    const newErrors = {};
+    
+    // Required fields validation
+    const requiredFields = {
+      name: "Product name",
+      price: "Price",
+      description: "Description",
+      category: "Category",
+      subCategory: "Sub Category",
+      expiryDate: "Expiry date",
+      batchNo: "Batch number",
+      mfgName: "Manufacturer name",
+      weight: "Weight",
+      height: "Height",
+      width: "Width",
+      stock: "Stock"
+    };
+
+    // Check each required field
+    Object.entries(requiredFields).forEach(([field, label]) => {
+      if (!product[field] || String(product[field]).trim() === "") {
+        newErrors[field] = `${label} is required`;
+      }
+    });
+
+    // Validate numeric fields
+    if (product.price && (isNaN(product.price) || Number(product.price) <= 0)) {
+      newErrors.price = "Price must be a positive number";
+    }
+
+    if (product.stock && (isNaN(product.stock) || Number(product.stock) < 0)) {
+      newErrors.stock = "Stock must be a non-negative number";
+    }
+
+    if (product.discount && (isNaN(product.discount) || Number(product.discount) < 0)) {
+      newErrors.discount = "Discount must be a non-negative number";
+    }
+
+    if (product.gst && (isNaN(product.gst) || Number(product.gst) < 0)) {
+      newErrors.gst = "GST must be a non-negative number";
+    }
+
+    // Validate dimensions
+    if (product.weight && (isNaN(product.weight) || Number(product.weight) <= 0)) {
+      newErrors.weight = "Weight must be a positive number";
+    }
+
+    if (product.height && (isNaN(product.height) || Number(product.height) <= 0)) {
+      newErrors.height = "Height must be a positive number";
+    }
+
+    if (product.width && (isNaN(product.width) || Number(product.width) <= 0)) {
+      newErrors.width = "Width must be a positive number";
+    }
+
+    // Validate expiry date
+    if (product.expiryDate) {
+      const selectedDate = new Date(product.expiryDate);
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+      if (selectedDate < tomorrow) {
+        newErrors.expiryDate = "Expiry date must be at least tomorrow";
+      }
+    }
+
+    setErrors(newErrors);
+
+    // If there are errors, show a toast with the error summary
+    if (Object.keys(newErrors).length > 0) {
+      const errorMessage = Object.entries(newErrors)
+        .map(([field, message]) => `• ${message}`)
+        .join('\n');
+      
+      toast({
+        title: "Validation Errors",
+        description: errorMessage,
+        variant: "destructive",
+        duration: 5000,
+        className: "bg-white"
+      });
+      return false;
+    }
+
+    return true;
+  };
+
+  const uploadImage = async (file) => {
     const formData = new FormData();
     formData.append("image", file);
-
     try {
       const imageResponse = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/v1/hair-tests/upload-image`,
@@ -94,11 +191,9 @@ const EditProduct = () => {
           body: formData,
         }
       );
-
       if (!imageResponse.ok) {
         throw new Error("Image upload failed");
       }
-
       const data = await imageResponse.json();
       return data.imageUrl;
     } catch (error) {
@@ -107,34 +202,35 @@ const EditProduct = () => {
     }
   };
 
-  // Handle image selection
-  const handleImageUpload = e => {
+  const handleImageUpload = (e) => {
     const files = e.target.files;
     if (files) {
       const newImages = Array.from(files);
-      setImageFiles(prev => [...prev, ...newImages]);
+      setImageFiles((prev) => [...prev, ...newImages]);
     }
   };
 
   const handleSaveEdit = async () => {
     setLoading(true);
     try {
+      if (!isValid()) {
+        setLoading(false);
+        return;
+      }
+
       const token = localStorage.getItem("token");
       if (!token) {
         throw new Error("Please login to continue.");
       }
-      console.log("Token found:", token);
 
       if (!product._id) {
         throw new Error("Product ID is missing.");
       }
-      console.log("Product ID verified:", product._id);
 
-      // Upload images if any
       let imageUrls = [...src];
       if (imageFiles.length > 0) {
         console.log(`Uploading ${imageFiles.length} image(s)...`);
-        const uploadPromises = imageFiles.map(file => uploadImage(file));
+        const uploadPromises = imageFiles.map((file) => uploadImage(file));
         const newImageUrls = await Promise.all(uploadPromises);
         imageUrls = [...imageUrls, ...newImageUrls];
         console.log("Image URLs:", imageUrls);
@@ -142,55 +238,54 @@ const EditProduct = () => {
         console.log("No new images to upload");
       }
 
-      // Prepare updated product
       const updatedProduct = {
         _id: product._id,
         newName: product.name,
-        newPrice: product.price,
+        newPrice: Number(product.price),
         newDescription: product.description,
         category: product.category,
         subCategory: product.subCategory,
-        gst: product.gst,
+        gst: product.gst ? Number(product.gst) : undefined,
         expiryDate: product.expiryDate,
         batchNo: product.batchNo,
         mfgName: product.mfgName,
-        weight: product.weight,
-        height: product.height,
-        width: product.width,
+        weight: product.weight ? Number(product.weight) : undefined,
+        height: product.height ? Number(product.height) : undefined,
+        width: product.width ? Number(product.width) : undefined,
         metaTitle: product.seoMetaTitle,
         metaDesc: product.seoMetaDesc,
         metaSlug: product.slug,
         metaCanonical: product.canonical,
         productDisplay: product.productDisplay,
-        benefits: benefits.filter(b => b.title || b.desc),
-        ingredient: ingredients.filter(i => i.title || i.desc),
-        faq: faq.filter(f => f.title || f.desc),
+        benefits: benefits.filter((b) => b.title || b.desc),
+        ingredient: ingredients.filter((i) => i.title || i.desc),
+        faq: faq.filter((f) => f.title || f.desc),
         highlights,
         longDes,
-        stock: product.stock,
-        discount: product.discount,
+        shortDes,
+        benefitsMain,
+        ingredientMain,
+        stock: product.stock ? Number(product.stock) : undefined,
+        discount: product.discount ? Number(product.discount) : undefined,
         filter,
         kit,
-        src: imageUrls, // Use uploaded image URLs
+        src: imageUrls,
       };
 
-      // Log the product data
       console.log("Product data being sent:", updatedProduct);
 
-      // Send the product data as JSON
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/v1/admin/update-product`,
         {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json", // Ensure JSON content type
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(updatedProduct), // Send as JSON
+          body: JSON.stringify(updatedProduct),
         }
       );
 
-      // Log response details
       console.log("Response Status:", response.status);
       console.log("Response Headers:", [...response.headers.entries()]);
 
@@ -201,7 +296,22 @@ const EditProduct = () => {
         toast({
           title: "Product Updated",
           description: `${updatedProduct.newName} has been updated successfully.`,
+          className: "bg-white"
         });
+        setProduct({});
+        setBenefits([{ title: "", desc: "" }]);
+        setIngredients([{ title: "", desc: "" }]);
+        setFaq([{ title: "", desc: "" }]);
+        setHighlights("");
+        setLongDes("");
+        setShortDes("");
+        setBenefitsMain("");
+        setIngredientMain("");
+        setKit([]);
+        setSrc([]);
+        setFilter([]);
+        setImageFiles([]);
+        setErrors({});
         navigate("/products");
       } else {
         throw new Error(data.message || "Failed to update product");
@@ -212,7 +322,7 @@ const EditProduct = () => {
         title: "Error",
         description: error.message || "Failed to update product",
         variant: "destructive",
-        className:"bg-white"
+        className: "bg-white"
       });
     } finally {
       setLoading(false);
@@ -220,7 +330,7 @@ const EditProduct = () => {
   };
 
   const addBenefit = () => setBenefits([...benefits, { title: "", desc: "" }]);
-  const removeBenefit = index =>
+  const removeBenefit = (index) =>
     setBenefits(benefits.filter((_, i) => i !== index));
   const updateBenefit = (index, field, value) => {
     const newBenefits = [...benefits];
@@ -230,7 +340,7 @@ const EditProduct = () => {
 
   const addIngredient = () =>
     setIngredients([...ingredients, { title: "", desc: "" }]);
-  const removeIngredient = index =>
+  const removeIngredient = (index) =>
     setIngredients(ingredients.filter((_, i) => i !== index));
   const updateIngredient = (index, field, value) => {
     const newIngredients = [...ingredients];
@@ -239,7 +349,7 @@ const EditProduct = () => {
   };
 
   const addFaq = () => setFaq([...faq, { title: "", desc: "" }]);
-  const removeFaq = index => setFaq(faq.filter((_, i) => i !== index));
+  const removeFaq = (index) => setFaq(faq.filter((_, i) => i !== index));
   const updateFaq = (index, field, value) => {
     const newFaq = [...faq];
     newFaq[index][field] = value;
@@ -247,7 +357,7 @@ const EditProduct = () => {
   };
 
   const addKit = () => setKit([...kit, ""]);
-  const removeKit = index => setKit(kit.filter((_, i) => i !== index));
+  const removeKit = (index) => setKit(kit.filter((_, i) => i !== index));
   const updateKit = (index, value) => {
     const newKit = [...kit];
     newKit[index] = value;
@@ -255,7 +365,8 @@ const EditProduct = () => {
   };
 
   const addFilter = () => setFilter([...filter, ""]);
-  const removeFilter = index => setFilter(filter.filter((_, i) => i !== index));
+  const removeFilter = (index) =>
+    setFilter(filter.filter((_, i) => i !== index));
   const updateFilter = (index, value) => {
     const newFilter = [...filter];
     newFilter[index] = value;
@@ -270,79 +381,277 @@ const EditProduct = () => {
             <CardTitle>Edit Product</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Category */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Category
-              </Label>
-              <Select
-                value={product?.category}
-                onValueChange={value =>
-                  setProduct({ ...product, category: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  <SelectItem value="oral">Oral</SelectItem>
-                  <SelectItem value="topical">
-                    Topical (External Use)
-                  </SelectItem>
-                  <SelectItem value="both">Both</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Category</Label>
+                <Select
+                  value={product?.category}
+                  onValueChange={(value) =>
+                    setProduct({ ...product, category: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="oral">Oral</SelectItem>
+                    <SelectItem value="topical">
+                      Topical (External Use)
+                    </SelectItem>
+                    <SelectItem value="both">Both</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Product Name</Label>
+                <Input
+                  value={product?.name || ""}
+                  onChange={(e) =>
+                    setProduct({ ...product, name: e.target.value })
+                  }
+                  className="hover:border-primary transition-colors"
+                />
+              </div>
             </div>
 
-            {/* Product Name */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Product Name
-              </Label>
-              <Input
-                value={product?.name || ""}
-                onChange={e => setProduct({ ...product, name: e.target.value })}
-                className="hover:border-primary transition-colors"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Price</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  value={product?.price || ""}
+                  onChange={(e) =>
+                    setProduct({ ...product, price: e.target.value })
+                  }
+                  className="hover:border-primary transition-colors"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Sub Category</Label>
+                <Select
+                  value={product?.subCategory}
+                  onValueChange={(value) =>
+                    setProduct({ ...product, subCategory: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select sub category" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="tablets">Tablets</SelectItem>
+                    <SelectItem value="syrup">Syrup</SelectItem>
+                    <SelectItem value="sachets">Sachets</SelectItem>
+                    <SelectItem value="hair-solution">Hair Solution</SelectItem>
+                    <SelectItem value="serum">Serum</SelectItem>
+                    <SelectItem value="oil">Oil</SelectItem>
+                    <SelectItem value="gel">Gel</SelectItem>
+                    <SelectItem value="mask">Mask</SelectItem>
+                    <SelectItem value="cream">Cream & Ointments</SelectItem>
+                    <SelectItem value="shampoo">Shampoo</SelectItem>
+                    <SelectItem value="conditioner">Conditioner</SelectItem>
+                    <SelectItem value="color">Color</SelectItem>
+                    <SelectItem value="spray">Spray</SelectItem>
+                    <SelectItem value="foam">Foam</SelectItem>
+                    <SelectItem value="fider">Fider</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
-            {/* Price */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Expiry Date</Label>
+                <Input
+                  type="date"
+                  value={product?.expiryDate || ""}
+                  onChange={(e) =>
+                    setProduct({ ...product, expiryDate: e.target.value })
+                  }
+                  min={
+                    new Date(new Date().setDate(new Date().getDate() + 1))
+                      .toISOString()
+                      .split("T")[0]
+                  }
+                  className="hover:border-primary transition-colors"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Batch No</Label>
+                <Input
+                  value={product?.batchNo || ""}
+                  onChange={(e) =>
+                    setProduct({ ...product, batchNo: e.target.value })
+                  }
+                  className="hover:border-primary transition-colors"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Manufacturer Name</Label>
+                <Input
+                  value={product?.mfgName || ""}
+                  onChange={(e) =>
+                    setProduct({ ...product, mfgName: e.target.value })
+                  }
+                  className="hover:border-primary transition-colors"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Weight (in grams)</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  value={product?.weight || ""}
+                  onChange={(e) =>
+                    setProduct({ ...product, weight: e.target.value })
+                  }
+                  className="hover:border-primary transition-colors"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Height (in cm)</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  value={product?.height || ""}
+                  onChange={(e) =>
+                    setProduct({ ...product, height: e.target.value })
+                  }
+                  className="hover:border-primary transition-colors"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Width (in cm)</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  value={product?.width || ""}
+                  onChange={(e) =>
+                    setProduct({ ...product, width: e.target.value })
+                  }
+                  className="hover:border-primary transition-colors"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Slug</Label>
+                <Input
+                  value={product?.slug || ""}
+                  onChange={(e) =>
+                    setProduct({ ...product, slug: e.target.value })
+                  }
+                  className="hover:border-primary transition-colors"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Canonical URL</Label>
+                <Input
+                  value={product?.canonical || ""}
+                  onChange={(e) =>
+                    setProduct({ ...product, canonical: e.target.value })
+                  }
+                  className="hover:border-primary transition-colors"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Discount (Rs)</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={product?.discount || ""}
+                  onChange={(e) =>
+                    setProduct({ ...product, discount: e.target.value })
+                  }
+                  className="hover:border-primary transition-colors"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Stock</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  value={product?.stock || ""}
+                  onChange={(e) =>
+                    setProduct({ ...product, stock: e.target.value })
+                  }
+                  className="hover:border-primary transition-colors"
+                />
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Price
-              </Label>
+              <Label>GST (%)</Label>
               <Input
                 type="number"
                 min="0"
-                value={product?.price || ""}
-                onChange={e => setProduct({ ...product, price: e.target.value })}
-                placeholder="Enter price"
-                className="hover:border-primary transition-colors"
-              />
-              {!product?.price && (
-                <p className="text-red-500 text-sm">Price is required</p>
-              )}
-            </div>
-
-            {/* Description */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Description
-              </Label>
-              <Textarea
-                value={product?.description || ""}
-                onChange={e =>
-                  setProduct({ ...product, description: e.target.value })
+                value={product?.gst || ""}
+                onChange={(e) =>
+                  setProduct({ ...product, gst: e.target.value })
                 }
                 className="hover:border-primary transition-colors"
               />
             </div>
 
-            {/* Long Description */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Long Description
-              </Label>
+              <Label>SEO Meta Title</Label>
+              <Input
+                value={product?.seoMetaTitle || ""}
+                onChange={(e) =>
+                  setProduct({ ...product, seoMetaTitle: e.target.value })
+                }
+                className="hover:border-primary transition-colors"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>SEO Meta Description</Label>
+              <Textarea
+                value={product?.seoMetaDesc || ""}
+                onChange={(e) =>
+                  setProduct({ ...product, seoMetaDesc: e.target.value })
+                }
+                className="hover:border-primary transition-colors"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <div className="mt-2">
+                <ReactQuill
+                  value={product?.description || ""}
+                  onChange={(content) =>
+                    setProduct({ ...product, description: content })
+                  }
+                  theme="snow"
+                  placeholder="Type product description here..."
+                  modules={quillModules}
+                  formats={quillFormats}
+                  className="bg-white"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Long Description</Label>
               <div className="mt-2">
                 <ReactQuill
                   value={longDes}
@@ -356,187 +665,189 @@ const EditProduct = () => {
               </div>
             </div>
 
-            {/* Benefits */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Benefits
-              </Label>
+              <Label>Short Description</Label>
+              <div className="mt-2">
+                <ReactQuill
+                  value={shortDes}
+                  onChange={(content) => setShortDes(content)}
+                  theme="snow"
+                  placeholder="Type short description here..."
+                  modules={quillModules}
+                  formats={quillFormats}
+                  className="bg-white"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Main Benefits</Label>
+              <div className="mt-2">
+                <ReactQuill
+                  value={benefitsMain}
+                  onChange={(content) => setBenefitsMain(content)}
+                  theme="snow"
+                  placeholder="Type main benefits here..."
+                  modules={quillModules}
+                  formats={quillFormats}
+                  className="bg-white"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Main Ingredients</Label>
+              <div className="mt-2">
+                <ReactQuill
+                  value={ingredientMain}
+                  onChange={(content) => setIngredientMain(content)}
+                  theme="snow"
+                  placeholder="Type main ingredients here..."
+                  modules={quillModules}
+                  formats={quillFormats}
+                  className="bg-white"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Benefits</Label>
               {benefits.map((benefit, index) => (
                 <div
                   key={index}
-                  className="space-y-2 border p-4 rounded-md relative"
+                  className="flex gap-2 items-start"
                 >
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-2 right-2"
-                    onClick={() => removeBenefit(index)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                  <div>
-                    <Label>Title</Label>
+                  <div className="flex-1 space-y-2">
                     <Input
                       value={benefit.title}
-                      onChange={e =>
+                      onChange={(e) =>
                         updateBenefit(index, "title", e.target.value)
                       }
                       className="hover:border-primary transition-colors"
                     />
+                    <ReactQuill
+                      value={benefit.desc}
+                      onChange={(content) =>
+                        updateBenefit(index, "desc", content)
+                      }
+                      modules={quillModules}
+                      formats={quillFormats}
+                    />
                   </div>
-                  <div>
-                    <Label>Description</Label>
-                    <div className="mt-2">
-                      <ReactQuill
-                        value={benefit.desc}
-                        onChange={(content) => updateBenefit(index, "desc", content)}
-                        modules={quillModules}
-                        formats={quillFormats}
-                        theme="snow"
-                        className="bg-white"
-                      />
-                    </div>
-                  </div>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => removeBenefit(index)}
+                  >
+                    Remove
+                  </Button>
                 </div>
-              ))}  <br />
-              <Button onClick={addBenefit} className="mt-2">
-                Add Benefit
-              </Button>
+              ))}
+              <div className="flex justify-end mt-2">
+                <Button onClick={addBenefit}>Add Benefit</Button>
+              </div>
             </div>
 
-            {/* Ingredients */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Ingredients
-              </Label>
+              <Label>Ingredients</Label>
               {ingredients.map((ingredient, index) => (
                 <div
                   key={index}
-                  className="space-y-2 border p-4 rounded-md relative"
+                  className="flex gap-2 items-start"
                 >
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-2 right-2"
-                    onClick={() => removeIngredient(index)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                  <div>
-                    <Label>Title</Label>
+                  <div className="flex-1 space-y-2">
                     <Input
                       value={ingredient.title}
-                      onChange={e =>
+                      onChange={(e) =>
                         updateIngredient(index, "title", e.target.value)
                       }
                       className="hover:border-primary transition-colors"
                     />
-                  </div>
-                  <div>
-                    <Label>Description</Label>
                     <Textarea
                       value={ingredient.desc}
-                      onChange={e =>
+                      onChange={(e) =>
                         updateIngredient(index, "desc", e.target.value)
                       }
                       className="hover:border-primary transition-colors"
                     />
                   </div>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => removeIngredient(index)}
+                  >
+                    Remove
+                  </Button>
                 </div>
-              ))} <br />
-              <Button onClick={addIngredient} className="mt-2">
-                Add Ingredient
-              </Button>
+              ))}
+              <div className="flex justify-end mt-2">
+                <Button onClick={addIngredient}>Add Ingredient</Button>
+              </div>
             </div>
 
-            {/* FAQ */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                FAQ
-              </Label>
+              <Label>FAQ</Label>
               {faq.map((item, index) => (
                 <div
                   key={index}
-                  className="space-y-2 border p-4 rounded-md relative"
+                  className="flex gap-2 items-start"
                 >
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-2 right-2"
-                    onClick={() => removeFaq(index)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                  <div>
-                    <Label>Question</Label>
+                  <div className="flex-1 space-y-2">
                     <Input
                       value={item.title}
-                      onChange={e => updateFaq(index, "title", e.target.value)}
+                      onChange={(e) =>
+                        updateFaq(index, "title", e.target.value)
+                      }
                       className="hover:border-primary transition-colors"
                     />
-                  </div>
-                  <div>
-                    <Label>Answer</Label>
                     <Textarea
                       value={item.desc}
-                      onChange={e => updateFaq(index, "desc", e.target.value)}
+                      onChange={(e) => updateFaq(index, "desc", e.target.value)}
                       className="hover:border-primary transition-colors"
                     />
                   </div>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => removeFaq(index)}
+                  >
+                    Remove
+                  </Button>
                 </div>
-              ))} <br />
-              <Button onClick={addFaq} className="mt-2">
-                Add FAQ
-              </Button>
+              ))}
+              <div className="flex justify-end mt-2">
+                <Button onClick={addFaq}>Add FAQ</Button>
+              </div>
             </div>
 
-            {/* Highlights */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Highlights
-              </Label>
-              <Textarea
-                value={highlights}
-                onChange={e => setHighlights(e.target.value)}
-                className="hover:border-primary transition-colors"
-              />
-            </div>
-
-            {/* Kit */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Kit
-              </Label>
+              <Label>Kit Items</Label>
               {kit.map((item, index) => (
                 <div
                   key={index}
-                  className="space-y-2 border p-4 rounded-md relative"
+                  className="flex gap-2 items-center"
                 >
+                  <Input
+                    className="flex-1 hover:border-primary transition-colors"
+                    value={item}
+                    onChange={(e) => updateKit(index, e.target.value)}
+                  />
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-2 right-2"
+                    variant="destructive"
+                    size="sm"
                     onClick={() => removeKit(index)}
                   >
-                    <X className="h-4 w-4" />
+                    Remove
                   </Button>
-                  <Input
-                    value={item}
-                    onChange={e => updateKit(index, e.target.value)}
-                    className="hover:border-primary transition-colors"
-                  />
                 </div>
-              ))} <br />
-              <Button onClick={addKit} className="mt-2">
-                Add Kit Item
-              </Button>
+              ))}
+              <div className="flex justify-end mt-2">
+                <Button onClick={addKit}>Add Kit Item</Button>
+              </div>
             </div>
 
-            {/* Filter */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Filter
-              </Label>
+              <Label>Filter Tags</Label>
               {filter.map((item, index) => (
                 <div
                   key={index}
@@ -544,7 +855,6 @@ const EditProduct = () => {
                 >
                   <Button
                     variant="ghost"
-                    size="icon"
                     className="absolute top-2 right-2"
                     onClick={() => removeFilter(index)}
                   >
@@ -552,243 +862,21 @@ const EditProduct = () => {
                   </Button>
                   <Input
                     value={item}
-                    onChange={e => updateFilter(index, e.target.value)}
+                    onChange={(e) => updateFilter(index, e.target.value)}
                     className="hover:border-primary transition-colors"
                   />
                 </div>
-              ))} <br />
-              <Button onClick={addFilter} className="mt-2">
-                Add Filter
-              </Button>
+              ))}
+              <div className="flex justify-end mt-2">
+                <Button onClick={addFilter}>Add Filter</Button>
+              </div>
             </div>
 
-            {/* Stock */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Stock
-              </Label>
-              <Input
-                type="number"
-                min="0"
-                value={product?.stock || ""}
-                onChange={e =>
-                  setProduct({ ...product, stock: e.target.value })
-                }
-                className="hover:border-primary transition-colors"
-              />
-            </div>
-
-            {/* Discount */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Discount (%)
-              </Label>
-              <Input
-                type="number"
-                min="0"
-                value={product?.discount || ""}
-                onChange={e =>
-                  setProduct({ ...product, discount: e.target.value })
-                }
-                className="hover:border-primary transition-colors"
-              />
-            </div>
-
-            {/* Sub Category */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Sub Category
-              </Label>
-              <Select
-                value={product?.subCategory}
-                onValueChange={value =>
-                  setProduct({ ...product, subCategory: value })
-                }
-              >
-                <SelectTrigger className="hover:border-primary transition-colors">
-                  <SelectValue placeholder="Select sub category" />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  <SelectItem value="tablets">Tablets</SelectItem>
-                  <SelectItem value="syrup">Syrup</SelectItem>
-                  <SelectItem value="sachets">Sachets</SelectItem>
-                  <SelectItem value="hair-solution">Hair Solution</SelectItem>
-                  <SelectItem value="serum">Serum</SelectItem>
-                  <SelectItem value="oil">Oil</SelectItem>
-                  <SelectItem value="gel">Gel</SelectItem>
-                  <SelectItem value="mask">Mask</SelectItem>
-                  <SelectItem value="cream">Cream & Ointments</SelectItem>
-                  <SelectItem value="shampoo">Shampoo</SelectItem>
-                  <SelectItem value="conditioner">Conditioner</SelectItem>
-                  <SelectItem value="color">Color</SelectItem>
-                  <SelectItem value="spray">Spray</SelectItem>
-                  <SelectItem value="foam">Foam</SelectItem>
-                  <SelectItem value="fider">Fider</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* GST */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                GST
-              </Label>
-              <Input
-                type="number"
-                value={product?.gst || ""}
-                onChange={e => setProduct({ ...product, gst: e.target.value })}
-                className="hover:border-primary transition-colors"
-              />
-            </div>
-
-            {/* Expiry Date */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Expiry Date
-              </Label>
-              <Input
-                type="date"
-                value={product?.expiryDate || ""}
-                onChange={e =>
-                  setProduct({ ...product, expiryDate: e.target.value })
-                }
-                className="hover:border-primary transition-colors"
-              />
-            </div>
-
-            {/* Batch No */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Batch No
-              </Label>
-              <Input
-                value={product?.batchNo || ""}
-                onChange={e =>
-                  setProduct({ ...product, batchNo: e.target.value })
-                }
-                className="hover:border-primary transition-colors"
-              />
-            </div>
-
-            {/* Manufacturer Name */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Manufacturer Name
-              </Label>
-              <Input
-                value={product?.mfgName || ""}
-                onChange={e =>
-                  setProduct({ ...product, mfgName: e.target.value })
-                }
-                className="hover:border-primary transition-colors"
-              />
-            </div>
-
-            {/* Weight */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Weight (in grams)
-              </Label>
-              <Input
-                type="number"
-                value={product?.weight || ""}
-                onChange={e =>
-                  setProduct({ ...product, weight: e.target.value })
-                }
-                className="hover:border-primary transition-colors"
-              />
-            </div>
-
-            {/* Height */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Height (in cm)
-              </Label>
-              <Input
-                type="number"
-                value={product?.height || ""}
-                onChange={e =>
-                  setProduct({ ...product, height: e.target.value })
-                }
-                className="hover:border-primary transition-colors"
-              />
-            </div>
-
-            {/* Width */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Width (in cm)
-              </Label>
-              <Input
-                type="number"
-                value={product?.width || ""}
-                onChange={e =>
-                  setProduct({ ...product, width: e.target.value })
-                }
-                className="hover:border-primary transition-colors"
-              />
-            </div>
-
-            {/* Slug */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Slug
-              </Label>
-              <Input
-                value={product?.slug || ""}
-                onChange={e => setProduct({ ...product, slug: e.target.value })}
-                className="hover:border-primary transition-colors"
-              />
-            </div>
-
-            {/* Canonical URL */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Canonical URL
-              </Label>
-              <Input
-                value={product?.canonical || ""}
-                onChange={e =>
-                  setProduct({ ...product, canonical: e.target.value })
-                }
-                className="hover:border-primary transition-colors"
-              />
-            </div>
-
-            {/* SEO Meta Title */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                SEO Meta Title
-              </Label>
-              <Input
-                value={product?.seoMetaTitle || ""}
-                onChange={e =>
-                  setProduct({ ...product, seoMetaTitle: e.target.value })
-                }
-                className="hover:border-primary transition-colors"
-              />
-            </div>
-
-            {/* SEO Meta Description */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                SEO Meta Description
-              </Label>
-              <Textarea
-                value={product?.seoMetaDesc || ""}
-                onChange={e =>
-                  setProduct({ ...product, seoMetaDesc: e.target.value })
-                }
-                className="hover:border-primary transition-colors"
-              />
-            </div>
-
-            {/* Product Display */}
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="productDisplay"
                 checked={product?.productDisplay || false}
-                onCheckedChange={checked =>
+                onCheckedChange={(checked) =>
                   setProduct({ ...product, productDisplay: checked })
                 }
                 className="hover:border-primary transition-colors"
@@ -801,11 +889,8 @@ const EditProduct = () => {
               </Label>
             </div>
 
-            {/* Product Image */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium hover:text-primary transition-colors">
-                Upload Images
-              </Label>
+              <Label>Upload Images</Label>
               <Input
                 type="file"
                 accept="image/*"
@@ -813,8 +898,7 @@ const EditProduct = () => {
                 onChange={handleImageUpload}
                 className="hover:border-primary transition-colors cursor-pointer"
               />
-              
-              {/* Selected Images Preview */}
+
               {imageFiles.length > 0 && (
                 <div className="mt-4">
                   <h3 className="text-sm font-medium mb-2">Selected Images:</h3>
@@ -831,7 +915,9 @@ const EditProduct = () => {
                           size="icon"
                           className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
                           onClick={() => {
-                            setImageFiles(prev => prev.filter((_, i) => i !== index));
+                            setImageFiles((prev) =>
+                              prev.filter((_, i) => i !== index)
+                            );
                           }}
                         >
                           <X className="h-4 w-4" />
@@ -842,7 +928,6 @@ const EditProduct = () => {
                 </div>
               )}
 
-              {/* Existing Images Preview */}
               {src.length > 0 && (
                 <div className="mt-4">
                   <h3 className="text-sm font-medium mb-2">Existing Images:</h3>
@@ -859,7 +944,9 @@ const EditProduct = () => {
                           size="icon"
                           className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
                           onClick={() => {
-                            setSrc(prev => prev.filter((_, i) => i !== index));
+                            setSrc((prev) =>
+                              prev.filter((_, i) => i !== index)
+                            );
                           }}
                         >
                           <X className="h-4 w-4" />
@@ -871,7 +958,6 @@ const EditProduct = () => {
               )}
             </div>
 
-            {/* Buttons */}
             <div className="flex justify-end gap-2">
               <Button
                 variant="outline"

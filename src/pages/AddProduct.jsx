@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,7 +23,7 @@ function AddProduct() {
   const navigate = useNavigate();
   const isEditMode = !!id;
 
-  const fileInputRef = React.useRef(null); // Create a ref for the file input
+  const fileInputRef = React.useRef(null);
 
   const [formData, setFormData] = useState({
     category: "",
@@ -32,15 +32,15 @@ function AddProduct() {
     price: "",
     description: "",
     longDes: "",
-    ingredients: "", // Maps to ingredient (array in backend)
-    benefits: "", // Maps to benefits (array in backend)
-    faq: "", // Maps to faq (array in backend)
+    ingredients: [], // Changed to array of objects
+    benefits: [], // Changed to array of objects
+    faq: [], // Changed to array of objects
     highlights: "",
     stock: "",
     discount: "",
     productType: "",
-    image: [], // Maps to src in backend
-    filterTag: "", // Maps to filter
+    image: [],
+    filterTag: "",
     gst: "",
     expiryDate: "",
     batchNo: "",
@@ -48,21 +48,21 @@ function AddProduct() {
     weight: "",
     height: "",
     width: "",
-    slug: "", // Maps to metaSlug
-    canonical: "", // Maps to metaCanonical
-    seoMetaTitle: "", // Maps to metaTitle
-    seoMetaDesc: "", // Maps to metaDesc
+    slug: "",
+    canonical: "",
+    seoMetaTitle: "",
+    seoMetaDesc: "",
     productDisplay: false,
-    kit: [], // Added to match schema
-    userReview: [], // Added to match schema
-    shortDes: "", // Added to match schema
-    benefitsMain: "", // Added to match schema
-    ingredientMain: "", // Added to match schema
+    kit: [],
+    userReview: [],
+    shortDes: "",
+    benefitsMain: "",
+    ingredientMain: "",
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [imageFiles, setImageFiles] = useState([]); // Store selected image files
-  const [errors, setErrors] = useState({}); // Store validation errors
+  const [imageFiles, setImageFiles] = useState([]);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (isEditMode) {
@@ -72,8 +72,8 @@ function AddProduct() {
           const data = await response.json();
           setFormData({
             ...data,
-            image: data.src || [], // Map src to image
-            filterTag: data.filter ? data.filter.join(", ") : "", // Convert array to comma-separated string
+            image: data.src || [],
+            filterTag: data.filter ? data.filter.join(", ") : "",
             slug: data.metaSlug || "",
             canonical: data.metaCanonical || "",
             seoMetaTitle: data.metaTitle || "",
@@ -83,6 +83,9 @@ function AddProduct() {
             shortDes: data.shortDes || "",
             benefitsMain: data.benefitsMain || "",
             ingredientMain: data.ingredientMain || "",
+            benefits: data.benefits || [], // Ensure array
+            ingredients: data.ingredient || [], // Ensure array
+            faq: data.faq || [], // Ensure array
           });
         } catch (error) {
           console.error("Error fetching product:", error);
@@ -90,6 +93,7 @@ function AddProduct() {
             title: "Error",
             description: "Failed to fetch product data.",
             variant: "destructive",
+            className: "bg-white"
           });
         }
       };
@@ -100,16 +104,59 @@ function AddProduct() {
   // Validation function
   const isValid = () => {
     const newErrors = {};
+    
+    // Required fields validation
+    const requiredFields = {
+      name: "Product name",
+      price: "Price",
+      description: "Description",
+      category: "Category",
+      subCategory: "Sub Category",
+      expiryDate: "Expiry date",
+      batchNo: "Batch number",
+      mfgName: "Manufacturer name",
+      weight: "Weight",
+      height: "Height",
+      width: "Width",
+      stock: "Stock"
+    };
 
-    // Required fields per schema
-    const requiredFields = ["name", "price", "description", "expiryDate"];
-    requiredFields.forEach(field => {
-      if (!formData[field] || formData[field].trim() === "") {
-        newErrors[field] = `${field
-          .replace(/([A-Z])/g, " $1")
-          .toLowerCase()} is required`;
+    // Check each required field
+    Object.entries(requiredFields).forEach(([field, label]) => {
+      if (!formData[field] || String(formData[field]).trim() === "") {
+        newErrors[field] = `${label} is required`;
       }
     });
+
+    // Validate numeric fields
+    if (formData.price && (isNaN(formData.price) || Number(formData.price) <= 0)) {
+      newErrors.price = "Price must be a positive number";
+    }
+
+    if (formData.stock && (isNaN(formData.stock) || Number(formData.stock) < 0)) {
+      newErrors.stock = "Stock must be a non-negative number";
+    }
+
+    if (formData.discount && (isNaN(formData.discount) || Number(formData.discount) < 0)) {
+      newErrors.discount = "Discount must be a non-negative number";
+    }
+
+    if (formData.gst && (isNaN(formData.gst) || Number(formData.gst) < 0)) {
+      newErrors.gst = "GST must be a non-negative number";
+    }
+
+    // Validate dimensions
+    if (formData.weight && (isNaN(formData.weight) || Number(formData.weight) <= 0)) {
+      newErrors.weight = "Weight must be a positive number";
+    }
+
+    if (formData.height && (isNaN(formData.height) || Number(formData.height) <= 0)) {
+      newErrors.height = "Height must be a positive number";
+    }
+
+    if (formData.width && (isNaN(formData.width) || Number(formData.width) <= 0)) {
+      newErrors.width = "Width must be a positive number";
+    }
 
     // Validate expiry date
     if (formData.expiryDate) {
@@ -117,87 +164,107 @@ function AddProduct() {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
       tomorrow.setHours(0, 0, 0, 0);
-
       if (selectedDate < tomorrow) {
         newErrors.expiryDate = "Expiry date must be at least tomorrow";
       }
     }
 
-    // Optional fields with validation
-    if (formData.price && (isNaN(formData.price) || formData.price <= 0)) {
-      newErrors.price = "Price must be a valid positive number";
-    }
-    if (formData.stock && (isNaN(formData.stock) || formData.stock < 0)) {
-      newErrors.stock = "Stock must be a valid non-negative number";
-    }
-    if (
-      formData.discount &&
-      (isNaN(formData.discount) ||
-        formData.discount < 0 ||
-        formData.discount > 100)
-    ) {
-      newErrors.discount = "Discount must be a number between 0 and 100";
-    }
-    if (formData.weight && (isNaN(formData.weight) || formData.weight <= 0)) {
-      newErrors.weight = "Weight must be a valid positive number";
-    }
-    if (formData.height && (isNaN(formData.height) || formData.height <= 0)) {
-      newErrors.height = "Height must be a valid positive number";
-    }
-    if (formData.width && (isNaN(formData.width) || formData.width <= 0)) {
-      newErrors.width = "Width must be a valid positive number";
-    }
-    if (formData.gst && (isNaN(formData.gst) || formData.gst < 0)) {
-      newErrors.gst = "GST must be a valid non-negative number";
-    }
-
-    // Image validation
+    // Image validation for new products
     if (!isEditMode && imageFiles.length === 0 && formData.image.length === 0) {
       newErrors.image = "At least one product image is required";
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    // If there are errors, show a toast with the error summary
+    if (Object.keys(newErrors).length > 0) {
+      const errorMessage = Object.entries(newErrors)
+        .map(([field, message]) => `• ${message}`)
+        .join('\n');
+      
+      toast({
+        title: "Validation Errors",
+        description: errorMessage,
+        variant: "destructive",
+        duration: 5000,
+        className: "bg-white"
+      });
+      return false;
+    }
+
+    return true;
   };
 
   const handleChange = (e, field) => {
     if (typeof e === "string") {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         [field]: e,
       }));
     } else {
       const { name, value } = e.target;
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         [name]: value,
       }));
     }
-    // Clear error for the field being edited
-    setErrors(prev => ({ ...prev, [field]: "" }));
+    setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  const handleImageUpload = e => {
+  // Handlers for structured fields
+  const addItem = (field) => {
+    if (field === "kit") {
+      setFormData((prev) => ({
+        ...prev,
+        kit: [...prev.kit, ""],
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: [...prev[field], { title: "", desc: "" }],
+      }));
+    }
+  };
+  const updateItem = (field, index, key, value) => {
+    if (field === "kit") {
+      const newKit = [...formData.kit];
+      newKit[index] = value;
+      setFormData((prev) => ({
+        ...prev,
+        kit: newKit,
+      }));
+    } else {
+      const updated = [...formData[field]];
+      updated[index][key] = value;
+      setFormData((prev) => ({ ...prev, [field]: updated }));
+    }
+  };
+  const removeItem = (field, index) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: prev[field].filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleImageUpload = (e) => {
     const files = e.target.files;
     if (files) {
       const newImages = Array.from(files);
-      setImageFiles(prev => [...prev, ...newImages]);
-      setErrors(prev => ({ ...prev, image: "" }));
+      setImageFiles((prev) => [...prev, ...newImages]);
+      setErrors((prev) => ({ ...prev, image: "" }));
     }
   };
 
   const removeSelectedImage = (indexToRemove) => {
-    setImageFiles(prev => prev.filter((_, i) => i !== indexToRemove));
-    // Reset the file input value after removing an image
+    setImageFiles((prev) => prev.filter((_, i) => i !== indexToRemove));
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
-  const uploadImage = async file => {
+  const uploadImage = async (file) => {
     const formData = new FormData();
     formData.append("image", file);
-
     try {
       const imageResponse = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/v1/hair-tests/upload-image`,
@@ -209,11 +276,9 @@ function AddProduct() {
           body: formData,
         }
       );
-
       if (!imageResponse.ok) {
         throw new Error("Image upload failed");
       }
-
       const data = await imageResponse.json();
       return data.imageUrl;
     } catch (error) {
@@ -222,40 +287,28 @@ function AddProduct() {
     }
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form submission started");
     setIsLoading(true);
 
-    // Validate form
-    console.log("Validating form...");
     if (!isValid()) {
       console.log("Form validation failed");
       setIsLoading(false);
-      toast({
-        title: "Validation Error",
-        description: "Please fill all required fields correctly.",
-        variant: "destructive",
-      });
       return;
     }
     console.log("Form validation passed");
 
     try {
-      // Check token
-      console.log("Checking authentication token...");
       const token = localStorage.getItem("token");
       if (!token) {
         throw new Error("Please login to continue.");
       }
-      console.log("Token found:", token);
 
-      // Upload images
-      console.log("Processing images...");
       let imageUrls = [...formData.image];
       if (imageFiles.length > 0) {
         console.log(`Uploading ${imageFiles.length} image(s)...`);
-        const uploadPromises = imageFiles.map(file => uploadImage(file));
+        const uploadPromises = imageFiles.map((file) => uploadImage(file));
         const newImageUrls = await Promise.all(uploadPromises);
         imageUrls = [...imageUrls, ...newImageUrls];
         console.log("Image URLs:", imageUrls);
@@ -263,59 +316,51 @@ function AddProduct() {
         console.log("No new images to upload");
       }
 
-      // Prepare data
-      console.log("Preparing data for submission...");
       const dataToSend = {
         name: formData.name,
         price: parseFloat(formData.price),
-        description: formData.description, // HTML content as a string
+        description: formData.description,
         kit: formData.kit,
-        image: imageUrls,
-        longDes: formData.longDes, // HTML content as a string
-        stock: formData.stock,
+        src: imageUrls,
+        longDes: formData.longDes,
+        stock: formData.stock ? parseFloat(formData.stock) : 0, // Align with schema
         userReview: formData.userReview,
-        discount: formData.discount ? parseFloat(formData.discount) : "",
-        shortDes: formData.shortDes, // HTML content as a string
-        highlights: formData.highlights, // HTML content as a string
-        benefitsMain: formData.benefitsMain, // HTML content as a string
-        ingredientMain: formData.ingredientMain, // HTML content as a string
+        discount: formData.discount ? parseFloat(formData.discount) : 0, // Align with schema
+        shortDes: formData.shortDes,
+        highlights: formData.highlights,
+        benefitsMain: formData.benefitsMain,
+        ingredientMain: formData.ingredientMain,
         productDisplay: formData.productDisplay,
         category: formData.category,
         subCategory: formData.subCategory,
-        gst: formData.gst ? parseFloat(formData.gst) : "",
+        gst: formData.gst ? parseFloat(formData.gst) : 0, // Align with schema
         expiryDate: formData.expiryDate || undefined,
         batchNo: formData.batchNo,
         mfgName: formData.mfgName,
-        width: formData.width ? parseFloat(formData.width) : "",
-        height: formData.height ? parseFloat(formData.height) : "",
-        weight: formData.weight ? parseFloat(formData.weight) : "",
+        width: formData.width ? parseFloat(formData.width) : 0, // Align with schema
+        height: formData.height ? parseFloat(formData.height) : 0, // Align with schema
+        weight: formData.weight ? parseFloat(formData.weight) : 0, // Align with schema
+        productDisplay: formData.productDisplay,
         metaTitle: formData.seoMetaTitle,
         metaDesc: formData.seoMetaDesc,
         metaSlug: formData.slug,
         metaCanonical: formData.canonical,
-
-        // Other fields with potential HTML content
-        // benefits: formData.benefits ? JSON.parse(formData.benefits) : [],
-        // ingredient: formData.ingredients
-        //   ? JSON.parse(formData.ingredients)
-        //   : [],
-        // faq: formData.faq ? JSON.parse(formData.faq) : [],
-
-        // filter: formData.filterTag
-        //   ? formData.filterTag.split(",").map((tag) => tag.trim())
-        //   : [],
+        benefits: formData.benefits, // Now an array of objects
+        ingredient: formData.ingredients, // Now an array of objects
+        faq: formData.faq, // Now an array of objects
+        filter: formData.filterTag
+          ? formData.filterTag.split(",").map((tag) => tag.trim())
+          : [],
       };
       console.log("Prepared data:", dataToSend);
 
-      // Stringify data
       console.log("Stringifying data...");
       const jsonData = JSON.stringify(dataToSend);
       console.log("Stringified data:", jsonData);
 
-      // Send data to API
       console.log("Sending request to API...");
       const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL}/api/v1/admin/addproduct`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/addproduct`,
         {
           method: isEditMode ? "PUT" : "POST",
           headers: {
@@ -326,31 +371,61 @@ function AddProduct() {
         }
       );
 
-      // Check if response is HTML or JSON
-      const rawResponse = await response.text(); // Get the raw response as text
+      const rawResponse = await response.text();
       if (response.ok) {
         let data;
         try {
-          data = JSON.parse(rawResponse); // Try to parse as JSON
+          data = JSON.parse(rawResponse);
           console.log("Response data:", data);
         } catch (err) {
           console.error("Error parsing JSON response:", err);
           throw new Error("Unexpected server response. Please try again.");
         }
 
-        // Continue with the success flow if JSON response is valid
         console.log("Product operation successful");
         toast({
           title: "Success",
           description: `Product ${
             isEditMode ? "updated" : "added"
           } successfully.`,
+          className: "bg-white"
         });
 
         // Reset form
         console.log("Resetting form...");
         setFormData({
-          // reset form data here
+          category: "",
+          subCategory: "",
+          name: "",
+          price: "",
+          description: "",
+          longDes: "",
+          ingredients: [],
+          benefits: [],
+          faq: [],
+          highlights: "",
+          stock: "",
+          discount: "",
+          productType: "",
+          image: [],
+          filterTag: "",
+          gst: "",
+          expiryDate: "",
+          batchNo: "",
+          mfgName: "",
+          weight: "",
+          height: "",
+          width: "",
+          slug: "",
+          canonical: "",
+          seoMetaTitle: "",
+          seoMetaDesc: "",
+          productDisplay: false,
+          kit: [],
+          userReview: [],
+          shortDes: "",
+          benefitsMain: "",
+          ingredientMain: "",
         });
         setImageFiles([]);
         setErrors({});
@@ -375,6 +450,7 @@ function AddProduct() {
             isEditMode ? "update" : "add"
           } product. Please try again.`,
         variant: "destructive",
+        className: "bg-white"
       });
     } finally {
       console.log("Submission process complete");
@@ -396,8 +472,8 @@ function AddProduct() {
                   <Label>Category</Label>
                   <Select
                     value={formData.category}
-                    onValueChange={value =>
-                      setFormData(prev => ({ ...prev, category: value }))
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, category: value }))
                     }
                   >
                     <SelectTrigger>
@@ -420,7 +496,7 @@ function AddProduct() {
                   <Input
                     name="name"
                     value={formData.name}
-                    onChange={e => handleChange(e, "name")}
+                    onChange={(e) => handleChange(e, "name")}
                     placeholder="Enter product name"
                   />
                   {errors.name && (
@@ -436,7 +512,7 @@ function AddProduct() {
                     name="price"
                     type="number"
                     value={formData.price}
-                    onChange={e => handleChange(e, "price")}
+                    onChange={(e) => handleChange(e, "price")}
                     placeholder="Enter price"
                     min="0"
                   />
@@ -448,8 +524,8 @@ function AddProduct() {
                   <Label>Sub Category</Label>
                   <Select
                     value={formData.subCategory}
-                    onValueChange={value =>
-                      setFormData(prev => ({ ...prev, subCategory: value }))
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, subCategory: value }))
                     }
                   >
                     <SelectTrigger>
@@ -488,8 +564,12 @@ function AddProduct() {
                     name="expiryDate"
                     type="date"
                     value={formData.expiryDate}
-                    onChange={e => handleChange(e, "expiryDate")}
-                    min={new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0]}
+                    onChange={(e) => handleChange(e, "expiryDate")}
+                    min={
+                      new Date(new Date().setDate(new Date().getDate() + 1))
+                        .toISOString()
+                        .split("T")[0]
+                    }
                     required
                   />
                   {errors.expiryDate && (
@@ -501,7 +581,7 @@ function AddProduct() {
                   <Input
                     name="batchNo"
                     value={formData.batchNo}
-                    onChange={e => handleChange(e, "batchNo")}
+                    onChange={(e) => handleChange(e, "batchNo")}
                     placeholder="Enter batch number"
                   />
                 </div>
@@ -513,7 +593,7 @@ function AddProduct() {
                   <Input
                     name="mfgName"
                     value={formData.mfgName}
-                    onChange={e => handleChange(e, "mfgName")}
+                    onChange={(e) => handleChange(e, "mfgName")}
                     placeholder="Enter manufacturer name"
                   />
                 </div>
@@ -523,7 +603,7 @@ function AddProduct() {
                     name="weight"
                     type="number"
                     value={formData.weight}
-                    onChange={e => handleChange(e, "weight")}
+                    onChange={(e) => handleChange(e, "weight")}
                     placeholder="Enter weight"
                   />
                   {errors.weight && (
@@ -539,7 +619,7 @@ function AddProduct() {
                     name="height"
                     type="number"
                     value={formData.height}
-                    onChange={e => handleChange(e, "height")}
+                    onChange={(e) => handleChange(e, "height")}
                     placeholder="Enter height"
                   />
                   {errors.height && (
@@ -552,7 +632,7 @@ function AddProduct() {
                     name="width"
                     type="number"
                     value={formData.width}
-                    onChange={e => handleChange(e, "width")}
+                    onChange={(e) => handleChange(e, "width")}
                     placeholder="Enter width"
                   />
                   {errors.width && (
@@ -567,7 +647,7 @@ function AddProduct() {
                   <Input
                     name="slug"
                     value={formData.slug}
-                    onChange={e => handleChange(e, "slug")}
+                    onChange={(e) => handleChange(e, "slug")}
                     placeholder="Enter slug"
                   />
                 </div>
@@ -576,7 +656,7 @@ function AddProduct() {
                   <Input
                     name="canonical"
                     value={formData.canonical}
-                    onChange={e => handleChange(e, "canonical")}
+                    onChange={(e) => handleChange(e, "canonical")}
                     placeholder="Enter canonical URL"
                   />
                 </div>
@@ -584,12 +664,12 @@ function AddProduct() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Discount (%)</Label>
+                  <Label>Discount (Rs)</Label>
                   <Input
                     name="discount"
                     type="number"
                     value={formData.discount}
-                    onChange={e => handleChange(e, "discount")}
+                    onChange={(e) => handleChange(e, "discount")}
                     placeholder="Enter discount percentage"
                     min="0"
                     max="100"
@@ -604,7 +684,7 @@ function AddProduct() {
                     name="stock"
                     type="number"
                     value={formData.stock}
-                    onChange={e => handleChange(e, "stock")}
+                    onChange={(e) => handleChange(e, "stock")}
                     placeholder="Enter stock quantity"
                     min="0"
                   />
@@ -620,7 +700,7 @@ function AddProduct() {
                   name="gst"
                   type="number"
                   value={formData.gst}
-                  onChange={e => handleChange(e, "gst")}
+                  onChange={(e) => handleChange(e, "gst")}
                   placeholder="Enter GST percentage"
                   min="0"
                 />
@@ -634,7 +714,7 @@ function AddProduct() {
                 <Input
                   name="seoMetaTitle"
                   value={formData.seoMetaTitle}
-                  onChange={e => handleChange(e, "seoMetaTitle")}
+                  onChange={(e) => handleChange(e, "seoMetaTitle")}
                   placeholder="Enter SEO meta title"
                 />
               </div>
@@ -644,7 +724,7 @@ function AddProduct() {
                 <Textarea
                   name="seoMetaDesc"
                   value={formData.seoMetaDesc}
-                  onChange={e => handleChange(e, "seoMetaDesc")}
+                  onChange={(e) => handleChange(e, "seoMetaDesc")}
                   placeholder="Enter SEO meta description"
                 />
               </div>
@@ -654,16 +734,21 @@ function AddProduct() {
                 <Input
                   name="filterTag"
                   value={formData.filterTag}
-                  onChange={e => handleChange(e, "filterTag")}
+                  onChange={(e) => handleChange(e, "filterTag")}
                   placeholder="Enter filter tags (e.g., hair, skin)"
                 />
+                <div className="flex justify-end mt-2">
+                  <Button type="button" onClick={() => addItem("filterTag")}>
+                    Add Filter Tag
+                  </Button>
+                </div>
               </div>
 
               <div className="space-y-2">
                 <Label>Short Description</Label>
                 <ReactQuill
                   value={formData.shortDes}
-                  onChange={value => handleChange(value, "shortDes")}
+                  onChange={(value) => handleChange(value, "shortDes")}
                   theme="snow"
                   placeholder="Type short description here..."
                   modules={{
@@ -687,7 +772,7 @@ function AddProduct() {
                 <Label>Description</Label>
                 <ReactQuill
                   value={formData.description}
-                  onChange={value => handleChange(value, "description")}
+                  onChange={(value) => handleChange(value, "description")}
                   theme="snow"
                   placeholder="Type product description here..."
                   modules={{
@@ -714,7 +799,7 @@ function AddProduct() {
                 <Label>Long Description</Label>
                 <ReactQuill
                   value={formData.longDes}
-                  onChange={value => handleChange(value, "longDes")}
+                  onChange={(value) => handleChange(value, "longDes")}
                   theme="snow"
                   placeholder="Type long description here..."
                   modules={{
@@ -738,7 +823,7 @@ function AddProduct() {
                 <Label>Main Ingredients</Label>
                 <ReactQuill
                   value={formData.ingredientMain}
-                  onChange={value => handleChange(value, "ingredientMain")}
+                  onChange={(value) => handleChange(value, "ingredientMain")}
                   theme="snow"
                   placeholder="Type main ingredients here..."
                   modules={{
@@ -760,33 +845,46 @@ function AddProduct() {
 
               <div className="space-y-2">
                 <Label>Ingredients</Label>
-                <ReactQuill
-                  value={formData.ingredients}
-                  onChange={value => handleChange(value, "ingredients")}
-                  theme="snow"
-                  placeholder="Type ingredients here (format as JSON array if structured)..."
-                  modules={{
-                    toolbar: [
-                      [{ header: "1" }, { header: "2" }, { font: [] }],
-                      [{ list: "ordered" }, { list: "bullet" }],
-                      [{ align: [] }],
-                      ["bold", "italic", "underline"],
-                      ["link"],
-                      [{ color: [] }, { background: [] }],
-                      ["blockquote", "code-block"],
-                      ["image"],
-                      [{ script: "sub" }, { script: "super" }],
-                      ["clean"],
-                    ],
-                  }}
-                />
+                {formData.ingredients.map((item, index) => (
+                  <div key={index} className="flex gap-2 items-start">
+                    <div className="flex-1 space-y-2">
+                      <Input
+                        value={item.title}
+                        onChange={(e) =>
+                          updateItem("ingredients", index, "title", e.target.value)
+                        }
+                        placeholder="Ingredient title"
+                      />
+                      <Input
+                        value={item.desc}
+                        onChange={(e) =>
+                          updateItem("ingredients", index, "desc", e.target.value)
+                        }
+                        placeholder="Ingredient description"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeItem("ingredients", index)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <div className="flex justify-end mt-2">
+                  <Button type="button" onClick={() => addItem("ingredients")}>
+                    Add Ingredient
+                  </Button>
+                </div>
               </div>
 
               <div className="space-y-2">
                 <Label>Main Benefits</Label>
                 <ReactQuill
                   value={formData.benefitsMain}
-                  onChange={value => handleChange(value, "benefitsMain")}
+                  onChange={(value) => handleChange(value, "benefitsMain")}
                   theme="snow"
                   placeholder="Type main benefits here..."
                   modules={{
@@ -808,57 +906,83 @@ function AddProduct() {
 
               <div className="space-y-2">
                 <Label>Benefits</Label>
-                <ReactQuill
-                  value={formData.benefits}
-                  onChange={value => handleChange(value, "benefits")}
-                  theme="snow"
-                  placeholder="Type benefits here (format as JSON array if structured)..."
-                  modules={{
-                    toolbar: [
-                      [{ header: "1" }, { header: "2" }, { font: [] }],
-                      [{ list: "ordered" }, { list: "bullet" }],
-                      [{ align: [] }],
-                      ["bold", "italic", "underline"],
-                      ["link"],
-                      [{ color: [] }, { background: [] }],
-                      ["blockquote", "code-block"],
-                      ["image"],
-                      [{ script: "sub" }, { script: "super" }],
-                      ["clean"],
-                    ],
-                  }}
-                />
+                {formData.benefits.map((item, index) => (
+                  <div key={index} className="flex gap-2 items-start">
+                    <div className="flex-1 space-y-2">
+                      <Input
+                        value={item.title}
+                        onChange={(e) =>
+                          updateItem("benefits", index, "title", e.target.value)
+                        }
+                        placeholder="Benefit title"
+                      />
+                      <Input
+                        value={item.desc}
+                        onChange={(e) =>
+                          updateItem("benefits", index, "desc", e.target.value)
+                        }
+                        placeholder="Benefit description"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeItem("benefits", index)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <div className="flex justify-end mt-2">
+                  <Button type="button" onClick={() => addItem("benefits")}>
+                    Add Benefit
+                  </Button>
+                </div>
               </div>
 
               <div className="space-y-2">
                 <Label>FAQ</Label>
-                <ReactQuill
-                  value={formData.faq}
-                  onChange={value => handleChange(value, "faq")}
-                  theme="snow"
-                  placeholder="Type FAQ here (format as JSON array if structured)..."
-                  modules={{
-                    toolbar: [
-                      [{ header: "1" }, { header: "2" }, { font: [] }],
-                      [{ list: "ordered" }, { list: "bullet" }],
-                      [{ align: [] }],
-                      ["bold", "italic", "underline"],
-                      ["link"],
-                      [{ color: [] }, { background: [] }],
-                      ["blockquote", "code-block"],
-                      ["image"],
-                      [{ script: "sub" }, { script: "super" }],
-                      ["clean"],
-                    ],
-                  }}
-                />
+                {formData.faq.map((item, index) => (
+                  <div key={index} className="flex gap-2 items-start">
+                    <div className="flex-1 space-y-2">
+                      <Input
+                        value={item.title}
+                        onChange={(e) =>
+                          updateItem("faq", index, "title", e.target.value)
+                        }
+                        placeholder="FAQ question"
+                      />
+                      <Input
+                        value={item.desc}
+                        onChange={(e) =>
+                          updateItem("faq", index, "desc", e.target.value)
+                        }
+                        placeholder="FAQ answer"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeItem("faq", index)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <div className="flex justify-end mt-2">
+                  <Button type="button" onClick={() => addItem("faq")}>
+                    Add FAQ
+                  </Button>
+                </div>
               </div>
 
               <div className="space-y-2">
                 <Label>Highlights</Label>
                 <ReactQuill
                   value={formData.highlights}
-                  onChange={value => handleChange(value, "highlights")}
+                  onChange={(value) => handleChange(value, "highlights")}
                   theme="snow"
                   placeholder="Type highlights here..."
                   modules={{
@@ -879,28 +1003,42 @@ function AddProduct() {
               </div>
 
               <div className="space-y-2">
-                <Label>Kit Items (comma-separated)</Label>
-                <Input
-                  name="kit"
-                  value={formData.kit.join(", ")}
-                  onChange={e =>
-                    setFormData(prev => ({
-                      ...prev,
-                      kit: e.target.value.split(",").map(item => item.trim()),
-                    }))
-                  }
-                  placeholder="Enter kit items (e.g., item1, item2)"
-                />
+                <Label>Kit Items</Label>
+                {formData.kit.map((item, index) => (
+                  <div key={index} className="flex gap-2 items-center">
+                    <Input
+                      className="flex-1"
+                      value={item}
+                      onChange={(e) =>
+                        updateItem("kit", index, "", e.target.value)
+                      }
+                      placeholder="Enter kit item"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeItem("kit", index)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <div className="flex justify-end mt-2">
+                  <Button type="button" onClick={() => addItem("kit")}>
+                    Add Kit Item
+                  </Button>
+                </div>
               </div>
 
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="productDisplay"
-                  checked={formData.productDisplay}
-                  onCheckedChange={checked =>
-                    setFormData(prev => ({
+                  checked={!!formData.productDisplay}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({
                       ...prev,
-                      productDisplay: checked,
+                      productDisplay: checked === true,
                     }))
                   }
                 />
@@ -917,19 +1055,21 @@ function AddProduct() {
                   accept="image/*"
                   multiple
                   onChange={handleImageUpload}
-                  ref={fileInputRef} // Assign the ref to the input
+                  ref={fileInputRef}
                 />
                 {errors.image && (
                   <p className="text-red-500 text-sm">{errors.image}</p>
                 )}
 
-                {/* Preview for newly selected images */}
                 {imageFiles.length > 0 && (
                   <div className="mt-2">
                     <p className="text-sm font-medium">Selected Images:</p>
                     <div className="flex flex-wrap gap-2 mt-2">
                       {imageFiles.map((file, index) => (
-                        <div key={index} className="relative w-24 h-24 rounded-md overflow-hidden">
+                        <div
+                          key={index}
+                          className="relative w-24 h-24 rounded-md overflow-hidden"
+                        >
                           <img
                             src={URL.createObjectURL(file)}
                             alt={`Selected preview ${index + 1}`}
@@ -938,9 +1078,22 @@ function AddProduct() {
                           <button
                             type="button"
                             className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs"
-                            onClick={() => removeSelectedImage(index)} // Use the new remove function
+                            onClick={() => removeSelectedImage(index)}
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <line x1="18" y1="6" x2="6" y2="18"></line>
+                              <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
                           </button>
                         </div>
                       ))}
@@ -948,20 +1101,21 @@ function AddProduct() {
                   </div>
                 )}
 
-                {/* Preview for existing images in edit mode */}
                 {isEditMode && formData.image.length > 0 && (
                   <div className="mt-4">
                     <p className="text-sm font-medium">Existing Images:</p>
                     <div className="flex flex-wrap gap-2 mt-2">
                       {formData.image.map((url, index) => (
-                         <div key={index} className="relative w-24 h-24 rounded-md overflow-hidden">
+                        <div
+                          key={index}
+                          className="relative w-24 h-24 rounded-md overflow-hidden"
+                        >
                           <img
                             src={url}
                             alt={`Existing image ${index + 1}`}
                             className="w-full h-full object-cover"
                           />
-                           {/* Add delete functionality for existing images if needed */}
-                         </div>
+                        </div>
                       ))}
                     </div>
                   </div>

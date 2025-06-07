@@ -48,6 +48,7 @@ const AddDoctor = () => {
     qualification: "",
     awards: [], // Awards should be an array of strings (URLs)
     isSpec: false,
+    showOnDashboard: false // Initialize showOnDashboard
   });
 
   const [profileImage, setProfileImage] = useState(null);
@@ -75,6 +76,7 @@ const AddDoctor = () => {
         qualification: doctorData.qualification || "",
         awards: doctorData.awards || [],
         isSpec: doctorData.isSpec || false,
+        showOnDashboard: doctorData.showOnDashboard || false // Set showOnDashboard from doctorData
       });
       setProfileImage(doctorData.image);
       setProfileImagePreview(doctorData.image);
@@ -286,6 +288,7 @@ const AddDoctor = () => {
         ...formData,
         image: uploadedProfileImage,
         awards: [...(doctorData?.awards || []), ...filteredUploadedAwards],
+        showOnDashboard: formData.showOnDashboard
       };
 
       if (isEdit && doctorData?._id) {
@@ -686,7 +689,12 @@ const AddDoctor = () => {
                 <Checkbox
                   id="showOnDashboard"
                   checked={formData.showOnDashboard}
-                  onCheckedChange={handleCheckboxChange("showOnDashboard")}
+                  onCheckedChange={(checked) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      showOnDashboard: checked
+                    }));
+                  }}
                 />
                 <Label htmlFor="showOnDashboard">Show on Dashboard</Label>
               </div>
@@ -695,7 +703,12 @@ const AddDoctor = () => {
                 <Checkbox
                   id="isSpec"
                   checked={formData.isSpec}
-                  onCheckedChange={handleCheckboxChange("isSpec")}
+                  onCheckedChange={(checked) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      isSpec: checked
+                    }));
+                  }}
                 />
                 <Label htmlFor="isSpec">Is Specialist</Label>
               </div>

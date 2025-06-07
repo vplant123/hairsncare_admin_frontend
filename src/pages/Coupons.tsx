@@ -44,10 +44,9 @@ interface CouponFormData {
   _id?: string | null;
   code: string;
   type: string;
-  percent: string;
+  percent: number;
   validity: string;
   isActive: boolean;
-  notes: string;
 }
 
 const Coupons = () => {
@@ -70,11 +69,10 @@ const Coupons = () => {
   const initialFormData: CouponFormData = {
     _id: null,
     code: "",
-    type: "percentage",
-    percent: "",
+    type: "1",
+    percent: 0,
     validity: "",
     isActive: true,
-    notes: "",
   };
 
   const [formData, setFormData] = useState<CouponFormData>(initialFormData);
@@ -85,13 +83,12 @@ const Coupons = () => {
       setFormData({
         _id: selectedCoupon._id || null,
         code: selectedCoupon.code || "",
-        type: selectedCoupon.type || "percentage",
-        percent: selectedCoupon.percent?.toString() || "",
+        type: selectedCoupon.type || "1",
+        percent: selectedCoupon.percent || 0,
         validity: selectedCoupon.validity
           ? new Date(selectedCoupon.validity).toISOString().split("T")[0]
           : "",
         isActive: selectedCoupon.isActive ?? true,
-        notes: selectedCoupon.notes || "",
       });
     } else if (!createCouponOpen) {
       setFormData(initialFormData);
@@ -124,33 +121,10 @@ const Coupons = () => {
     }
 
     // Validate percent
-    if (!formData.percent.trim()) {
+    if (formData.percent <= 0 || formData.percent > 100) {
       toast({
         title: "Validation Error",
-        description: "Percent is required.",
-        variant: "destructive",
-        duration: 5000,
-      });
-      return false;
-    }
-
-    // Validate percent is a positive number
-    const percent = Number(formData.percent);
-    if (isNaN(percent) || percent <= 0) {
-      toast({
-        title: "Validation Error",
-        description: "Percent must be a positive number.",
-        variant: "destructive",
-        duration: 5000,
-      });
-      return false;
-    }
-
-    // Validate percentage value range
-    if (formData.type === "percentage" && percent > 100) {
-      toast({
-        title: "Validation Error",
-        description: "Percentage value cannot be greater than 100%.",
+        description: "Percent must be between 0 and 100.",
         variant: "destructive",
         duration: 5000,
       });
@@ -184,17 +158,6 @@ const Coupons = () => {
       return false;
     }
 
-    // Validate notes (optional but if provided, check length)
-    if (formData.notes && formData.notes.length > 500) {
-      toast({
-        title: "Validation Error",
-        description: "Notes cannot exceed 500 characters.",
-        variant: "destructive",
-        duration: 5000,
-      });
-      return false;
-    }
-
     return true;
   };
 
@@ -203,19 +166,10 @@ const Coupons = () => {
     // Validate value field for numbers
     if (field === "percent") {
       const numValue = Number(value);
-      if (isNaN(numValue) || numValue < 0) {
+      if (isNaN(numValue) || numValue < 0 || numValue > 100) {
         toast({
           title: "Validation Error",
-          description: "Percent must be a positive number.",
-          variant: "destructive",
-          duration: 5000,
-        });
-        return;
-      }
-      if (formData.type === "percentage" && numValue > 100) {
-        toast({
-          title: "Validation Error",
-          description: "Percentage value cannot be greater than 100%.",
+          description: "Percent must be between 0 and 100.",
           variant: "destructive",
           duration: 5000,
         });
@@ -300,7 +254,7 @@ const Coupons = () => {
         code: formData.code,
         _id: null,
         validity: formData.validity,
-        percent: Number(formData.percent),
+        percent: formData.percent,
         type: formData.type,
         isActive: formData.isActive ?? true,
       };
@@ -368,7 +322,7 @@ const Coupons = () => {
         code: formData.code,
         _id: formData._id,
         validity: formData.validity,
-        percent: Number(formData.percent),
+        percent: formData.percent,
         type: formData.type,
         isActive: formData.isActive,
       };
@@ -675,6 +629,7 @@ const Coupons = () => {
                       <TableHead>Discount</TableHead>
                       <TableHead>Expiry Date</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Type</TableHead>
                       <TableHead>Active</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -703,11 +658,7 @@ const Coupons = () => {
                               {coupon.code}
                             </TableCell>
                             <TableCell>
-                              {coupon.type === "percentage"
-                                ? `${coupon.percent || 0}%`
-                                : `${(parseFloat(coupon.percent) || 0).toFixed(
-                                    2
-                                  )} Rs`}
+                              {`${coupon.percent}%`}
                             </TableCell>
                             <TableCell>{formatDate(coupon.validity)}</TableCell>
                             <TableCell>
@@ -720,6 +671,11 @@ const Coupons = () => {
                               >
                                 {coupon.isActive ? "Active" : "Not Active"}
                               </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {coupon.type === "1" ? "Hair Test" : 
+                               coupon.type === "2" ? "Order" : 
+                               coupon.type === "3" ? "Both" : "-"}
                             </TableCell>
                             <TableCell>
                               <Switch
@@ -838,8 +794,9 @@ const Coupons = () => {
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent className="bg-white">
-                      <SelectItem value="percentage">Percentage (%)</SelectItem>
-                      <SelectItem value="fixed">Fixed Amount (Rs)</SelectItem>
+                      <SelectItem value="1">Hair Test</SelectItem>
+                      <SelectItem value="2">Order</SelectItem>
+                      <SelectItem value="3">Both</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -847,14 +804,15 @@ const Coupons = () => {
                 <div className="space-y-2">
                   <div className="flex items-center">
                     <Percent className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span>Value</span>
+                    <span>Discount Percentage</span>
                   </div>
                   <Input
                     type="number"
                     value={formData.percent}
-                    onChange={(e) => handleInputChange("percent", e.target.value)}
-                    placeholder={formData.type === "percentage" ? "25" : "100"}
+                    onChange={(e) => handleInputChange("percent", Number(e.target.value))}
+                    placeholder="Enter discount percentage"
                     min="0"
+                    max="100"
                   />
                 </div>
               </div>
@@ -870,15 +828,6 @@ const Coupons = () => {
                   onChange={(e) =>
                     handleInputChange("validity", e.target.value)
                   }
-                />
-              </div>
-
-              <div className="space-y-2">
-                <span>Notes</span>
-                <Input
-                  value={formData.notes}
-                  onChange={(e) => handleInputChange("notes", e.target.value)}
-                  placeholder="Coupon notes or description"
                 />
               </div>
 
