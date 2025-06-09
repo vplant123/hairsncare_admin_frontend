@@ -45,6 +45,7 @@ import ManagementReport from "../src/managementReport";
 import TestResults from "./pages/TestResults";
 import HairTestPage from "./pages/HairTestPage";
 import AdminDashboard from "./pages/admin-dashboard/AdminDashboard.jsx";
+import Blogs from "./pages/Blogs";
 
 // Updated ProtectedRoute component
 const ProtectedRoute = ({
@@ -287,6 +288,19 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/blogs"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="website"
+                >
+                  <Blogs />
+                </ProtectedRoute>
+              }
+            />
+          
+              
 
             {/* Product Routes with specific permissions for subadmin */}
             <Route

@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Stethoscope,
   X,
+  
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -44,6 +45,7 @@ const routesByRole = {
     // { path: "/reports", label: "Reports" },
     // { path: "/prescriptions", label: "Prescriptions" },
     { path: "/reviews", label: "Reviews" },
+    { path: "/blogs", label: "Blogs" },
     { path: "/invoice", label: "Invoice" },
     { path: "/contact", label: "Contact Us" },
   ],
@@ -79,7 +81,7 @@ const icons = {
   "/admins": UserCog,
   "/orders": ShoppingCart,
   "/reviews": Star,
-
+"/blogs":Globe,
   "/website": Globe,
   "/products": ShoppingBag,
   "/coupons": Tag,
