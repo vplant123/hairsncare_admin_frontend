@@ -187,7 +187,6 @@ function AddProduct() {
         description: errorMessage,
         variant: "destructive",
         duration: 5000,
-        className: "bg-white"
       });
       return false;
     }
@@ -385,10 +384,8 @@ function AddProduct() {
         console.log("Product operation successful");
         toast({
           title: "Success",
-          description: `Product ${
-            isEditMode ? "updated" : "added"
-          } successfully.`,
-          className: "bg-white"
+          description: "Product added successfully",
+          variant: "success",
         });
 
         // Reset form

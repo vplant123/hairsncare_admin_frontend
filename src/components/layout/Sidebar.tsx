@@ -32,12 +32,16 @@ interface SidebarProps {
 const routesByRole = {
   admin: [
     { path: "/dashboard", label: "Dashboard" },
-    { path: "/admins", label: "Admins" },
     { path: "/users", label: "Patient" },
-    { path: "/doctors", label: "Doctors" },
     { path: "/hair-test", label: "Hair Tests" },
-    // { path: "/appoinment", label: "Appointments" },
+    { path: "/followup", label: "Follow Up" },
     { path: "/orders", label: "Orders" },
+    { path: "/admins", label: "Admins" },
+
+    { path: "/doctors", label: "Doctors" },
+
+    // { path: "/appoinment", label: "Appointments" },
+
     { path: "/products", label: "Products" },
     { path: "/website", label: "Manage Website" },
     { path: "/coupons", label: "Coupons" },
@@ -57,6 +61,9 @@ const routesByRole = {
     { path: "/appointments", label: "Appointments" },
     // { path: "/reports", label: "Reports" },
     // { path: "/prescriptions", label: "Prescriptions" },
+    { path: "/hair-test", label: "Hair Tests", permissionKey: "hairTest" },
+    { path: "/reviews", label: "Reviews", permissionKey: "reviews" },
+    { path: "/followup", label: "Follow Up", permissionKey: "followUp" },
   ],
   subadmin: [
     { path: "/dashboard", label: "Dashboard" },
@@ -90,6 +97,7 @@ const icons = {
   "/appointments": Tag,
   "/reports": FileText,
   "/prescriptions": FileCheck,
+  "/follow-up": FileText,
 };
 
 const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(({ isMobileOpen = false, onMobileClose }, ref) => {

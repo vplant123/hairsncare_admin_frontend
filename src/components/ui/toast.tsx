@@ -23,13 +23,13 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 rounded-md border shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
   {
     variants: {
       variant: {
-        default: "border bg-background text-foreground",
-        destructive:
-          "destructive group border-destructive bg-destructive text-destructive-foreground",
+        default: "bg-background text-foreground",
+        destructive: "destructive group border-red-500 bg-red-100 text-red-900",
+        success: "success group border-green-500 bg-green-100 text-green-900",
       },
     },
     defaultVariants: {
@@ -49,8 +49,20 @@ const Toast = React.forwardRef<
       className={cn(toastVariants({ variant }), "relative", className)}
       {...props}
     >
-      {props.children}
-      <div className="absolute bottom-0 left-0 h-1 w-full bg-green-500 animate-[shrink_5s_linear_forwards]" />
+      <div className="flex w-full items-center justify-between space-x-4 overflow-hidden p-6 pr-8">
+        {props.children}
+      </div>
+      <div
+        className={cn(
+          "absolute bottom-0 h-1 animate-[shrink_5s_linear_forwards]",
+          "left-[-1px] right-[-1px] rounded-b-md",
+          variant === "destructive"
+            ? "bg-red-500"
+            : variant === "success"
+              ? "bg-green-500"
+              : ""
+        )}
+      />
     </ToastPrimitives.Root>
   );
 });

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import toast, { Toaster } from "react-hot-toast";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Select,
   SelectContent,
@@ -27,6 +27,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Toaster } from "@/components/ui/toaster";
 
 interface Review {
   _id: string;
@@ -43,6 +44,7 @@ const Reviews = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const token = localStorage.getItem("token");
+  const { toast } = useToast();
 
   const handleFetchData = async () => {
     try {
@@ -88,19 +90,31 @@ const Reviews = () => {
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Failed to toggle status:", errorData);
-        toast.error(errorData.message || "Failed to update status via delete endpoint");
+        toast({
+          title: "Error",
+          description: errorData.message || "Failed to update status via delete endpoint",
+          variant: "destructive",
+        });
         handleFetchData();
         return;
       }
 
       const result = await response.json();
       console.log("Status updated successfully via delete endpoint:", result);
-      toast.success(newIsDeletedStatus ? "Review set to inactive" : "Review set to active");
+      toast({
+        title: "Success",
+        description: newIsDeletedStatus ? "Review set to inactive" : "Review set to active",
+        variant: "success",
+      });
 
       handleFetchData();
     } catch (error) {
       console.error("Error toggling status:", error);
-      toast.error("Error updating review status");
+      toast({
+        title: "Error",
+        description: "Error updating review status",
+        variant: "destructive",
+      });
       handleFetchData();
     }
   };

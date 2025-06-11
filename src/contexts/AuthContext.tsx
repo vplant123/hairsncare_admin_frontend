@@ -41,7 +41,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [permissions, setPermissions] = useState<{ [key: string]: boolean }>(
     () => {
       const storedPermissions = localStorage.getItem("permissions");
-      return storedPermissions ? JSON.parse(storedPermissions) : {};
+      if (storedPermissions) {
+        const parsedPermissions = JSON.parse(storedPermissions);
+        return { ...parsedPermissions, followUp: parsedPermissions.followUp || false };
+      }
+      return { 
+        hairTest: false,
+        doctor: false,
+        patient: false,
+        website: false,
+        coupon: false,
+        orders: false,
+        contactus: false,
+        product: false,
+        reviews: false,
+        admin: false,
+        followUp: false,
+      };
     }
   );
 
@@ -102,12 +118,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         // Store authentication data
         localStorage.setItem("token", token);
         localStorage.setItem("role", userRole);
-        localStorage.setItem("permissions", JSON.stringify(userPermissions));
+        localStorage.setItem("permissions", JSON.stringify({
+          ...userPermissions,
+          followUp: userPermissions.followUp || false,
+        }));
         localStorage.setItem("userProfile", JSON.stringify(profileData));
 
         setIsAuthenticated(true);
         setRole(userRole);
-        setPermissions(userPermissions);
+        setPermissions({
+          ...userPermissions,
+          followUp: userPermissions.followUp || false,
+        });
         setUserProfile(profileData);
 
         // Navigate based on role
@@ -143,7 +165,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = () => {
     setIsAuthenticated(false);
     setRole(null);
-    setPermissions({});
+    setPermissions({
+      hairTest: false,
+      doctor: false,
+      patient: false,
+      website: false,
+      coupon: false,
+      orders: false,
+      contactus: false,
+      product: false,
+      reviews: false,
+      admin: false,
+      followUp: false,
+    });
     setUserProfile({
       fullname: "",
       email: "",

@@ -103,6 +103,7 @@ const Coupons = () => {
       toast({
         title: "Validation Error",
         description: "Coupon Code is required.",
+        className: "bg-red-50 border-red-200",
         variant: "destructive",
         duration: 5000,
       });
@@ -114,6 +115,7 @@ const Coupons = () => {
       toast({
         title: "Validation Error",
         description: "Coupon Type is required.",
+        className: "bg-red-50 border-red-200",
         variant: "destructive",
         duration: 5000,
       });
@@ -125,6 +127,7 @@ const Coupons = () => {
       toast({
         title: "Validation Error",
         description: "Percent must be between 0 and 100.",
+        className: "bg-red-50 border-red-200",
         variant: "destructive",
         duration: 5000,
       });
@@ -138,6 +141,7 @@ const Coupons = () => {
         description: "Validity Date is required.",
         variant: "destructive",
         duration: 5000,
+        className: "bg-red-50 border-red-200"
       });
       return false;
     }
@@ -152,6 +156,7 @@ const Coupons = () => {
       toast({
         title: "Validation Error",
         description: "Validity Date must be today or a future date.",
+        className: "bg-red-50 border-red-200",
         variant: "destructive",
         duration: 5000,
       });
@@ -170,6 +175,7 @@ const Coupons = () => {
         toast({
           title: "Validation Error",
           description: "Percent must be between 0 and 100.",
+          className: "bg-red-50 border-red-200",
           variant: "destructive",
           duration: 5000,
         });
@@ -187,7 +193,7 @@ const Coupons = () => {
       if (selectedDate < today) {
         toast({
           title: "Validation Error",
-          className: "bg-white",
+          className: "bg-red-50 border-red-200",
           description: "Validity Date must be today or a future date.",
           variant: "destructive",
           duration: 5000,

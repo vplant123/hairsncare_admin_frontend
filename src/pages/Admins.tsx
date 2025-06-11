@@ -284,7 +284,7 @@ const Admins = () => {
         toast({
           title: "Admin Added",
           description: `${newAdmin.fullname} has been added as a ${newAdmin.role}`,
-          variant: "default", // Ensure success toast uses default variant
+          variant: "success",
         });
       } else {
         // Handle API errors
@@ -362,7 +362,7 @@ const Admins = () => {
         toast({
           title: "Admin Updated",
           description: `${newAdmin.fullname} has been updated successfully`,
-          variant: "default", // Ensure success toast uses default variant
+          variant: "success",
         });
       } else {
         // Handle API errors
@@ -457,7 +457,7 @@ const Admins = () => {
           toast({
             title: "Admin Deleted",
             description: data.message,
-            variant: "default",
+            variant: "success",
             className: "bg-green-200",
           });
         } else {

@@ -21,7 +21,7 @@ import AddProduct from "./pages/AddProduct";
 import DeleteProduct from "./pages/DeleteProduct";
 import EditProduct from "./pages/EditProduct";
 import OrdersInvoices from "./pages/OrdersInvoices";
-
+import FollowUp from "./pages/FollowUp";
 import ManageWebsite from "./pages/ManageWebsite";
 
 import Coupons from "./pages/Coupons";
@@ -166,7 +166,15 @@ const App = () => (
               }
             />
             <Route
-              path="/appoinment" // Note: Typo in path, should likely be /appointment
+              path="/followup"
+              element={
+                <ProtectedRoute requiredRoles={["admin", "doctor"]}>
+                   <FollowUp/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/appointment" // Note: Typo in path, should likely be /appointment
               element={
                 <ProtectedRoute requiredRoles={["admin", "doctor"]}>
                   <AppointmentManagement />
