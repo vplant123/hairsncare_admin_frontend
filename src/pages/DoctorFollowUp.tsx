@@ -72,7 +72,7 @@ interface FollowUp {
   }>;
 }
 
-const FollowUp = () => {
+const DoctorFollowUp = () => {
   // const [activeTab, setActiveTab] = useState("all");
   const [selectedTest, setSelectedTest] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -718,18 +718,13 @@ const FollowUp = () => {
   return (
     <DashboardLayout>
       <Toaster />
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Follow Up Tests</h1>
-      </div>
+     
 
-      <Tabs
-        defaultValue="completed"
-        className="space-y-4"
-      >
+      <Tabs defaultValue="completed" className="space-y-4">
         <TabsContent value="completed" className="space-y-4">
           <Card className="bg-white">
             <CardHeader className="pb-3">
-              <CardTitle>Completed Tests</CardTitle>
+              <CardTitle>Follow Up Tests</CardTitle>
               <CardDescription>
                 View and manage completed hair test appointments and results
               </CardDescription>
@@ -1622,4 +1617,4 @@ const FollowUp = () => {
   );
 };
 
-export default FollowUp;
+export default DoctorFollowUp;

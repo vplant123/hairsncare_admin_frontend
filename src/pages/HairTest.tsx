@@ -89,6 +89,7 @@ const HairTest = () => {
   const [hairTests, setHairTests] = useState([]);
   const [Orders, setOrders] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [pendingSearchQuery, setPendingSearchQuery] = useState("");
 
   const [doctorsList, setDoctorsList] = useState<any>();
   const [assignResponse, setAssignResponse] = useState({
@@ -125,7 +126,18 @@ const HairTest = () => {
 
   const pendingTests = hairTests.filter(
     (test) => test.status?.toLowerCase() === "pending"
-  );
+  ).filter((test) => {
+    const query = pendingSearchQuery.toLowerCase();
+    const name = test.personal?.name?.toLowerCase() || "";
+    const email = test.personal?.email?.toLowerCase() || "";
+    const phoneNumber = test.personal?.phoneNumber?.toLowerCase() || "";
+
+    return (
+      name.includes(query) ||
+      email.includes(query) ||
+      phoneNumber.includes(query)
+    );
+  });
 
   // Filter hair tests based on search query for All tab
   const filteredAllHairTests = hairTests.filter((test) => {
@@ -165,7 +177,7 @@ const HairTest = () => {
   const handleFetchData = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/hair-tests/getall`,
+        `${BASE_URL}/hair-tests/getall`,
         {
           method: "GET",
         }
@@ -181,7 +193,7 @@ const HairTest = () => {
   const handleFetchOrders = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/getOrders`,
+        `${BASE_URL}/admin/getOrders`,
         {
           method: "GET",
         }
@@ -226,7 +238,7 @@ const HairTest = () => {
 
       console.log("Making API call to send WhatsApp...");
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/admin/sendWhatsapp?userId=${userId}`,
+        `${BASE_URL}/admin/sendWhatsapp?userId=${userId}`,
         {
           method: "POST",
           headers: {
@@ -264,6 +276,7 @@ const HairTest = () => {
       });
     } catch (error) {
       console.error("Error in sendWhatsapp:", error);
+      
       toast(error.message || "Error sending WhatsApp message", {
         duration: 4000,
         position: "top-right",
@@ -737,7 +750,7 @@ const HairTest = () => {
 
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="bg-[#209FD9] text-white whitespace-nowrap">
                     <TableHead>Created Date & Time</TableHead>
                     <TableHead>Patient Name</TableHead>
                     <TableHead>Phone Number</TableHead>
@@ -745,19 +758,30 @@ const HairTest = () => {
                     <TableHead>Payment Status</TableHead>
                     <TableHead>Progress</TableHead>
                     <TableHead>Method</TableHead>
-                    <TableHead>Scheduled Date & Time</TableHead>
+                    <TableHead>Date & Time Slot</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Action</TableHead>
+                    <TableHead></TableHead>
+                    <TableHead>Final Status</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
-                  {paginatedAllHairTests.map(test => (
-                    <TableRow key={test._id}>
+                <TableBody className="whitespace-nowrap">
+                  {paginatedAllHairTests.map((test, index) => (
+                    <TableRow
+                      key={test._id}
+                      className={`hover:bg-gray-100 ${index % 2 === 0 ? "bg-white" : "bg-gray-100"}`}
+                    >
                       <TableCell>
                         {test.appointments?.[0]?.createdAt
-                          ? `${new Date(test.appointments[0].createdAt).toLocaleDateString(
-                              "en-GB",
-                              { day: "2-digit", month: "short", year: "numeric" }
-                            )} ${new Date(test.appointments[0].createdAt).toLocaleTimeString([], {
+                          ? `${new Date(
+                              test.appointments[0].createdAt
+                            ).toLocaleDateString("en-GB", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })}, ${new Date(
+                              test.appointments[0].createdAt
+                            ).toLocaleTimeString([], {
                               hour: "2-digit",
                               minute: "2-digit",
                             })}`
@@ -776,7 +800,7 @@ const HairTest = () => {
                               ? "bg-green-100"
                               : test.orders?.amount === 150
                                 ? "bg-blue-100"
-                                : typeof test.orders?.amount !== 'number'
+                                : typeof test.orders?.amount !== "number"
                                   ? "bg-yellow-100"
                                   : "bg-gray-100" // Default neutral if none match
                           } text-gray-700`}
@@ -790,9 +814,11 @@ const HairTest = () => {
                       <TableCell>
                         <span
                           className={`inline-flex items-center justify-center w-24 h-6 rounded-full px-2.5 py-0.5 text-sm font-medium ${
-                            test.appointments?.[0]?.Method?.toLowerCase() === "video call"
+                            test.appointments?.[0]?.Method?.toLowerCase() ===
+                            "video call"
                               ? "bg-green-100"
-                              : test.appointments?.[0]?.Method?.toLowerCase() === "audio call"
+                              : test.appointments?.[0]?.Method?.toLowerCase() ===
+                                  "audio call"
                                 ? "bg-blue-100"
                                 : "bg-gray-100"
                           } text-gray-700`}
@@ -800,19 +826,27 @@ const HairTest = () => {
                           {test.appointments?.[0]?.Method || "Pending"}
                         </span>
                       </TableCell>
-                      <TableCell>
-                        {test.appointments?.[0]?.appointmentDate
-                          ? new Date(
+                      <TableCell className="whitespace-nowrap">
+                        {test.appointments?.[0]?.appointmentDate &&
+                        test.appointments?.[0]?.timeSlot
+                          ? `${new Date(
                               test.appointments[0].appointmentDate
                             ).toLocaleDateString("en-GB", {
                               day: "2-digit",
                               month: "short",
                               year: "numeric",
-                            })
-                          : ""}
-                        {test.appointments?.[0]?.timeSlot
-                          ? ` (${test.appointments[0].timeSlot})`
-                          : ""}
+                            })} (${test.appointments[0].timeSlot})`
+                          : test.appointments?.[0]?.appointmentDate
+                            ? new Date(
+                                test.appointments[0].appointmentDate
+                              ).toLocaleDateString("en-GB", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              })
+                            : test.appointments?.[0]?.timeSlot
+                              ? `(${test.appointments[0].timeSlot})`
+                              : ""}
                       </TableCell>
 
                       <TableCell>
@@ -830,7 +864,7 @@ const HairTest = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex flex-col gap-2 items-end">
-                          {test.status?.toLowerCase() === "completed" && (
+                          {/* {test.status?.toLowerCase() === "completed" && (
                             <Button
                               variant="outline"
                               size="sm"
@@ -839,7 +873,7 @@ const HairTest = () => {
                             >
                               <span>Schedule Follow Up</span>
                             </Button>
-                          )}
+                          )} */}
                           {test.status?.toLowerCase() === "pending" && (
                             <Button
                               variant="outline"
@@ -878,6 +912,23 @@ const HairTest = () => {
                             </>
                           )}
                         </Button>
+                      </TableCell>
+                      <TableCell>
+                        {test.appointments?.[0]?.status?.toLowerCase() ===
+                        "completed" ? (
+                          <span className="inline-flex items-center justify-center w-36 h-7 rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-700">
+                            Report sent complete
+                          </span>
+                        ) : test.appointments?.[0]?.status?.toLowerCase() ===
+                          "booked" ? (
+                          <span className="inline-flex items-center justify-center w-28 h-7 rounded-full px-2.5 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-700">
+                            Report pending
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center justify-center w-48 h-7 rounded-full px-2.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-700">
+                            Report generated
+                          </span>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -954,6 +1005,8 @@ const HairTest = () => {
                     <Input
                       placeholder="Search pending tests..."
                       className="pl-10"
+                      value={pendingSearchQuery}
+                      onChange={e => setPendingSearchQuery(e.target.value)}
                     />
                   </div>
                   <Button variant="outline" size="icon">
@@ -1020,7 +1073,7 @@ const HairTest = () => {
 
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="bg-[#209FD9] text-white whitespace-nowrap">
                     <TableHead>Patient Name</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Phone Number</TableHead>
@@ -1030,8 +1083,11 @@ const HairTest = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedPendingTests.map(test => (
-                    <TableRow key={test._id}>
+                  {paginatedPendingTests.map((test, index) => (
+                    <TableRow
+                      key={test._id}
+                      className={`hover:bg-gray-100 ${index % 2 === 0 ? "bg-white" : "bg-gray-100"}`}
+                    >
                       <TableCell className="font-medium">
                         {test.personal?.name || "N/A"}
                       </TableCell>
@@ -1162,7 +1218,7 @@ const HairTest = () => {
 
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="bg-[#209FD9] text-white whitespace-nowrap">
                     <TableHead>Order ID</TableHead>
                     <TableHead>User Name</TableHead>
                     <TableHead>Order Type</TableHead>
@@ -1176,8 +1232,11 @@ const HairTest = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {Orders.map(order => (
-                    <TableRow key={order._id}>
+                  {Orders.map((order,index) => (
+                    <TableRow
+                      key={order._id}
+                      className={`hover:bg-gray-100 ${index % 2 === 0 ? "bg-white" : "bg-gray-100"}`}
+                    >
                       <TableCell className="font-medium">
                         {order._id || "N/A"}
                       </TableCell>
@@ -1478,6 +1537,8 @@ const HairTest = () => {
                       Generate Prescription
                     </Button>
 
+                    {/* The following button is removed as per user request */}
+                    {/*
                     <Button
                       variant="outline"
                       className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
@@ -1485,6 +1546,7 @@ const HairTest = () => {
                       <CheckCircle className="h-4 w-4" />
                       Report Send Complete
                     </Button>
+                    */}
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>

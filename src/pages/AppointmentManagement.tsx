@@ -78,7 +78,11 @@ const AppointmentManagement = () => {
         const data = await response.json();
         console.log(data);
         if (data.success) {
-          setAppointments(data.data || []);
+          // Filter appointments where followupOf is null, undefined, or doesn't exist
+          const filteredData = data?.data?.filter(
+            appointment => !('followupOf' in appointment)
+          );
+          setAppointments(filteredData || []);
         } else {
           setError(data.message || "Failed to fetch appointments.");
         }
@@ -96,12 +100,12 @@ const AppointmentManagement = () => {
   }, []); // Empty dependency array means this effect runs once on mount
 
   // Filter appointments based on search query
-  const filteredAppointments = appointments.filter((appointment) =>
-    // Check if userId and fullname exist before accessing
-    appointment.userId?.fullname
+  const filteredAppointments = appointments.filter(appointment => {
+    // Apply the search filter
+    return appointment.userId?.fullname
       .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
+      .includes(searchQuery.toLowerCase());
+  });
 
   // Pagination calculations
   const totalAppointments = filteredAppointments.length;
@@ -132,7 +136,7 @@ const AppointmentManagement = () => {
                   placeholder="Search appointments..."
                   className="px-10"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
@@ -144,13 +148,13 @@ const AppointmentManagement = () => {
               <span>Rows per page&nbsp;</span>
               <select
                 value={rowsPerPage}
-                onChange={(e) => {
+                onChange={e => {
                   setRowsPerPage(Number(e.target.value));
                   setCurrentPage(1); // Reset to first page
                 }}
                 className="border rounded px-2 py-1"
               >
-                {[5, 10, 25, 50].map((num) => (
+                {[5, 10, 25, 50].map(num => (
                   <option key={num} value={num}>
                     {num}
                   </option>
@@ -175,7 +179,7 @@ const AppointmentManagement = () => {
                 {"|<"}
               </button> */}
               <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 className="px-2"
               >
@@ -183,7 +187,7 @@ const AppointmentManagement = () => {
               </button>
               <button
                 onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  setCurrentPage(prev => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
                 className="px-2"
@@ -203,15 +207,16 @@ const AppointmentManagement = () => {
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="bg-[#209FD9] text-white whitespace-nowrap">
+                  <TableHead>Date & Time </TableHead>
                   <TableHead>Patient Name</TableHead>
-                  <TableHead>Time Slot</TableHead>
-                  <TableHead>Appointment Date</TableHead>
-                  <TableHead>Created Date</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Patient Type</TableHead>
+                  <TableHead>Phone No.</TableHead>
+                  <TableHead>Email Id</TableHead>
+                  <TableHead>Progress</TableHead>
+                  <TableHead>Method</TableHead>
+                  <TableHead>Date & Time Slot</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Action</TableHead>
+                  <TableHead>FollowUp Date & Time</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -234,25 +239,55 @@ const AppointmentManagement = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paginatedAppointments.map((appointment) => (
+                  paginatedAppointments.map(appointment => (
                     <TableRow key={appointment._id}>
+                      <TableCell>{appointment.appointmentDate}</TableCell>
                       <TableCell className="font-medium">
                         {appointment.userId?.fullname || "N/A"}
                       </TableCell>
-                      <TableCell>{appointment.timeSlot || "N/A"}</TableCell>
+                      <TableCell>{appointment.userId?.mobile || ""}</TableCell>
+                      <TableCell>{appointment.userId?.email || ""}</TableCell>
                       <TableCell>
-                        {formatDateArrowStyle(appointment.appointmentDate) ||
-                          "N/A"}
+                        <span>{appointment.progress}%</span>
                       </TableCell>
                       <TableCell>
-                        {formatDateArrowStyle(appointment.createdAt) || "N/A"}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-24 h-8 text-xs font-medium"
+                          style={{
+                            backgroundColor: appointment.Method === "Audio Call" ? "#3b82f6" : 
+                                           appointment.Method === "Video Call" ? "#10b981" : 
+                                           "white",
+                            color: "white",
+                            border: "none",
+                          }}
+                        >
+                          {appointment.Method}
+                        </Button>
+                      </TableCell>
+                    
+                      <TableCell>
+                        {formatDateArrowStyle(appointment.appointmentDate) || ""} {appointment.timeSlot ? `(${appointment.timeSlot})` : ""}
                       </TableCell>
                       <TableCell>
-                        {appointment.appointmentType || "N/A"}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-24 h-8 text-xs font-medium"
+                          style={{
+                            backgroundColor: appointment.status === "completed" ? "#22c55e" : 
+                                           appointment.status === "pending" ? "#eab308" : 
+                                           appointment.status === "cancelled" ? "#ef4444" : "#3b82f6",
+                            color: "white",
+                            border: "none",
+                          }}
+                        >
+                          {appointment.status?.charAt(0).toUpperCase() + appointment.status?.slice(1) || "N/A"}
+                        </Button>
                       </TableCell>
-                      <TableCell>
-                        {appointment.followupOf ? "Followup" : "New"}
-                      </TableCell>
+                      <TableCell>{appointment.appointmentType || ""}</TableCell>
+                      <TableCell></TableCell>
                       <TableCell>
                         {appointment.status ? (
                           <Button
@@ -260,12 +295,16 @@ const AppointmentManagement = () => {
                             size="sm"
                             className="w-24 h-8 text-xs font-medium"
                             style={{
-                              backgroundColor: appointment.status === "completed" ? "#22c55e" : "#eab308",
+                              backgroundColor:
+                                appointment.status === "completed"
+                                  ? "#22c55e"
+                                  : "#eab308",
                               color: "white",
-                              border: "none"
+                              border: "none",
                             }}
                           >
-                            {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+                            {appointment.status.charAt(0).toUpperCase() +
+                              appointment.status.slice(1)}
                           </Button>
                         ) : (
                           "N/A"
@@ -278,9 +317,12 @@ const AppointmentManagement = () => {
                             size="sm"
                             className="w-32 h-8 text-xs font-medium"
                             style={{
-                              backgroundColor: appointment?.status === "completed" ? "#22c55e" : "#3b82f6",
+                              backgroundColor:
+                                appointment?.status === "completed"
+                                  ? "#22c55e"
+                                  : "#3b82f6",
                               color: "white",
-                              border: "none"
+                              border: "none",
                             }}
                             onClick={() => {
                               const userId = appointment.userId?._id;

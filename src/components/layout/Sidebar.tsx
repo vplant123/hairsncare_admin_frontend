@@ -55,7 +55,7 @@ const routesByRole = {
   ],
   doctor: [
     // { path: "/dashboard", label: "Dashboard" },
-    { path: "/appoinment", label: "Appointment Management" },
+    { path: "/appointment", label: "Appointment Management" },
     // { path: "/hair-test", label: "Hair Test" },
     // { path: "/invoice", label: "Invoice" },
     { path: "/appointments", label: "Appointments" },
@@ -63,7 +63,8 @@ const routesByRole = {
     // { path: "/prescriptions", label: "Prescriptions" },
     { path: "/hair-test", label: "Hair Tests", permissionKey: "hairTest" },
     { path: "/reviews", label: "Reviews", permissionKey: "reviews" },
-    { path: "/followup", label: "Follow Up", permissionKey: "followUp" },
+    { path: "/doctor-followup", label: "Follow Up" },
+    { path: "/Generate-Prescription-for-Orders", label: "Orders" },
   ],
   subadmin: [
     { path: "/dashboard", label: "Dashboard" },

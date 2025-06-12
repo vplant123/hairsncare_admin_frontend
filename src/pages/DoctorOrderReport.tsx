@@ -72,7 +72,7 @@ interface FollowUp {
   }>;
 }
 
-const FollowUp = () => {
+const DoctorOrderReport = () => {
   // const [activeTab, setActiveTab] = useState("all");
   const [selectedTest, setSelectedTest] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -224,139 +224,53 @@ const FollowUp = () => {
     prescriptionCurrentPage * prescriptionRowsPerPage
   );
 
-  const handleFetchData = async () => {
+  const [appointments, setAppointments] = useState([]);
+
+  const fetchAppointments = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/hair-tests/getfollowup`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/doctor/get-all-appointment`,
         {
           method: "GET",
-        }
-      );
-      const data = await response.json();
-      console.log("Fetched Hair Tests:", data);
-      setHairTests(data?.message || []);
-    } catch (error) {
-      console.log("Error while fetching hair tests data", error);
-    }
-  };
-
-  const handleFetchOrders = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/getOrders`,
-        {
-          method: "GET",
-        }
-      );
-      const data = await response.json();
-      console.log("Fetched Orders:", data);
-      setOrders(data?.data || []);
-    } catch (error) {
-      console.log("Error while fetching orders data", error);
-    }
-  };
-  const sendWhatsapp = async userId => {
-    console.log("Starting WhatsApp send process for userId:", userId);
-
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("No token found");
-        toast("No authorization token found", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#EF4444",
-            color: "#fff",
-          },
-        });
-        return;
-      }
-
-      if (!userId) {
-        console.error("No userId provided");
-        toast("User ID not found", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#EF4444",
-            color: "#fff",
-          },
-        });
-        return;
-      }
-
-      console.log("Making API call to send WhatsApp...");
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/admin/sendWhatsapp?userId=${userId}`,
-        {
-          method: "POST",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
         }
       );
-
-      console.log("API Response status:", response.status);
       const data = await response.json();
-      console.log("API Response data:", data);
-
-      if (!response.ok) {
-        console.error("API call failed:", data);
-        toast(data.message || "Failed to send WhatsApp message", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#EF4444",
-            color: "#fff",
-          },
-        });
-        return;
+      console.log("Appointments Data:", data);
+      if (data.success) {
+        setAppointments(data.data);
       }
-
-      console.log("API call successful, showing success toast");
-      toast(data.message || "WhatsApp message sent successfully", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#10B981",
-          color: "#fff",
-        },
-      });
     } catch (error) {
-      console.error("Error in sendWhatsapp:", error);
-      toast(error.message || "Error sending WhatsApp message", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-    }
-  };
-  const handleFetchDoctor = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/all-doctor-Data`,
-        {
-          method: "GET",
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      setDoctorsList(data.data);
-    } catch (error) {
-      console.log("error while fetching doctors data", error);
+      console.error("Error fetching appointments:", error);
     }
   };
 
   useEffect(() => {
-    handleFetchData();
-    handleFetchOrders();
-    handleFetchDoctor();
+    fetchAppointments();
   }, []);
+
+  // Filter appointments based on search query
+  const filteredAppointments = appointments.filter(appointment => {
+    // Only include appointments that have an orderId
+    if (!appointment.orderId) return false;
+
+    const query = searchQuery.toLowerCase();
+    const fullname = appointment.userId?.fullname?.toLowerCase() || "";
+    const orderId = appointment.orderId?.toLowerCase() || "";
+    return fullname.includes(query) || orderId.includes(query);
+  });
+
+  // Pagination calculations for appointments
+  const totalAppointments = filteredAppointments.length;
+  const totalPages = Math.ceil(totalAppointments / completedRowsPerPage);
+
+  const paginatedAppointments = filteredAppointments.slice(
+    (completedCurrentPage - 1) * completedRowsPerPage,
+    completedCurrentPage * completedRowsPerPage
+  );
 
   const handleFollowUp = (test: FollowUp) => {
     console.log("Starting follow-up process for test:", test);
@@ -368,353 +282,6 @@ const FollowUp = () => {
     setIsFollowUpModalOpen(true);
   };
 
-  const handleSubmitFollowUp = async () => {
-    console.log("Submit follow-up initiated");
-    console.log("Current follow-up data:", followUpData);
-    console.log("Selected test for follow-up:", selectedTestForFollowUp);
-
-    // Validate required fields
-    if (
-      !followUpData.doctorId ||
-      !followUpData.appointmentDate ||
-      !followUpData.timeSlot
-    ) {
-      console.error("Missing required fields:", {
-        doctorId: !followUpData.doctorId,
-        appointmentDate: !followUpData.appointmentDate,
-        timeSlot: !followUpData.timeSlot,
-      });
-      toast("Please fill in all required fields", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-      return;
-    }
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("No authorization token found");
-      toast("No authorization token found", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-      return;
-    }
-
-    try {
-      const requestData = {
-        doctorId: followUpData.doctorId,
-        appointmentDate: followUpData.appointmentDate,
-        timeSlot: followUpData.timeSlot,
-        status: "pending",
-        doctorNotes: followUpData.doctorNotes || "",
-        followupOf: selectedTestForFollowUp,
-      };
-
-      console.log("Preparing API request with data:", requestData);
-
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/create-Followup-Appointment`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(requestData),
-        }
-      );
-
-      console.log("API Response status:", response.status);
-      const result = await response.json();
-      console.log("API Response data:", result);
-
-      if (response.ok) {
-        console.log("Follow-up created successfully");
-        toast("Follow-up appointment created successfully", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#10B981",
-            color: "#fff",
-          },
-        });
-        setIsFollowUpModalOpen(false);
-        setFollowUpData({
-          followupOf: "",
-          doctorId: "",
-          appointmentDate: "",
-          timeSlot: "",
-          status: "pending",
-          doctorNotes: "",
-        });
-        console.log("State reset completed");
-        await handleFetchData();
-        console.log("Data refreshed");
-      } else {
-        console.error("Failed to create follow-up:", result.message);
-        toast(result.message || "Failed to create follow-up", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#EF4444",
-            color: "#fff",
-          },
-        });
-      }
-    } catch (error) {
-      console.error("Error in follow-up creation:", error);
-      toast("Error creating follow-up", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-    }
-  };
-
-  const handleSubmitSchedule = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      toast("No authorization token found", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-      return;
-    }
-
-    if (
-      !scheduleAppointment.doctorId ||
-      !scheduleAppointment.appointmentDate ||
-      !scheduleAppointment.timeSlot
-    ) {
-      toast("Please fill in all required fields", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/assignAppointmentToDoctor`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            doctorId: scheduleAppointment.doctorId,
-            appointmentDate: scheduleAppointment.appointmentDate,
-            timeSlot: scheduleAppointment.timeSlot,
-            hairTestId: scheduleAppointment.hairTestId,
-            followupOf: scheduleAppointment.hairTestId,
-          }),
-        }
-      );
-
-      const result = await response.json();
-      if (response.ok) {
-        toast("Appointment scheduled successfully", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#10B981",
-            color: "#fff",
-          },
-        });
-        setIsModalOpen(false);
-        setScheduleAppointment({
-          doctorId: "",
-          appointmentDate: "",
-          timeSlot: "",
-          hairTestId: "",
-        });
-        await handleFetchData();
-      } else {
-        toast(result.message || "Failed to schedule appointment", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#EF4444",
-            color: "#fff",
-          },
-        });
-      }
-    } catch (error) {
-      toast("Error scheduling appointment", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-      console.error("Error scheduling appointment:", error);
-    }
-  };
-
-  const viewReport = async (testId, status) => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/hair-tests/getall`,
-        {
-          method: "GET",
-        }
-      );
-      const data = await response.json();
-      if (data.success) {
-        const test = data.message.find(t => t._id === testId);
-        if (test) {
-          setSelectedTest(test);
-          setIsCompletedModalOpen(true);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching test details:", error);
-    }
-  };
-
-  const viewOrderDetails = async orderId => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/order-details`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ orderId }),
-        }
-      );
-      const data = await response.json();
-      if (data.success) {
-        setSelectedOrder(data.data.order);
-        setSelectedAppointment(data.data.appointments?.[0] || null);
-        setIsOrderModalOpen(true);
-      }
-    } catch (error) {
-      console.error("Error fetching order details:", error);
-    }
-  };
-
-  const handleAssignDoctor = async () => {
-    if (!selectedDoctor || !selectedOrder?._id) {
-      console.log("Doctor or order not selected.");
-      toast("Please select a doctor", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/assignDoctorForPrescription`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({
-            orderId: selectedOrder._id,
-            doctorId: selectedDoctor,
-            items: selectedOrder.products,
-          }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (response.ok) {
-        console.log("Doctor assigned successfully:", result);
-        toast(result.message || "Doctor assigned successfully", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#10B981",
-            color: "#fff",
-          },
-        });
-        setTimeout(() => {
-          setIsOrderModalOpen(false);
-          setSelectedDoctor("");
-          setAssignResponse({ message: "", type: "" });
-          handleFetchOrders();
-        }, 2000);
-      } else {
-        console.error("Failed to assign doctor:", result.message);
-        toast(result.message || "Failed to assign doctor", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#EF4444",
-            color: "#fff",
-          },
-        });
-      }
-    } catch (error) {
-      console.error("Error assigning doctor:", error);
-      toast("Error assigning doctor", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-    }
-  };
-
-  const handleViewPrescription = async orderId => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/order-details`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ orderId }),
-        }
-      );
-      const data = await response.json();
-      if (data.success) {
-        setSelectedPrescription(data.data.order);
-        setIsPrescriptionModalOpen(true);
-      }
-    } catch (error) {
-      console.error("Error fetching prescription details:", error);
-      toast.error("Error fetching prescription details");
-    }
-  };
-
   return (
     <DashboardLayout>
       <Toaster />
@@ -722,10 +289,7 @@ const FollowUp = () => {
         <h1 className="text-2xl font-bold">Follow Up Tests</h1>
       </div>
 
-      <Tabs
-        defaultValue="completed"
-        className="space-y-4"
-      >
+      <Tabs defaultValue="completed" className="space-y-4">
         <TabsContent value="completed" className="space-y-4">
           <Card className="bg-white">
             <CardHeader className="pb-3">
@@ -778,223 +342,116 @@ const FollowUp = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-[#209FD9] text-white whitespace-nowrap">
-                    <TableHead>Created Date & Time</TableHead>
-                    <TableHead>Patient Name</TableHead>
-                    <TableHead>Phone Number</TableHead>
-                    <TableHead>Email Id</TableHead>
+                    <TableHead>Order ID</TableHead>
+                                      <TableHead>Patient Name</TableHead>
+                                      <TableHead>Order Details</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>FolloweUp Date & Time</TableHead>
-                    <TableHead>Action</TableHead>
-                    <TableHead>Final Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedCompletedTests.map((test, index) => (
+                  {paginatedAppointments.map((appointment, index) => (
                     <TableRow
-                      key={test._id}
+                      key={appointment._id}
                       className={`hover:bg-gray-100 ${index % 2 === 0 ? "bg-white" : "bg-gray-100"}`}
                     >
-                      <TableCell>
-                        {test.appointments?.[0]?.createdAt
-                          ? `${new Date(
-                              test.appointments[0].createdAt
-                            ).toLocaleDateString("en-GB", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })} ${new Date(
-                              test.appointments[0].createdAt
-                            ).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}`
-                          : ""}
-                      </TableCell>
+                      <TableCell>{appointment.orderId || ""}</TableCell>
                       <TableCell className="font-medium">
-                        {test.personal?.name || ""}
-                      </TableCell>
-                      <TableCell>{test.personal?.phoneNumber || ""}</TableCell>
-                      <TableCell>{test.personal?.email || ""}</TableCell>
+                        {appointment.userId?.fullname || ""}
+                          </TableCell>
+                          <TableCell></TableCell>
                       <TableCell>
-                        {/* <span
-                          className={`inline-flex items-center justify-center w-24 h-6 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            test.status?.toLowerCase() === "pending"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : test.status?.toLowerCase() === "completed"
-                                ? "bg-green-100 text-green-700"
-                                : "bg-blue-100 text-blue-700"
-                          }`}
-                        >
-                          {test.status || "Unknown"}
-                        </span> */}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-full sm:w-auto bg-primary hover:bg-health-primary/90 text-white px-4 py-2 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
-                          onClick={() => {
-                            const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
-                            const path = "patient-test-result";
-                            const userId = test?.userId?._id;
-                            const appointmentId = test?.appointments?.[0]?._id;
-                            const testId = test?._id;
+                        {appointment.status?.toLowerCase() === "assigned" ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex items-center gap-1 text-blue-600 hover:text-blue-700"
+                            onClick={() => {
+                                // Add your prescription generation logic here
+                                   const userId = appointment.userId?._id;
+                                   const appointmentId = appointment._id;
+                                const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
+                                  const testId =
+                                    appointment.appointmentType ===
+                                    "prescription_only"
+                                      ? appointment.orderId
+                                      : appointment.followupOf ||
+                                        appointment.hairTestId;
 
-                            if (userId && testId && appointmentId) {
+                                  if (!userId || !testId) {
+                                    toast.error("Missing required data for this appointment", {
+                                      duration: 4000,
+                                      position: "top-right",
+                                      style: {
+                                        background: "#EF4444",
+                                        color: "#fff",
+                                      },
+                                    });
+                                    return;
+                                  }
+                              const path =
+                                
+                                appointment.followupOf
+                                    ? "followup/patient-test-result"
+                                    : "patient-test-result";
+
                               window.open(
                                 `${baseUrl}/${path}/${userId},${appointmentId},${testId}`,
                                 "_blank"
                               );
-                            } else {
-                              toast.error(
-                                "Missing required data for this report."
-                              );
-                            }
-                          }}
-                        >
-                          <Eye className="h-4 w-4" />
-                          View Old Test
-                        </Button>
+                            }}
+                          >
+                            <FileText className="h-4 w-4" />
+                            Generate Prescription
+                          </Button>
+                        ) : appointment.status?.toLowerCase() === "completed" ? (
+                          <span className="flex items-center gap-1 text-green-600">
+                            <CheckCircle className="h-4 w-4" />
+                            Prescription Generated
+                          </span>
+                        ) : (
+                          <span className="text-yellow-600">{appointment.status || ""}</span>
+                        )}
                       </TableCell>
-
-                      <TableCell>
-                        {test.appointments?.[0]?.appointmentDate
-                          ? new Date(
-                              test.appointments[0].appointmentDate
-                            ).toLocaleDateString("en-GB", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })
-                          : ""}
-                        {test.appointments?.[0]?.timeSlot
-                          ? ` (${test.appointments[0].timeSlot})`
-                          : ""}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex flex-col gap-2 items-end">
-                          {test.status?.toLowerCase() === "completed" && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-[180px] flex items-center justify-center gap-1 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 transition-colors"
-                              onClick={() => handleFollowUp(test)}
-                            >
-                              <span>Schedule Follow Up</span>
-                            </Button>
-                          )}
-                          {test.status?.toLowerCase() === "pending" && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-[180px] flex items-center justify-center gap-1 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-300 transition-colors"
-                              onClick={() => {
-                                setSelectedTest(test);
-                                setScheduleAppointment(prev => ({
-                                  ...prev,
-                                  hairTestId: test._id,
-                                }));
-                                setIsModalOpen(true);
-                              }}
-                            >
-                              <span>Schedule Appointment</span>
-                            </Button>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span
-                          className={`inline-flex items-center justify-center w-24 h-6 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            test.appointments?.[0]?.status?.toLowerCase() ===
-                            "pending"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : test.appointments?.[0]?.status?.toLowerCase() ===
-                                  "completed"
-                                ? "bg-green-100 text-green-700"
-                                : test.appointments?.[0]?.status?.toLowerCase() ===
-                                    "assigned"
-                                  ? "bg-blue-100 text-blue-700"
-                                  : "bg-gray-100 text-gray-700"
-                          }`}
-                        >
-                          {test.appointments?.[0]?.status || "Unknown"}
-                        </span>
-                      </TableCell>
-
-                      {/* <TableCell className="text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex items-center gap-1 text-health-primary"
-                          onClick={() => viewReport(test._id, test.status)}
-                        >
-                          {test.status?.toLowerCase() === "completed" ? (
-                            <>
-                              <FileText className="h-3 w-3" />
-                              <span>Report sent</span>
-                            </>
-                          ) : (
-                            <>
-                              <Eye className="h-3 w-3" />
-                              <span>View report</span>
-                            </>
-                          )}
-                        </Button>
-                      </TableCell> */}
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
 
-              {/* Pagination Controls (Bottom) for Completed Hair Tests */}
+              {/* Pagination Controls (Bottom) */}
               <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
-                  {totalCompletedTests} total results.
+                  {totalAppointments} total results.
                 </div>
                 <div className="space-x-2">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setCompletedCurrentPage(1)}
-                    disabled={
-                      completedCurrentPage === 1 || totalCompletedPages === 0
-                    }
+                    disabled={completedCurrentPage === 1 || totalPages === 0}
                   >
                     First
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() =>
-                      setCompletedCurrentPage(prev => Math.max(prev - 1, 1))
-                    }
-                    disabled={
-                      completedCurrentPage === 1 || totalCompletedPages === 0
-                    }
+                    onClick={() => setCompletedCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={completedCurrentPage === 1 || totalPages === 0}
                   >
                     Previous
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() =>
-                      setCompletedCurrentPage(prev =>
-                        Math.min(prev + 1, totalCompletedPages)
-                      )
-                    }
-                    disabled={
-                      completedCurrentPage === totalCompletedPages ||
-                      totalCompletedPages === 0
-                    }
+                    onClick={() => setCompletedCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={completedCurrentPage === totalPages || totalPages === 0}
                   >
                     Next
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCompletedCurrentPage(totalCompletedPages)}
-                    disabled={
-                      completedCurrentPage === totalCompletedPages ||
-                      totalCompletedPages === 0
-                    }
+                    onClick={() => setCompletedCurrentPage(totalPages)}
+                    disabled={completedCurrentPage === totalPages || totalPages === 0}
                   >
                     Last
                   </Button>
@@ -1334,7 +791,7 @@ const FollowUp = () => {
               >
                 Cancel
               </Button>
-              <Button
+              {/* <Button
                 onClick={() => {
                   console.log("Schedule appointment button clicked");
                   handleSubmitSchedule();
@@ -1342,7 +799,7 @@ const FollowUp = () => {
                 className="bg-primary hover:bg-health-primary/90"
               >
                 Schedule Appointment
-              </Button>
+              </Button> */}
             </div>
           </div>
         </DialogContent>
@@ -1460,7 +917,7 @@ const FollowUp = () => {
               </div>
 
               {/* Assign Doctor Section */}
-              <div className="space-y-3 mt-4">
+              {/* <div className="space-y-3 mt-4">
                 <h3 className="text-lg font-semibold">Assign Doctor</h3>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Select Doctor</label>
@@ -1486,7 +943,7 @@ const FollowUp = () => {
                 >
                   Assign Doctor
                 </Button>
-              </div>
+              </div> */}
 
               {/* Success/Error Message */}
               {assignResponse.message && (
@@ -1608,12 +1065,12 @@ const FollowUp = () => {
               >
                 Cancel
               </Button>
-              <Button
+              {/* <Button
                 onClick={handleSubmitFollowUp}
                 className="bg-primary hover:bg-health-primary/90"
               >
                 Schedule Follow Up
-              </Button>
+              </Button> */}
             </div>
           </div>
         </DialogContent>
@@ -1622,4 +1079,4 @@ const FollowUp = () => {
   );
 };
 
-export default FollowUp;
+export default DoctorOrderReport;

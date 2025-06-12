@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import {
@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 // import { toast } from "sonner";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, X } from "lucide-react";
 
 // Define regex patterns
 const regexPatterns = {
@@ -29,9 +29,10 @@ const regexPatterns = {
 const AddDoctor = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const isEdit = location.state?.isEdit;
+  const isEdit = !!location.state?.doctor;
   const doctorData = location.state?.doctor;
   const fileInputRef = React.useRef(null); // Add ref for file input
+  const awardsFileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -383,6 +384,20 @@ const AddDoctor = () => {
     }
   };
 
+  const handleRemoveAwardImage = (indexToRemove) => {
+    setAwardsImagesPreviews(prevPreviews =>
+      prevPreviews.filter((_, index) => index !== indexToRemove)
+    );
+    // If you need to handle the File objects for actual submission, you'll need a similar filter for awardsImages
+    setAwardsImages(prevImages => {
+      const newImages = prevImages.filter((_, index) => index !== indexToRemove);
+      if (newImages.length === 0 && awardsFileInputRef.current) {
+        awardsFileInputRef.current.value = "";
+      }
+      return newImages;
+    });
+  };
+
   return (
     <DashboardLayout>
       <div className="flex items-center gap-4 mb-6">
@@ -664,7 +679,9 @@ const AddDoctor = () => {
                 id="awards"
                 type="file"
                 accept="image/*"
+                ref={awardsFileInputRef}
                 onChange={e => handleImageUpload(e, "awards")}
+                disabled={awardsImagesPreviews.length > 0}
               />
               {(awardsImagesPreviews.length > 0 ||
                 (isEdit && doctorData?.awards?.length > 0)) && (
@@ -673,12 +690,22 @@ const AddDoctor = () => {
                     ? awardsImagesPreviews
                     : doctorData?.awards
                   )?.map((award, index) => (
-                    <img
-                      key={index}
-                      src={award}
-                      alt={`Award preview ${index + 1}`}
-                      className="w-20 h-20 object-cover rounded"
-                    />
+                    <div key={index} className="relative">
+                      <img
+                        src={award}
+                        alt={`Award preview ${index + 1}`}
+                        className="w-20 h-20 object-cover rounded"
+                      />
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="destructive"
+                        className="absolute top-0 right-0 h-6 w-6 rounded-full -mt-2 -mr-2 flex items-center justify-center"
+                        onClick={() => handleRemoveAwardImage(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                   ))}
                 </div>
               )}

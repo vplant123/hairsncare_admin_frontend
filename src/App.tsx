@@ -37,6 +37,8 @@ import ContactUs from "./pages/ContactUs";
 import AddDoctor from "./pages/AddDoctor";
 import AddInvoices from "./pages/AddInvoices";
 import AppointmentManagement from "./pages/AppointmentManagement";
+import DoctorFollowUp from "./pages/DoctorFollowUp";
+import DoctorOrdeerReport from "./pages/DoctorOrderReport";
 import PatientTestResult from "./pages/PatientTestResult";
 import GenerateReport from "./pages/GenerateReport";
 import Report from "./pages/report/Report.jsx";
@@ -91,9 +93,7 @@ const App = () => (
             <Route
               path="/"
               element={
-                <ProtectedRoute
-                  requiredRoles={["admin", "subadmin", "doctor"]}
-                >
+                <ProtectedRoute requiredRoles={["admin", "subadmin", "doctor"]}>
                   <Navigate to="/dashboard" replace />
                 </ProtectedRoute>
               }
@@ -109,9 +109,7 @@ const App = () => (
             <Route
               path="/dashboard"
               element={
-                <ProtectedRoute
-                  requiredRoles={["admin", "subadmin", "doctor"]}
-                >
+                <ProtectedRoute requiredRoles={["admin", "subadmin", "doctor"]}>
                   <Dashboard />
                 </ProtectedRoute>
               }
@@ -169,7 +167,7 @@ const App = () => (
               path="/followup"
               element={
                 <ProtectedRoute requiredRoles={["admin", "doctor"]}>
-                   <FollowUp/>
+                  <FollowUp />
                 </ProtectedRoute>
               }
             />
@@ -180,6 +178,19 @@ const App = () => (
                   <AppointmentManagement />
                 </ProtectedRoute>
               }
+            />
+            <Route
+              path="/doctor-followup"
+              element={
+                <ProtectedRoute requiredRoles={["admin", "doctor"]}>
+                  <DoctorFollowUp />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/Generate-Prescription-for-Orders"
+              element={<ProtectedRoute requiredRoles={["admin","doctor"]}>
+                <DoctorOrdeerReport/>
+              </ProtectedRoute>}
             />
             {/* PatientTestResult and related report routes might need more granular permission/role checks */}
             <Route
@@ -307,8 +318,6 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-          
-              
 
             {/* Product Routes with specific permissions for subadmin */}
             <Route
@@ -396,9 +405,7 @@ const App = () => (
             <Route
               path="/admin-dashboard"
               element={
-                <ProtectedRoute
-                  requiredRoles={["admin", "subadmin", "doctor"]}
-                >
+                <ProtectedRoute requiredRoles={["admin", "subadmin", "doctor"]}>
                   <AdminDashboard />
                 </ProtectedRoute>
               }
@@ -421,6 +428,15 @@ const App = () => (
               element={
                 <ProtectedRoute requiredRoles={["admin", "doctor"]}>
                   <Appointments />
+                </ProtectedRoute>
+              }
+            />
+            {/* New Route for Doctors to view Orders */}
+            <Route
+              path="/orders"
+              element={
+                <ProtectedRoute requiredRoles={["doctor"]}>
+                  <OrdersInvoices />
                 </ProtectedRoute>
               }
             />
