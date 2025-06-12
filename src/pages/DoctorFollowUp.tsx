@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
-import BASE_URL from "../Config";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -18,1601 +16,375 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Eye, Search, Filter, FileText, CheckCircle, Pill } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { toast, Toaster } from "react-hot-toast";
-
-import { useNavigate } from "react-router-dom";
-
-interface FollowUp {
-  _id: string;
-  userId?: { fullname: string };
-  personal?: {
-    name?: string;
-    email?: string;
-    phoneNumber?: string;
-    ageRange?: string;
-    ["Select your age group"]?: string;
-    Gender?: { src?: string };
-    createdAt?: string;
-    progress?: number;
-  };
-  status?: string;
-  orders?: { amount?: number };
-  followUps?: Array<{
-    _id: string;
-    doctorId: string;
-    appointmentDate: string;
-    timeSlot: string;
-    status: string;
-    doctorNotes?: string;
-    createdAt: string;
-  }>;
-  appointments?: Array<{
-    _id: string;
-    appointmentDate: string;
-    timeSlot: string;
-    status: string;
-    Method?: string; // Added Method property
-  }>;
-}
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
 const DoctorFollowUp = () => {
-  // const [activeTab, setActiveTab] = useState("all");
-  const [selectedTest, setSelectedTest] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isCompletedModalOpen, setIsCompletedModalOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [selectedAppointment, setSelectedAppointment] = useState(null);
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const [error, setError] = useState("");
-  const [selectedPatient, setSelectedPatient] = useState(null);
-
   const navigate = useNavigate();
-
-  const [selectedDoctor, setSelectedDoctor] = useState("");
-  const [hairTests, setHairTests] = useState([]);
-  const [Orders, setOrders] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+  const [selectedTest, setSelectedTest] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const [doctorsList, setDoctorsList] = useState<any>();
-  const [assignResponse, setAssignResponse] = useState({
-    message: "",
-    type: "",
-  });
-
-  const [isFollowUpModalOpen, setIsFollowUpModalOpen] = useState(false);
-  const [selectedTestForFollowUp, setSelectedTestForFollowUp] =
-    useState<FollowUp | null>(null);
-  const [followUpData, setFollowUpData] = useState({
-    followupOf: "",
-    doctorId: "",
-    appointmentDate: "",
-    timeSlot: "",
-    status: "pending",
-    doctorNotes: "",
-  });
-
-  const [scheduleAppointment, setScheduleAppointment] = useState({
-    doctorId: "",
-    appointmentDate: "",
-    timeSlot: "",
-    hairTestId: "",
-  });
-
-  // Pagination state for All Hair Tests
-  const [allCurrentPage, setAllCurrentPage] = useState(1);
-  const [allRowsPerPage, setAllRowsPerPage] = useState(10);
-
-  // Pagination state for Pending Tests
-  const [pendingCurrentPage, setPendingCurrentPage] = useState(1);
-  const [pendingRowsPerPage, setPendingRowsPerPage] = useState(10);
-
-  const pendingTests = hairTests.filter(
-    test => test.status?.toLowerCase() === "pending"
-  );
-
-  const completedTests = hairTests.filter(
-    test => test.status?.toLowerCase() === "completed"
-  );
-
-  // Filter hair tests based on search query for All tab
-  const filteredAllHairTests = hairTests.filter(test => {
-    const query = searchQuery.toLowerCase();
-    const name = test.personal?.name?.toLowerCase() || "";
-    const email = test.personal?.email?.toLowerCase() || "";
-    const phoneNumber = test.personal?.phoneNumber?.toLowerCase() || "";
-
-    return (
-      name.includes(query) ||
-      email.includes(query) ||
-      phoneNumber.includes(query)
-    );
-  });
-
-  // Filter hair tests based on search query for Completed tab
-  const filteredCompletedHairTests = completedTests.filter(test => {
-    const query = searchQuery.toLowerCase();
-    const name = test.personal?.name?.toLowerCase() || "";
-    const email = test.personal?.email?.toLowerCase() || "";
-    const phoneNumber = test.personal?.phoneNumber?.toLowerCase() || "";
-
-    return (
-      name.includes(query) ||
-      email.includes(query) ||
-      phoneNumber.includes(query)
-    );
-  });
-
-  // Pagination calculations for All Hair Tests
-  const totalAllHairTests = filteredAllHairTests.length;
-  const totalAllPages = Math.ceil(totalAllHairTests / allRowsPerPage);
-
-  const paginatedAllHairTests = filteredAllHairTests.slice(
-    (allCurrentPage - 1) * allRowsPerPage,
-    allCurrentPage * allRowsPerPage
-  );
-
-  // Pagination calculations for Pending Tests
-  const totalPendingTests = pendingTests.length;
-  const totalPendingPages = Math.ceil(totalPendingTests / pendingRowsPerPage);
-
-  const paginatedPendingTests = pendingTests.slice(
-    (pendingCurrentPage - 1) * pendingRowsPerPage,
-    pendingCurrentPage * pendingRowsPerPage
-  );
-
-  // Pagination state for Completed Tests
-  const [completedCurrentPage, setCompletedCurrentPage] = useState(1);
-  const [completedRowsPerPage, setCompletedRowsPerPage] = useState(10);
-
-  // Pagination calculations for Completed Tests
-  const totalCompletedTests = filteredCompletedHairTests.length;
-  const totalCompletedPages = Math.ceil(
-    totalCompletedTests / completedRowsPerPage
-  );
-
-  const paginatedCompletedTests = filteredCompletedHairTests.slice(
-    (completedCurrentPage - 1) * completedRowsPerPage,
-    completedCurrentPage * completedRowsPerPage
-  );
-
-  const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
-  const [selectedPrescription, setSelectedPrescription] = useState(null);
-
-  // Pagination state for Prescriptions
-  const [prescriptionCurrentPage, setPrescriptionCurrentPage] = useState(1);
-  const [prescriptionRowsPerPage, setPrescriptionRowsPerPage] = useState(10);
-
-  // Filter and paginate prescriptions
-  const filteredPrescriptions = Orders.filter(order => {
-    const query = searchQuery.toLowerCase();
-    const name = order.personalId?.name?.toLowerCase() || "";
-    const email = order.personalId?.email?.toLowerCase() || "";
-    const productName =
-      order.productId?.map(p => p.name.toLowerCase()).join(", ") || "";
-
-    return (
-      name.includes(query) ||
-      email.includes(query) ||
-      productName.includes(query)
-    );
-  });
-
-  const totalPrescriptionOrders = filteredPrescriptions.length;
-  const totalPrescriptionPages = Math.ceil(
-    totalPrescriptionOrders / prescriptionRowsPerPage
-  );
-
-  const paginatedPrescriptions = filteredPrescriptions.slice(
-    (prescriptionCurrentPage - 1) * prescriptionRowsPerPage,
-    prescriptionCurrentPage * prescriptionRowsPerPage
-  );
-
-  const handleFetchData = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/hair-tests/getfollowup`,
-        {
-          method: "GET",
-        }
-      );
-      const data = await response.json();
-      console.log("Fetched Hair Tests:", data);
-      setHairTests(data?.message || []);
-    } catch (error) {
-      console.log("Error while fetching hair tests data", error);
+  function formatDateArrowStyle(isoString) {
+    const date = new Date(isoString);
+    // Check if the date is invalid
+    if (isNaN(date.getTime())) {
+      return ""; // Return an empty string if the date is invalid
     }
-  };
 
-  const handleFetchOrders = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/getOrders`,
-        {
-          method: "GET",
-        }
-      );
-      const data = await response.json();
-      console.log("Fetched Orders:", data);
-      setOrders(data?.data || []);
-    } catch (error) {
-      console.log("Error while fetching orders data", error);
-    }
-  };
-  const sendWhatsapp = async userId => {
-    console.log("Starting WhatsApp send process for userId:", userId);
+    const day = date.getUTCDate().toString().padStart(2, "0");
+    const month = date.toLocaleString("en-US", {
+      month: "short",
+      timeZone: "UTC",
+    });
+    const year = date.getUTCFullYear();
 
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("No token found");
-        toast("No authorization token found", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#EF4444",
-            color: "#fff",
-          },
-        });
-        return;
-      }
-
-      if (!userId) {
-        console.error("No userId provided");
-        toast("User ID not found", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#EF4444",
-            color: "#fff",
-          },
-        });
-        return;
-      }
-
-      console.log("Making API call to send WhatsApp...");
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/admin/sendWhatsapp?userId=${userId}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      console.log("API Response status:", response.status);
-      const data = await response.json();
-      console.log("API Response data:", data);
-
-      if (!response.ok) {
-        console.error("API call failed:", data);
-        toast(data.message || "Failed to send WhatsApp message", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#EF4444",
-            color: "#fff",
-          },
-        });
-        return;
-      }
-
-      console.log("API call successful, showing success toast");
-      toast(data.message || "WhatsApp message sent successfully", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#10B981",
-          color: "#fff",
-        },
-      });
-    } catch (error) {
-      console.error("Error in sendWhatsapp:", error);
-      toast(error.message || "Error sending WhatsApp message", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-    }
-  };
-  const handleFetchDoctor = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/all-doctor-Data`,
-        {
-          method: "GET",
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      setDoctorsList(data.data);
-    } catch (error) {
-      console.log("error while fetching doctors data", error);
-    }
-  };
+    return `${day} ${month} ${year}`;
+  }
 
   useEffect(() => {
-    handleFetchData();
-    handleFetchOrders();
-    handleFetchDoctor();
-  }, []);
-
-  const handleFollowUp = (test: FollowUp) => {
-    console.log("Starting follow-up process for test:", test);
-    setSelectedTestForFollowUp(test);
-    setFollowUpData(prev => ({
-      ...prev,
-      followupOf: test._id,
-    }));
-    setIsFollowUpModalOpen(true);
-  };
-
-  const handleSubmitFollowUp = async () => {
-    console.log("Submit follow-up initiated");
-    console.log("Current follow-up data:", followUpData);
-    console.log("Selected test for follow-up:", selectedTestForFollowUp);
-
-    // Validate required fields
-    if (
-      !followUpData.doctorId ||
-      !followUpData.appointmentDate ||
-      !followUpData.timeSlot
-    ) {
-      console.error("Missing required fields:", {
-        doctorId: !followUpData.doctorId,
-        appointmentDate: !followUpData.appointmentDate,
-        timeSlot: !followUpData.timeSlot,
-      });
-      toast("Please fill in all required fields", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-      return;
-    }
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("No authorization token found");
-      toast("No authorization token found", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-      return;
-    }
-
-    try {
-      const requestData = {
-        doctorId: followUpData.doctorId,
-        appointmentDate: followUpData.appointmentDate,
-        timeSlot: followUpData.timeSlot,
-        status: "pending",
-        doctorNotes: followUpData.doctorNotes || "",
-        followupOf: selectedTestForFollowUp,
-      };
-
-      console.log("Preparing API request with data:", requestData);
-
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/create-Followup-Appointment`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(requestData),
+    const fetchAppointments = async () => {
+      try {
+        const token = localStorage.getItem("token"); // Get token from localStorage
+        if (!token) {
+          setError("Authorization token not found.");
+          setLoading(false);
+          return;
         }
-      );
 
-      console.log("API Response status:", response.status);
-      const result = await response.json();
-      console.log("API Response data:", result);
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL}/api/v1/doctor/get-all-appointment`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-      if (response.ok) {
-        console.log("Follow-up created successfully");
-        toast("Follow-up appointment created successfully", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#10B981",
-            color: "#fff",
-          },
-        });
-        setIsFollowUpModalOpen(false);
-        setFollowUpData({
-          followupOf: "",
-          doctorId: "",
-          appointmentDate: "",
-          timeSlot: "",
-          status: "pending",
-          doctorNotes: "",
-        });
-        console.log("State reset completed");
-        await handleFetchData();
-        console.log("Data refreshed");
-      } else {
-        console.error("Failed to create follow-up:", result.message);
-        toast(result.message || "Failed to create follow-up", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#EF4444",
-            color: "#fff",
-          },
-        });
+        if (!response.ok) {
+          throw new Error(
+            `Error fetching appointments: ${response.statusText}`
+          );
+        }
+
+        const data = await response.json();
+        console.log(data?.data);
+        if (data?.success) {
+          const filteredData = data?.data?.filter((appointment) => {
+            // Filter logic to include only follow-up appointments where followupOf is not null
+            return (
+              appointment.appointmentType === "hair_test_with_prescription" &&
+              appointment.followupOf != null
+            );
+          });
+
+          setAppointments(filteredData || []);
+          console.log(filteredData);
+        } else {
+          setError(data.message || "Failed to fetch appointments.");
+        }
+      } catch (err: any) {
+        setError(
+          err.message || "An error occurred while fetching appointments."
+        );
+        console.error("Error fetching appointments:", err);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error in follow-up creation:", error);
-      toast("Error creating follow-up", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-    }
-  };
+    };
 
-  const handleSubmitSchedule = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      toast("No authorization token found", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-      return;
-    }
+    fetchAppointments();
+  }, []); // Empty dependency array means this effect runs once on mount
 
-    if (
-      !scheduleAppointment.doctorId ||
-      !scheduleAppointment.appointmentDate ||
-      !scheduleAppointment.timeSlot
-    ) {
-      toast("Please fill in all required fields", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-      return;
-    }
+  // Filter appointments based on search query
+  const filteredAppointments = appointments.filter((appointment) => {
+    // Apply the search filter
+    return appointment.userId?.fullname
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+  });
 
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/assignAppointmentToDoctor`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            doctorId: scheduleAppointment.doctorId,
-            appointmentDate: scheduleAppointment.appointmentDate,
-            timeSlot: scheduleAppointment.timeSlot,
-            hairTestId: scheduleAppointment.hairTestId,
-            followupOf: scheduleAppointment.hairTestId,
-          }),
-        }
-      );
+  // Pagination calculations
+  const totalAppointments = filteredAppointments.length;
+  const totalPages = Math.ceil(totalAppointments / rowsPerPage);
 
-      const result = await response.json();
-      if (response.ok) {
-        toast("Appointment scheduled successfully", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#10B981",
-            color: "#fff",
-          },
-        });
-        setIsModalOpen(false);
-        setScheduleAppointment({
-          doctorId: "",
-          appointmentDate: "",
-          timeSlot: "",
-          hairTestId: "",
-        });
-        await handleFetchData();
-      } else {
-        toast(result.message || "Failed to schedule appointment", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#EF4444",
-            color: "#fff",
-          },
-        });
-      }
-    } catch (error) {
-      toast("Error scheduling appointment", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-      console.error("Error scheduling appointment:", error);
-    }
-  };
-
-  const viewReport = async (testId, status) => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/hair-tests/getall`,
-        {
-          method: "GET",
-        }
-      );
-      const data = await response.json();
-      if (data.success) {
-        const test = data.message.find(t => t._id === testId);
-        if (test) {
-          setSelectedTest(test);
-          setIsCompletedModalOpen(true);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching test details:", error);
-    }
-  };
-
-  const viewOrderDetails = async orderId => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/order-details`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ orderId }),
-        }
-      );
-      const data = await response.json();
-      if (data.success) {
-        setSelectedOrder(data.data.order);
-        setSelectedAppointment(data.data.appointments?.[0] || null);
-        setIsOrderModalOpen(true);
-      }
-    } catch (error) {
-      console.error("Error fetching order details:", error);
-    }
-  };
-
-  const handleAssignDoctor = async () => {
-    if (!selectedDoctor || !selectedOrder?._id) {
-      console.log("Doctor or order not selected.");
-      toast("Please select a doctor", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/assignDoctorForPrescription`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({
-            orderId: selectedOrder._id,
-            doctorId: selectedDoctor,
-            items: selectedOrder.products,
-          }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (response.ok) {
-        console.log("Doctor assigned successfully:", result);
-        toast(result.message || "Doctor assigned successfully", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#10B981",
-            color: "#fff",
-          },
-        });
-        setTimeout(() => {
-          setIsOrderModalOpen(false);
-          setSelectedDoctor("");
-          setAssignResponse({ message: "", type: "" });
-          handleFetchOrders();
-        }, 2000);
-      } else {
-        console.error("Failed to assign doctor:", result.message);
-        toast(result.message || "Failed to assign doctor", {
-          duration: 4000,
-          position: "top-right",
-          style: {
-            background: "#EF4444",
-            color: "#fff",
-          },
-        });
-      }
-    } catch (error) {
-      console.error("Error assigning doctor:", error);
-      toast("Error assigning doctor", {
-        duration: 4000,
-        position: "top-right",
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-    }
-  };
-
-  const handleViewPrescription = async orderId => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/order-details`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ orderId }),
-        }
-      );
-      const data = await response.json();
-      if (data.success) {
-        setSelectedPrescription(data.data.order);
-        setIsPrescriptionModalOpen(true);
-      }
-    } catch (error) {
-      console.error("Error fetching prescription details:", error);
-      toast.error("Error fetching prescription details");
-    }
-  };
+  const paginatedAppointments = filteredAppointments.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
 
   return (
     <DashboardLayout>
-      <Toaster />
-     
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Appointment Management</h1>
+      </div>
 
-      <Tabs defaultValue="completed" className="space-y-4">
-        <TabsContent value="completed" className="space-y-4">
-          <Card className="bg-white">
-            <CardHeader className="pb-3">
-              <CardTitle>Follow Up Tests</CardTitle>
-              <CardDescription>
-                View and manage completed hair test appointments and results
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="relative w-64">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input
-                      placeholder="Search completed tests..."
-                      className="px-10"
-                      value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                    />
-                  </div>
-                </div>
+      <Card className="bg-white">
+        <CardHeader className="pb-3">
+          <CardTitle>Appointments</CardTitle>
+          <CardDescription>Manage patient appointments</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-2">
+              <div className="relative w-64">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Search appointments..."
+                  className="px-10"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
+            </div>
+          </div>
 
-              {/* Pagination Controls for Completed Hair Tests */}
-              <div className="flex flex-col sm:flex-row items-center justify-between my-4">
-                <div className="flex items-center gap-2 mb-4 sm:mb-0">
-                  <span className="text-sm font-medium">Rows per page:</span>
-                  <select
-                    value={completedRowsPerPage}
-                    onChange={e => {
-                      setCompletedRowsPerPage(Number(e.target.value));
-                      setCompletedCurrentPage(1); // Reset to first page
-                    }}
-                    className="border rounded px-2 py-1 text-sm"
-                  >
-                    {[5, 10, 25, 50].map(num => (
-                      <option key={num} value={num}>
-                        {num}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex items-center gap-1 text-md">
-                  <span className="mr-4 ">
-                    {completedCurrentPage} of {totalCompletedPages}
-                  </span>
-                </div>
-              </div>
+          {/* Pagination Controls (Top) */}
+          <div className="flex items-center justify-between my-2">
+            <div className="flex items-center">
+              <span>Rows per page&nbsp;</span>
+              <select
+                value={rowsPerPage}
+                onChange={(e) => {
+                  setRowsPerPage(Number(e.target.value));
+                  setCurrentPage(1); // Reset to first page
+                }}
+                className="border rounded px-2 py-1"
+              >
+                {[5, 10, 25, 50].map((num) => (
+                  <option key={num} value={num}>
+                    {num}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <span>
+                {totalAppointments === 0
+                  ? "0"
+                  : `${(currentPage - 1) * rowsPerPage + 1}-${Math.min(
+                      currentPage * rowsPerPage,
+                      totalAppointments
+                    )}`}{" "}
+                of {totalAppointments}
+              </span>
+              {/* <button
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                className="px-2"
+              >
+                {"|<"}
+              </button> */}
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-2"
+              >
+                {"<"}
+              </button>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className="px-2"
+              >
+                {">"}
+              </button>
+              {/* <button
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                className="px-2"
+              >
+                {">|"}
+              </button> */}
+            </div>
+          </div>
 
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-[#209FD9] text-white whitespace-nowrap">
-                    <TableHead>Created Date & Time</TableHead>
-                    <TableHead>Patient Name</TableHead>
-                    <TableHead>Phone Number</TableHead>
-                    <TableHead>Email Id</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>FolloweUp Date & Time</TableHead>
-                    <TableHead>Action</TableHead>
-                    <TableHead>Final Status</TableHead>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-[#209FD9] text-white whitespace-nowrap">
+                  <TableHead>Date & Time </TableHead>
+                  <TableHead>Patient Name</TableHead>
+                  <TableHead>Phone No.</TableHead>
+                  <TableHead>Email Id</TableHead>
+                  <TableHead>Progress</TableHead>
+                  <TableHead>Method</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>FollowUp Date & Time</TableHead>
+                  <TableHead>Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center">
+                      Loading appointments...
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedCompletedTests.map((test, index) => (
-                    <TableRow
-                      key={test._id}
-                      className={`hover:bg-gray-100 ${index % 2 === 0 ? "bg-white" : "bg-gray-100"}`}
-                    >
-                      <TableCell>
-                        {test.appointments?.[0]?.createdAt
-                          ? `${new Date(
-                              test.appointments[0].createdAt
-                            ).toLocaleDateString("en-GB", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })} ${new Date(
-                              test.appointments[0].createdAt
-                            ).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}`
-                          : ""}
-                      </TableCell>
+                ) : error ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center text-red-500">
+                      {error}
+                    </TableCell>
+                  </TableRow>
+                ) : paginatedAppointments.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center">
+                      No appointments found.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedAppointments.map((appointment) => (
+                    <TableRow key={appointment._id}>
+                      <TableCell>{appointment.appointmentDate}</TableCell>
                       <TableCell className="font-medium">
-                        {test.personal?.name || ""}
+                        {appointment.userId?.fullname || "N/A"}
                       </TableCell>
-                      <TableCell>{test.personal?.phoneNumber || ""}</TableCell>
-                      <TableCell>{test.personal?.email || ""}</TableCell>
+                      <TableCell>{appointment.userId?.mobile || ""}</TableCell>
+                      <TableCell>{appointment.userId?.email || ""}</TableCell>
                       <TableCell>
-                        {/* <span
-                          className={`inline-flex items-center justify-center w-24 h-6 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            test.status?.toLowerCase() === "pending"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : test.status?.toLowerCase() === "completed"
-                                ? "bg-green-100 text-green-700"
-                                : "bg-blue-100 text-blue-700"
-                          }`}
-                        >
-                          {test.status || "Unknown"}
-                        </span> */}
+                        <span>{appointment.progress}%</span>
+                      </TableCell>
+                      <TableCell>
                         <Button
                           variant="outline"
                           size="sm"
-                          className="w-full sm:w-auto bg-primary hover:bg-health-primary/90 text-white px-4 py-2 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
-                          onClick={() => {
-                            const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
-                            const path = "patient-test-result";
-                            const userId = test?.userId?._id;
-                            const appointmentId = test?.appointments?.[0]?._id;
-                            const testId = test?._id;
+                          className="w-24 h-8 text-xs font-medium"
+                          style={{
+                            backgroundColor:
+                              appointment.Method === "Audio Call"
+                                ? "#3b82f6"
+                                : appointment.Method === "Video Call"
+                                  ? "#10b981"
+                                  : "white",
+                            color: "white",
+                            border: "none",
+                          }}
+                        >
+                          {appointment.Method}
+                        </Button>
+                      </TableCell>
 
-                            if (userId && testId && appointmentId) {
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-24 h-8 text-xs font-medium"
+                          style={{
+                            backgroundColor:
+                              appointment.status === "completed"
+                                ? "#22c55e"
+                                : appointment.status === "pending"
+                                  ? "#eab308"
+                                  : appointment.status === "cancelled"
+                                    ? "#ef4444"
+                                    : "#3b82f6",
+                            color: "white",
+                            border: "none",
+                          }}
+                        >
+                          {appointment.status?.charAt(0).toUpperCase() +
+                            appointment.status?.slice(1) || "N/A"}
+                        </Button>
+                      </TableCell>
+                      <TableCell>
+                        {appointment.appointmentType || "Follow Up Patient"}
+                      </TableCell>
+
+                      {/* <TableCell>
+                        {appointment.status ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-24 h-8 text-xs font-medium"
+                            style={{
+                              backgroundColor:
+                                appointment.status === "completed"
+                                  ? "#22c55e"
+                                  : "#eab308",
+                              color: "white",
+                              border: "none",
+                            }}
+                          >
+                            {appointment.status.charAt(0).toUpperCase() +
+                              appointment.status.slice(1)}
+                          </Button>
+                        ) : (
+                          "N/A"
+                        )}
+                      </TableCell> */}
+
+                      <TableCell>
+                        {formatDateArrowStyle(appointment.appointmentDate) ||
+                          ""}{" "}
+                        {appointment.timeSlot
+                          ? `(${appointment.timeSlot})`
+                          : ""}
+                      </TableCell>
+                      <TableCell>
+                        {appointment?.status ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-32 h-8 text-xs font-medium"
+                            style={{
+                              backgroundColor:
+                                appointment?.status === "completed"
+                                  ? "#22c55e"
+                                  : "#3b82f6",
+                              color: "white",
+                              border: "none",
+                            }}
+                            onClick={() => {
+                              const userId = appointment.userId?._id;
+                              const appointmentId = appointment._id;
+                              const testId = appointment.followupOf;
+
+                              if (!userId || !testId) {
+                                toast({
+                                  variant: "destructive",
+                                  title: "Error",
+                                  description:
+                                    "Missing required data for this appointment",
+                                });
+                                return;
+                              }
+
+                              const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
+                              const path = "followup/patient-test-result";
+
                               window.open(
                                 `${baseUrl}/${path}/${userId},${appointmentId},${testId}`,
                                 "_blank"
                               );
-                            } else {
-                              toast.error(
-                                "Missing required data for this report."
-                              );
-                            }
-                          }}
-                        >
-                          <Eye className="h-4 w-4" />
-                          View Old Test
-                        </Button>
+                            }}
+                          >
+                            {appointment?.status === "completed"
+                              ? "Prescription Sent"
+                              : "Generate Prescription"}
+                          </Button>
+                        ) : (
+                          "N/A"
+                        )}
                       </TableCell>
-
-                      <TableCell>
-                        {test.appointments?.[0]?.appointmentDate
-                          ? new Date(
-                              test.appointments[0].appointmentDate
-                            ).toLocaleDateString("en-GB", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })
-                          : ""}
-                        {test.appointments?.[0]?.timeSlot
-                          ? ` (${test.appointments[0].timeSlot})`
-                          : ""}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex flex-col gap-2 items-end">
-                          {test.status?.toLowerCase() === "completed" && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-[180px] flex items-center justify-center gap-1 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 transition-colors"
-                              onClick={() => handleFollowUp(test)}
-                            >
-                              <span>Schedule Follow Up</span>
-                            </Button>
-                          )}
-                          {test.status?.toLowerCase() === "pending" && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-[180px] flex items-center justify-center gap-1 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-300 transition-colors"
-                              onClick={() => {
-                                setSelectedTest(test);
-                                setScheduleAppointment(prev => ({
-                                  ...prev,
-                                  hairTestId: test._id,
-                                }));
-                                setIsModalOpen(true);
-                              }}
-                            >
-                              <span>Schedule Appointment</span>
-                            </Button>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span
-                          className={`inline-flex items-center justify-center w-24 h-6 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            test.appointments?.[0]?.status?.toLowerCase() ===
-                            "pending"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : test.appointments?.[0]?.status?.toLowerCase() ===
-                                  "completed"
-                                ? "bg-green-100 text-green-700"
-                                : test.appointments?.[0]?.status?.toLowerCase() ===
-                                    "assigned"
-                                  ? "bg-blue-100 text-blue-700"
-                                  : "bg-gray-100 text-gray-700"
-                          }`}
-                        >
-                          {test.appointments?.[0]?.status || "Unknown"}
-                        </span>
-                      </TableCell>
-
-                      {/* <TableCell className="text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex items-center gap-1 text-health-primary"
-                          onClick={() => viewReport(test._id, test.status)}
-                        >
-                          {test.status?.toLowerCase() === "completed" ? (
-                            <>
-                              <FileText className="h-3 w-3" />
-                              <span>Report sent</span>
-                            </>
-                          ) : (
-                            <>
-                              <Eye className="h-3 w-3" />
-                              <span>View report</span>
-                            </>
-                          )}
-                        </Button>
-                      </TableCell> */}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-
-              {/* Pagination Controls (Bottom) for Completed Hair Tests */}
-              <div className="flex items-center justify-end space-x-2 py-4">
-                <div className="flex-1 text-sm text-muted-foreground">
-                  {totalCompletedTests} total results.
-                </div>
-                <div className="space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCompletedCurrentPage(1)}
-                    disabled={
-                      completedCurrentPage === 1 || totalCompletedPages === 0
-                    }
-                  >
-                    First
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      setCompletedCurrentPage(prev => Math.max(prev - 1, 1))
-                    }
-                    disabled={
-                      completedCurrentPage === 1 || totalCompletedPages === 0
-                    }
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      setCompletedCurrentPage(prev =>
-                        Math.min(prev + 1, totalCompletedPages)
-                      )
-                    }
-                    disabled={
-                      completedCurrentPage === totalCompletedPages ||
-                      totalCompletedPages === 0
-                    }
-                  >
-                    Next
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCompletedCurrentPage(totalCompletedPages)}
-                    disabled={
-                      completedCurrentPage === totalCompletedPages ||
-                      totalCompletedPages === 0
-                    }
-                  >
-                    Last
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-
-      {/* Completed Test Report Modal */}
-      <Dialog
-        open={isCompletedModalOpen}
-        onOpenChange={setIsCompletedModalOpen}
-      >
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
-          {selectedTest && (
-            <div className="space-y-6 overflow-y-auto">
-              <DialogHeader className="sticky top-0 z-10 pb-4">
-                <DialogTitle>Completed Test Report</DialogTitle>
-                <DialogDescription>
-                  View and manage completed test report
-                </DialogDescription>
-              </DialogHeader>
-
-              {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Patient Name</label>
-                  <div className="p-2 border rounded-md bg-gray-50">
-                    {selectedTest.personal?.name || "N/A"}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Email</label>
-                  <div className="p-2 border rounded-md bg-gray-50">
-                    {selectedTest.personal?.email || "N/A"}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Phone Number</label>
-                  <div className="p-2 border rounded-md bg-gray-50">
-                    {selectedTest.personal?.phoneNumber || "N/A"}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Age Range</label>
-                  <div className="p-2 border rounded-md bg-gray-50">
-                    {selectedTest.personal?.ageRange ||
-                      selectedTest.personal?.["Select your age group"] ||
-                      "N/A"}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Status</label>
-                  <div className="p-2 border rounded-md bg-gray-50">
-                    <span className="text-green-600">
-                      {selectedTest.status || "Completed"}
-                    </span>
-                  </div>
-                </div>
-              </div> */}
-
-              {/* Appointment Details Section */}
-              <div>
-                <h3 className="text-lg font-semibold mb-3">
-                  Appointment Details
-                </h3>
-                {selectedTest.appointments &&
-                selectedTest.appointments.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">
-                        Appointment ID
-                      </label>
-                      <div className="p-2 border rounded-md bg-gray-50">
-                        {selectedTest.appointments[0]._id || "-"}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Status</label>
-                      <div className="p-2 border rounded-md bg-gray-50">
-                        <span
-                          className={`${
-                            selectedTest.appointments[0].status?.toLowerCase() ===
-                            "pending"
-                              ? "text-yellow-600"
-                              : selectedTest.appointments[0].status?.toLowerCase() ===
-                                  "completed"
-                                ? "text-green-600"
-                                : "text-blue-600"
-                          }`}
-                        >
-                          {selectedTest.appointments[0].status || "Unknown"}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Time Slot</label>
-                      <div className="p-2 border rounded-md bg-gray-50">
-                        {selectedTest.appointments[0].timeSlot || "-"}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Doctor</label>
-                      <div className="p-2 border rounded-md bg-gray-50">
-                        {selectedTest.appointments[0].doctorId?.name || "-"}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">
-                        Appointment Date
-                      </label>
-                      <div className="p-2 border rounded-md bg-gray-50">
-                        {selectedTest.appointments[0].appointmentDate
-                          ? new Date(
-                              selectedTest.appointments[0].appointmentDate
-                            ).toLocaleDateString("en-GB", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })
-                          : ""}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Created At</label>
-                      <div className="p-2 border rounded-md bg-gray-50">
-                        {selectedTest.appointments[0].createdAt
-                          ? new Date(
-                              selectedTest.appointments[0].createdAt
-                            ).toLocaleDateString("en-GB", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })
-                          : ""}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="p-3 border rounded-md bg-gray-50">
-                    <p className="text-gray-500 text-sm">
-                      No appointment details available
-                    </p>
-                  </div>
+                  ))
                 )}
-              </div>
-
-              <div className="border-t pt-4">
-                {selectedTest.status === "completed" ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Button
-                      variant="outline"
-                      className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
-                      onClick={() =>
-                        window.open(
-                          `${import.meta.env.VITE_FRONTEND_URL}/doctor-analyse-report/${selectedTest.appointments[0]._id}`,
-                          "_blank"
-                        )
-                      }
-                    >
-                      <FileText className="h-4 w-4" />
-                      Generate Assessment Report
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
-                      onClick={() =>
-                        window.open(
-                          `${import.meta.env.VITE_FRONTEND_URL}/management-report/${selectedTest.appointments[0]._id}`,
-                          "_blank"
-                        )
-                      }
-                    >
-                      <FileText className="h-4 w-4" />
-                      Generate Management Report
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
-                      onClick={() =>
-                        window.open(
-                          `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${selectedTest.appointments[0]._id}`,
-                          "_blank"
-                        )
-                      }
-                    >
-                      <FileText className="h-4 w-4" />
-                      Generate Prescription
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
-                    >
-                      <CheckCircle className="h-4 w-4" />
-                      Report Send Complete
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
-                )}
-                <div className="flex flex-col sm:flex-row justify-end gap-3  mt-4 sticky bottom-0  ">
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsCompletedModalOpen(false)}
-                    className="w-full sm:w-auto px-6 hover:bg-gray-50 hover:text-gray-600 transition-colors duration-200"
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    className="w-full sm:w-auto bg-primary hover:bg-health-primary/90 text-white px-6 transition-colors duration-200 flex items-center justify-center gap-2"
-                    onClick={() => {
-                      const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
-                      const path = "patient-test-result";
-                      const userId = selectedTest?.userId?._id;
-                      const appointmentId =
-                        selectedTest?.appointments?.[0]?._id;
-                      const testId = selectedTest?._id;
-
-                      if (userId && testId && appointmentId) {
-                        window.open(
-                          `${baseUrl}/${path}/${userId},${appointmentId},${testId}`,
-                          "_blank"
-                        );
-                      } else {
-                        toast.error("Missing required data for this report.");
-                      }
-                    }}
-                  >
-                    <Eye className="h-4 w-4" />
-                    View Test Report
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Schedule Appointment Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Schedule Appointment</DialogTitle>
-            <DialogDescription>
-              Schedule an appointment for the patient
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-sm text-red-600">{error}</p>
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Doctor *</label>
-              <Select
-                value={scheduleAppointment.doctorId}
-                onValueChange={value => {
-                  console.log("Doctor selected:", value);
-                  setScheduleAppointment(prev => ({
-                    ...prev,
-                    doctorId: value,
-                  }));
-                }}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select Doctor" />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  {doctorsList?.map(doctor => (
-                    <SelectItem key={doctor._id} value={doctor._id}>
-                      {doctor.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Appointment Date *</label>
-              <Input
-                type="date"
-                value={scheduleAppointment.appointmentDate}
-                onChange={e => {
-                  console.log("Date selected:", e.target.value);
-                  setScheduleAppointment(prev => ({
-                    ...prev,
-                    appointmentDate: e.target.value,
-                  }));
-                }}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Time Slot *</label>
-              <Select
-                value={scheduleAppointment.timeSlot}
-                onValueChange={value => {
-                  console.log("Time slot selected:", value);
-                  setScheduleAppointment(prev => ({
-                    ...prev,
-                    timeSlot: value,
-                  }));
-                }}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select Time Slot" />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  <SelectItem value="morning">Morning</SelectItem>
-                  <SelectItem value="noon">Noon</SelectItem>
-                  <SelectItem value="evening">Evening</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  console.log("Cancel button clicked");
-                  setIsModalOpen(false);
-                  setError("");
-                  setScheduleAppointment({
-                    doctorId: "",
-                    appointmentDate: "",
-                    timeSlot: "",
-                    hairTestId: "",
-                  });
-                  console.log("Schedule form reset");
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => {
-                  console.log("Schedule appointment button clicked");
-                  handleSubmitSchedule();
-                }}
-                className="bg-primary hover:bg-health-primary/90"
-              >
-                Schedule Appointment
-              </Button>
-            </div>
+              </TableBody>
+            </Table>
           </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Order Details Modal */}
-      <Dialog open={isOrderModalOpen} onOpenChange={setIsOrderModalOpen}>
-        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Order Details</DialogTitle>
-            <DialogDescription>
-              View and manage order information
-            </DialogDescription>
-          </DialogHeader>
-
-          {selectedOrder && (
-            <div className="space-y-4">
-              {/* Order Details Section */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold">Order Information</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium">Order ID</label>
-                    <div className="p-2 border rounded-md text-sm">
-                      {selectedOrder._id || "N/A"}
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium">User Name</label>
-                    <div className="p-2 border rounded-md text-sm">
-                      {selectedOrder.userId?.fullname || "N/A"}
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium">Order Type</label>
-                    <div className="p-2 border rounded-md text-sm">
-                      {selectedOrder.orderType || "N/A"}
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium">Status</label>
-                    <div className="p-2 border rounded-md text-sm">
-                      <span
-                        className={`${
-                          selectedOrder.status?.toLowerCase() === "pending"
-                            ? "text-yellow-600"
-                            : selectedOrder.status?.toLowerCase() === "paid"
-                              ? "text-green-600"
-                              : "text-red-600"
-                        }`}
-                      >
-                        {selectedOrder.status || "Unknown"}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium">
-                      Delivery Status
-                    </label>
-                    <div className="p-2 border rounded-md text-sm">
-                      <span
-                        className={`${
-                          selectedOrder.deliveryStatus?.toLowerCase() ===
-                          "pending"
-                            ? "text-yellow-600"
-                            : selectedOrder.deliveryStatus?.toLowerCase() ===
-                                "delivered"
-                              ? "text-green-600"
-                              : selectedOrder.deliveryStatus?.toLowerCase() ===
-                                  "canceled"
-                                ? "text-red-600"
-                                : "text-blue-600"
-                        }`}
-                      >
-                        {selectedOrder.deliveryStatus || "Unknown"}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium">Created At</label>
-                    <div className="p-2 border rounded-md text-sm">
-                      {selectedOrder.createdAt
-                        ? new Date(selectedOrder.createdAt).toLocaleDateString(
-                            "en-GB",
-                            { day: "2-digit", month: "short", year: "numeric" }
-                          )
-                        : ""}
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium">Doctor</label>
-                    <div className="p-2 border rounded-md text-sm">
-                      {selectedOrder.doctorId?.name || "N/A"}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Product Details Section */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold mt-4">Product Details</h3>
-                {selectedOrder.products && selectedOrder.products.length > 0 ? (
-                  <ul className="list-disc pl-5 space-y-1">
-                    {selectedOrder.products.map((product, index) => (
-                      <li key={index} className="text-sm">
-                        {product.name} (Quantity: {product.quantity})
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="p-2 border rounded-md text-sm text-gray-500">
-                    No products in this order.
-                  </div>
-                )}
-              </div>
-
-              {/* Assign Doctor Section */}
-              <div className="space-y-3 mt-4">
-                <h3 className="text-lg font-semibold">Assign Doctor</h3>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Select Doctor</label>
-                  <Select
-                    value={selectedDoctor}
-                    onValueChange={value => setSelectedDoctor(value)}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select Doctor" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      {doctorsList.map(doctor => (
-                        <SelectItem key={doctor._id} value={doctor._id}>
-                          {doctor.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button
-                  onClick={handleAssignDoctor}
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-                >
-                  Assign Doctor
-                </Button>
-              </div>
-
-              {/* Success/Error Message */}
-              {assignResponse.message && (
-                <div
-                  className={`p-3 rounded-md text-sm ${
-                    assignResponse.type === "success"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
-                >
-                  {assignResponse.message}
-                </div>
-              )}
-
-              <div className="flex justify-end mt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsOrderModalOpen(false)}
-                  className="px-6"
-                >
-                  Close
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Schedule Follow Up Modal */}
-      <Dialog open={isFollowUpModalOpen} onOpenChange={setIsFollowUpModalOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Schedule Follow Up</DialogTitle>
-            <DialogDescription>
-              Schedule a follow up appointment for the patient
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Doctor *</label>
-              <Select
-                value={followUpData.doctorId}
-                onValueChange={value =>
-                  setFollowUpData(prev => ({
-                    ...prev,
-                    doctorId: value,
-                  }))
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select Doctor" />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  {doctorsList?.map(doctor => (
-                    <SelectItem key={doctor._id} value={doctor._id}>
-                      {doctor.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Appointment Date *</label>
-              <Input
-                type="date"
-                value={followUpData.appointmentDate}
-                onChange={e =>
-                  setFollowUpData(prev => ({
-                    ...prev,
-                    appointmentDate: e.target.value,
-                  }))
-                }
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Time Slot *</label>
-              <Select
-                value={followUpData.timeSlot}
-                onValueChange={value =>
-                  setFollowUpData(prev => ({
-                    ...prev,
-                    timeSlot: value,
-                  }))
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select Time Slot" />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  <SelectItem value="morning">Morning</SelectItem>
-                  <SelectItem value="noon">Noon</SelectItem>
-                  <SelectItem value="evening">Evening</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Doctor Notes</label>
-              <textarea
-                value={followUpData.doctorNotes}
-                onChange={e =>
-                  setFollowUpData(prev => ({
-                    ...prev,
-                    doctorNotes: e.target.value,
-                  }))
-                }
-                rows={4}
-                className="w-full p-2 border rounded-md"
-                placeholder="Add any notes about the follow-up..."
-              ></textarea>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setIsFollowUpModalOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSubmitFollowUp}
-                className="bg-primary hover:bg-health-primary/90"
-              >
-                Schedule Follow Up
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+        </CardContent>
+      </Card>
     </DashboardLayout>
   );
 };
