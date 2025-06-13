@@ -930,7 +930,7 @@ const FollowUp = () => {
                             const testId = test.followupOf || test.hairTestId;
 
                             if (testId) {
-                              window.open(`${baseUrl}/${testId}`, "_blank");
+                              window.open(`${baseUrl}/${path}/${testId}`, "_blank");
                             } else {
                               toast.error(
                                 "Missing required data for this report."
