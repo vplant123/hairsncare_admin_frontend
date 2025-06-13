@@ -1563,7 +1563,7 @@ const HairTest = () => {
                     className="w-full sm:w-auto bg-primary hover:bg-health-primary/90 text-white px-6 transition-colors duration-200 flex items-center justify-center gap-2"
                     onClick={() => {
                       const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
-                      const path = "patient-test-result";
+                      const path = "test-results";
                       const userId = selectedTest?.userId?._id;
                       const appointmentId =
                         selectedTest?.appointments?.[0]?._id;
@@ -1571,7 +1571,7 @@ const HairTest = () => {
 
                       if (userId && testId && appointmentId) {
                         window.open(
-                          `${baseUrl}/${path}/${userId},${appointmentId},${testId}`,
+                          `${baseUrl}/${path}/${testId}`,
                           "_blank"
                         );
                       } else {

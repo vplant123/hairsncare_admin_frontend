@@ -79,11 +79,11 @@ const AppointmentManagement = () => {
         if (data?.success) {
           const filteredData = data?.data?.filter((appointment) => {
             // Check if appointmentType is "prescription_only" and followupOf is either null, undefined, or empty string
-            return (
+    return (
               appointment.appointmentType === "prescription_only" &&
               (appointment.followupOf === "" || appointment.followupOf == null) // Also handles null and undefined
-            );
-          });
+    );
+  });
           setAppointments(filteredData || []);
           console.log(filteredData);
         } else {
@@ -125,31 +125,31 @@ const AppointmentManagement = () => {
         <h1 className="text-2xl font-bold">Appointment Management</h1>
       </div>
 
-      <Card className="bg-white">
-        <CardHeader className="pb-3">
+          <Card className="bg-white">
+            <CardHeader className="pb-3">
           <CardTitle>Appointments</CardTitle>
           <CardDescription>Manage patient appointments</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-2">
-              <div className="relative w-64">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="relative w-64">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <Input
                   placeholder="Search appointments..."
-                  className="px-10"
-                  value={searchQuery}
+                      className="px-10"
+                      value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                />
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
           {/* Pagination Controls (Top) */}
           <div className="flex items-center justify-between my-2">
             <div className="flex items-center">
               <span>Rows per page&nbsp;</span>
-              <select
+                  <select
                 value={rowsPerPage}
                 onChange={(e) => {
                   setRowsPerPage(Number(e.target.value));
@@ -158,12 +158,12 @@ const AppointmentManagement = () => {
                 className="border rounded px-2 py-1"
               >
                 {[5, 10, 25, 50].map((num) => (
-                  <option key={num} value={num}>
-                    {num}
-                  </option>
-                ))}
-              </select>
-            </div>
+                      <option key={num} value={num}>
+                        {num}
+                      </option>
+                    ))}
+                  </select>
+                </div>
             <div className="flex items-center gap-2">
               <span>
                 {totalAppointments === 0
@@ -173,7 +173,7 @@ const AppointmentManagement = () => {
                       totalAppointments
                     )}`}{" "}
                 of {totalAppointments}
-              </span>
+                  </span>
               {/* <button
                 onClick={() => setCurrentPage(1)}
                 disabled={currentPage === 1}
@@ -204,32 +204,32 @@ const AppointmentManagement = () => {
               >
                 {">|"}
               </button> */}
-            </div>
-          </div>
+                </div>
+              </div>
 
           <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-[#209FD9] text-white whitespace-nowrap">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-[#209FD9] text-white whitespace-nowrap">
                   <TableHead>Order Id</TableHead>
                   <TableHead>Patient name</TableHead>
                   <TableHead>Phone No.</TableHead>
-                  <TableHead>Order Details</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+                    <TableHead>Order Details</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                 {loading ? (
                   <TableRow>
                     <TableCell colSpan={8} className="text-center">
                       Loading appointments...
-                    </TableCell>
+                      </TableCell>
                   </TableRow>
                 ) : error ? (
                   <TableRow>
                     <TableCell colSpan={8} className="text-center text-red-500">
                       {error}
-                    </TableCell>
+                      </TableCell>
                   </TableRow>
                 ) : paginatedAppointments.length === 0 ? (
                   <TableRow>
@@ -268,9 +268,9 @@ const AppointmentManagement = () => {
 
                       {/* <TableCell>
                         {appointment.status ? (
-                          <Button
-                            variant="outline"
-                            size="sm"
+                  <Button
+                    variant="outline"
+                    size="sm"
                             className="w-24 h-8 text-xs font-medium"
                             style={{
                               backgroundColor:
@@ -283,15 +283,15 @@ const AppointmentManagement = () => {
                           >
                             {appointment.status.charAt(0).toUpperCase() +
                               appointment.status.slice(1)}
-                          </Button>
+                  </Button>
                         ) : (
                           "N/A"
                         )}
                       </TableCell> */}
                       <TableCell>
                         {appointment?.status ? (
-                          <Button
-                            variant="outline"
+                    <Button
+                      variant="outline"
                             size="sm"
                             className="w-32 h-8 text-xs font-medium"
                             style={{
@@ -317,19 +317,19 @@ const AppointmentManagement = () => {
                                 return;
                               }
 
-                              const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
+                      const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
                               const path = "prescription_only";
 
-                              window.open(
-                                `${baseUrl}/${path}/${userId},${appointmentId},${testId}`,
-                                "_blank"
-                              );
-                            }}
-                          >
+                        window.open(
+                          `${baseUrl}/${path}/${userId},${appointmentId},${testId}`,
+                          "_blank"
+                        );
+                    }}
+                  >
                             {appointment?.status === "completed"
                               ? "Generate Prescription"
                               : "Generate Prescription"}
-                          </Button>
+                  </Button>
                         ) : (
                           "N/A"
                         )}
@@ -339,7 +339,7 @@ const AppointmentManagement = () => {
                 )}
               </TableBody>
             </Table>
-          </div>
+              </div>
         </CardContent>
       </Card>
     </DashboardLayout>

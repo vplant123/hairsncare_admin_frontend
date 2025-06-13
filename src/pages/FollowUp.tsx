@@ -233,8 +233,14 @@ const FollowUp = () => {
         }
       );
       const data = await response.json();
-      console.log("Fetched Hair Tests:", data);
-      setHairTests(data?.message || []);
+      console.log("Fetched data:", data);
+      let filterdata = data.data?.filter(item => {
+        return (
+          (item.followupOf !== null && item.followupOf !== undefined) ||
+          item.status == "completed"
+        );
+      });
+      setHairTests(filterdata || []);
     } catch (error) {
       console.log("Error while fetching hair tests data", error);
     }
@@ -255,7 +261,9 @@ const FollowUp = () => {
       console.log("Error while fetching orders data", error);
     }
   };
+
   const sendWhatsapp = async userId => {
+
     console.log("Starting WhatsApp send process for userId:", userId);
 
     try {
@@ -288,7 +296,7 @@ const FollowUp = () => {
 
       console.log("Making API call to send WhatsApp...");
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/admin/sendWhatsapp?userId=${userId}`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/sendWhatsapp?userId=${userId}`,
         {
           method: "POST",
           headers: {
@@ -326,6 +334,7 @@ const FollowUp = () => {
       });
     } catch (error) {
       console.error("Error in sendWhatsapp:", error);
+
       toast(error.message || "Error sending WhatsApp message", {
         duration: 4000,
         position: "top-right",
@@ -617,7 +626,88 @@ const FollowUp = () => {
       console.error("Error fetching order details:", error);
     }
   };
+//  const sendWhatsapp = async userId => {
+//    console.log("Starting WhatsApp send process for userId:", userId);
 
+//    try {
+//      const token = localStorage.getItem("token");
+//      if (!token) {
+//        console.error("No token found");
+//        toast("No authorization token found", {
+//          duration: 4000,
+//          position: "top-right",
+//          style: {
+//            background: "#EF4444",
+//            color: "#fff",
+//          },
+//        });
+//        return;
+//      }
+
+//      if (!userId) {
+//        console.error("No userId provided");
+//        toast("User ID not found", {
+//          duration: 4000,
+//          position: "top-right",
+//          style: {
+//            background: "#EF4444",
+//            color: "#fff",
+//          },
+//        });
+//        return;
+//      }
+
+//      console.log("Making API call to send WhatsApp...");
+//      const response = await fetch(
+//        `${BASE_URL}/admin/sendWhatsapp?userId=${userId}`,
+//        {
+//          method: "POST",
+//          headers: {
+//            Authorization: `Bearer ${token}`,
+//            "Content-Type": "application/json",
+//          },
+//        }
+//      );
+
+//      console.log("API Response status:", response.status);
+//      const data = await response.json();
+//      console.log("API Response data:", data);
+
+//      if (!response.ok) {
+//        console.error("API call failed:", data);
+//        toast(data.message || "Failed to send WhatsApp message", {
+//          duration: 4000,
+//          position: "top-right",
+//          style: {
+//            background: "#EF4444",
+//            color: "#fff",
+//          },
+//        });
+//        return;
+//      }
+
+//      console.log("API call successful, showing success toast");
+//      toast(data.message || "WhatsApp message sent successfully", {
+//        duration: 4000,
+//        position: "top-right",
+//        style: {
+//          background: "#10B981",
+//          color: "#fff",
+//        },
+//      });
+//    } catch (error) {
+//      console.error("Error in sendWhatsapp:", error);
+
+//      toast(error.message || "Error sending WhatsApp message", {
+//        duration: 4000,
+//        position: "top-right",
+//        style: {
+//          background: "#EF4444",
+//          color: "#fff",
+//        },
+//      });
+//    }
+//  };
   const handleAssignDoctor = async () => {
     if (!selectedDoctor || !selectedOrder?._id) {
       console.log("Doctor or order not selected.");
@@ -722,10 +812,7 @@ const FollowUp = () => {
         <h1 className="text-2xl font-bold">Follow Up Tests</h1>
       </div>
 
-      <Tabs
-        defaultValue="completed"
-        className="space-y-4"
-      >
+      <Tabs defaultValue="completed" className="space-y-4">
         <TabsContent value="completed" className="space-y-4">
           <Card className="bg-white">
             <CardHeader className="pb-3">
@@ -783,66 +870,67 @@ const FollowUp = () => {
                     <TableHead>Phone Number</TableHead>
                     <TableHead>Email Id</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>FolloweUp Date & Time</TableHead>
+                    <TableHead></TableHead>
+                    <TableHead>FolloweUp Date</TableHead>
                     <TableHead>Action</TableHead>
                     <TableHead>Final Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedCompletedTests.map((test, index) => (
+                  {hairTests.map((test, index) => (
                     <TableRow
                       key={test._id}
                       className={`hover:bg-gray-100 ${index % 2 === 0 ? "bg-white" : "bg-gray-100"}`}
                     >
                       <TableCell>
-                        {test.appointments?.[0]?.createdAt
-                          ? `${new Date(
-                              test.appointments[0].createdAt
-                            ).toLocaleDateString("en-GB", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })} ${new Date(
-                              test.appointments[0].createdAt
-                            ).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}`
+                        {test.createdAt
+                          ? `${new Date(test.createdAt).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )} ${new Date(test.createdAt).toLocaleTimeString(
+                              [],
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}`
                           : ""}
                       </TableCell>
                       <TableCell className="font-medium">
-                        {test.personal?.name || ""}
+                        {test.userId?.fullname || ""}
                       </TableCell>
-                      <TableCell>{test.personal?.phoneNumber || ""}</TableCell>
-                      <TableCell>{test.personal?.email || ""}</TableCell>
+                      <TableCell>{test.userId?.mobile || ""}</TableCell>
+                      <TableCell>{test.userId?.email || ""}</TableCell>
                       <TableCell>
-                        {/* <span
-                          className={`inline-flex items-center justify-center w-24 h-6 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            test.status?.toLowerCase() === "pending"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : test.status?.toLowerCase() === "completed"
-                                ? "bg-green-100 text-green-700"
-                                : "bg-blue-100 text-blue-700"
+                        <span
+                          className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium ${
+                            test.status?.toLowerCase() === "completed"
+                              ? "bg-green-100 text-green-700"
+                              : test.status?.toLowerCase() === "pending"
+                                ? "bg-blue-100 text-blue-700"
+                                : test.status?.toLowerCase() === "assigned"
+                                  ? "bg-yellow-100 text-yellow-700"
+                                  : "bg-gray-100 text-gray-700"
                           }`}
                         >
-                          {test.status || "Unknown"}
-                        </span> */}
+                          {test.status || ""}
+                        </span>
+                      </TableCell>
+                      <TableCell>
                         <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-full sm:w-auto bg-primary hover:bg-health-primary/90 text-white px-4 py-2 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
+                          className="w-full sm:w-auto bg-primary hover:bg-health-primary/90 text-white px-6 transition-colors duration-200 flex items-center justify-center gap-2"
                           onClick={() => {
                             const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
-                            const path = "patient-test-result";
-                            const userId = test?.userId?._id;
-                            const appointmentId = test?.appointments?.[0]?._id;
-                            const testId = test?._id;
+                            const path = "test-results";
 
-                            if (userId && testId && appointmentId) {
-                              window.open(
-                                `${baseUrl}/${path}/${userId},${appointmentId},${testId}`,
-                                "_blank"
-                              );
+                            const testId = test.followupOf || test.hairTestId;
+
+                            if (testId) {
+                              window.open(`${baseUrl}/${testId}`, "_blank");
                             } else {
                               toast.error(
                                 "Missing required data for this report."
@@ -851,94 +939,54 @@ const FollowUp = () => {
                           }}
                         >
                           <Eye className="h-4 w-4" />
-                          View Old Test
+                          View Test Report
                         </Button>
                       </TableCell>
-
                       <TableCell>
-                        {test.appointments?.[0]?.appointmentDate
-                          ? new Date(
-                              test.appointments[0].appointmentDate
-                            ).toLocaleDateString("en-GB", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })
-                          : ""}
-                        {test.appointments?.[0]?.timeSlot
-                          ? ` (${test.appointments[0].timeSlot})`
+                        {test.followUpDate
+                          ? `${new Date(test.followUpDate).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )}`
                           : ""}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex flex-col gap-2 items-end">
-                          {test.status?.toLowerCase() === "completed" && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-[180px] flex items-center justify-center gap-1 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 transition-colors"
-                              onClick={() => handleFollowUp(test)}
-                            >
-                              <span>Schedule Follow Up</span>
-                            </Button>
-                          )}
+                          {test.status?.toLowerCase() === "completed" &&
+                            test.followUpDate && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-[180px] flex items-center justify-center gap-1 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 transition-colors"
+                                onClick={() => handleFollowUp(test)}
+                              >
+                                <span>Schedule Follow Up</span>
+                              </Button>
+                            )}
                           {test.status?.toLowerCase() === "pending" && (
                             <Button
                               variant="outline"
                               size="sm"
-                              className="w-[180px] flex items-center justify-center gap-1 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-300 transition-colors"
-                              onClick={() => {
-                                setSelectedTest(test);
-                                setScheduleAppointment(prev => ({
-                                  ...prev,
-                                  hairTestId: test._id,
-                                }));
-                                setIsModalOpen(true);
-                              }}
+                              className="w-[180px] flex items-center justify-center gap-1 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 transition-colors"
+                              onClick={() => sendWhatsapp(test.userId?._id)}
                             >
-                              <span>Schedule Appointment</span>
+                              <svg
+                                className="w-4 h-4"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                              </svg>
+                              <span>Send WhatsApp</span>
                             </Button>
                           )}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <span
-                          className={`inline-flex items-center justify-center w-24 h-6 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            test.appointments?.[0]?.status?.toLowerCase() ===
-                            "pending"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : test.appointments?.[0]?.status?.toLowerCase() ===
-                                  "completed"
-                                ? "bg-green-100 text-green-700"
-                                : test.appointments?.[0]?.status?.toLowerCase() ===
-                                    "assigned"
-                                  ? "bg-blue-100 text-blue-700"
-                                  : "bg-gray-100 text-gray-700"
-                          }`}
-                        >
-                          {test.appointments?.[0]?.status || "Unknown"}
-                        </span>
-                      </TableCell>
-
-                      {/* <TableCell className="text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex items-center gap-1 text-health-primary"
-                          onClick={() => viewReport(test._id, test.status)}
-                        >
-                          {test.status?.toLowerCase() === "completed" ? (
-                            <>
-                              <FileText className="h-3 w-3" />
-                              <span>Report sent</span>
-                            </>
-                          ) : (
-                            <>
-                              <Eye className="h-3 w-3" />
-                              <span>View report</span>
-                            </>
-                          )}
-                        </Button>
-                      </TableCell> */}
+                      <TableCell></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -947,7 +995,7 @@ const FollowUp = () => {
               {/* Pagination Controls (Bottom) for Completed Hair Tests */}
               <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
-                  {totalCompletedTests} total results.
+                  {hairTests.length} total results.
                 </div>
                 <div className="space-x-2">
                   <Button
@@ -1210,17 +1258,12 @@ const FollowUp = () => {
                     className="w-full sm:w-auto bg-primary hover:bg-health-primary/90 text-white px-6 transition-colors duration-200 flex items-center justify-center gap-2"
                     onClick={() => {
                       const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
-                      const path = "patient-test-result";
-                      const userId = selectedTest?.userId?._id;
-                      const appointmentId =
-                        selectedTest?.appointments?.[0]?._id;
+                      const path = "test-results";
+
                       const testId = selectedTest?._id;
 
-                      if (userId && testId && appointmentId) {
-                        window.open(
-                          `${baseUrl}/${path}/${userId},${appointmentId},${testId}`,
-                          "_blank"
-                        );
+                      if (testId) {
+                        window.open(`${baseUrl}/${testId}`, "_blank");
                       } else {
                         toast.error("Missing required data for this report.");
                       }
