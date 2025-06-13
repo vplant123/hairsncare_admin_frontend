@@ -324,36 +324,26 @@ const AddDoctor = () => {
         responseData = JSON.parse(rawResponse);
       } catch (err) {
         console.error("Error parsing response:", err);
-        // If parsing fails but status is ok, consider it a success
-        if (response.ok) {
-          toast({
-            title: "Success",
-            description: isEdit ? "Doctor updated successfully!" : "Doctor added successfully!",
-           className:"bg-white"
-          });
-          // Navigate to doctor management with state to trigger refresh
-          navigate("/doctors", { 
-            state: { 
-              refresh: true,
-              message: isEdit ? "Doctor updated successfully!" : "Doctor added successfully!"
-            }
-          });
-          return;
-        }
         throw new Error("Invalid server response");
       }
 
       if (!response.ok) {
-        throw new Error(responseData.message || "Failed to save doctor profile");
+        const errorMessage = responseData?.message || "Failed to save doctor profile";
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+          className: "bg-white"
+        });
+        throw new Error(errorMessage);
       }
-
-      console.log("Response data:", responseData);
 
       toast({
         title: "Success",
         description: isEdit ? "Doctor updated successfully!" : "Doctor added successfully!",
-        classNames:"bg-white"
+        className: "bg-white"
       });
+      
       // Navigate to doctor management with state to trigger refresh
       navigate("/doctors", { 
         state: { 
