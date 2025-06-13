@@ -63,8 +63,10 @@ const ProtectedRoute = ({
   }
 
   if (requiredRoles && !requiredRoles.includes(role)) {
-    // Redirect to dashboard or forbidden page if role is not allowed
-    // For now, redirecting to dashboard
+    // Redirect based on role
+    if (role === "doctor") {
+      return <Navigate to="/appointment" replace />;
+    }
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -93,7 +95,7 @@ const App = () => (
             <Route
               path="/"
               element={
-                <ProtectedRoute requiredRoles={["admin", "subadmin", "doctor"]}>
+                <ProtectedRoute requiredRoles={["admin", "subadmin"]}>
                   <Navigate to="/dashboard" replace />
                 </ProtectedRoute>
               }
@@ -109,7 +111,7 @@ const App = () => (
             <Route
               path="/dashboard"
               element={
-                <ProtectedRoute requiredRoles={["admin", "subadmin", "doctor"]}>
+                <ProtectedRoute requiredRoles={["admin", "subadmin"]}>
                   <Dashboard />
                 </ProtectedRoute>
               }

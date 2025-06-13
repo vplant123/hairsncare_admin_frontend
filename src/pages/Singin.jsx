@@ -18,11 +18,15 @@ function SignIn() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
     if (token) {
-      const from = location.state?.from || "/dashboard";
-      navigate(from, { replace: true });
+      if (role === "doctor") {
+        navigate("/appointment", { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
     }
-  }, [navigate, location]);
+  }, [navigate]);
 
   const handleInputChange = e => {
     const { name, value } = e.target;
