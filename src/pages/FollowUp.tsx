@@ -41,6 +41,8 @@ import { useNavigate } from "react-router-dom";
 
 interface FollowUp {
   _id: string;
+  hairTestId?: string;
+  followupOf?: string;
   userId?: { fullname: string };
   personal?: {
     name?: string;
@@ -124,15 +126,15 @@ const FollowUp = () => {
   const [pendingRowsPerPage, setPendingRowsPerPage] = useState(10);
 
   const pendingTests = hairTests.filter(
-    test => test.status?.toLowerCase() === "pending"
+    (test) => test.status?.toLowerCase() === "pending"
   );
 
   const completedTests = hairTests.filter(
-    test => test.status?.toLowerCase() === "completed"
+    (test) => test.status?.toLowerCase() === "completed"
   );
 
   // Filter hair tests based on search query for All tab
-  const filteredAllHairTests = hairTests.filter(test => {
+  const filteredAllHairTests = hairTests.filter((test) => {
     const query = searchQuery.toLowerCase();
     const name = test.personal?.name?.toLowerCase() || "";
     const email = test.personal?.email?.toLowerCase() || "";
@@ -146,7 +148,7 @@ const FollowUp = () => {
   });
 
   // Filter hair tests based on search query for Completed tab
-  const filteredCompletedHairTests = completedTests.filter(test => {
+  const filteredCompletedHairTests = completedTests.filter((test) => {
     const query = searchQuery.toLowerCase();
     const name = test.personal?.name?.toLowerCase() || "";
     const email = test.personal?.email?.toLowerCase() || "";
@@ -200,12 +202,12 @@ const FollowUp = () => {
   const [prescriptionRowsPerPage, setPrescriptionRowsPerPage] = useState(10);
 
   // Filter and paginate prescriptions
-  const filteredPrescriptions = Orders.filter(order => {
+  const filteredPrescriptions = Orders.filter((order) => {
     const query = searchQuery.toLowerCase();
     const name = order.personalId?.name?.toLowerCase() || "";
     const email = order.personalId?.email?.toLowerCase() || "";
     const productName =
-      order.productId?.map(p => p.name.toLowerCase()).join(", ") || "";
+      order.productId?.map((p) => p.name.toLowerCase()).join(", ") || "";
 
     return (
       name.includes(query) ||
@@ -234,7 +236,7 @@ const FollowUp = () => {
       );
       const data = await response.json();
       console.log("Fetched data:", data);
-      let filterdata = data.data?.filter(item => {
+      let filterdata = data.data?.filter((item) => {
         return (
           (item.followupOf !== null && item.followupOf !== undefined) ||
           item.status == "completed"
@@ -262,8 +264,7 @@ const FollowUp = () => {
     }
   };
 
-  const sendWhatsapp = async userId => {
-
+  const sendWhatsapp = async (userId) => {
     console.log("Starting WhatsApp send process for userId:", userId);
 
     try {
@@ -367,12 +368,14 @@ const FollowUp = () => {
     handleFetchDoctor();
   }, []);
 
-  const handleFollowUp = (test: FollowUp) => {
+  const handleFollowUp = (test) => {
     console.log("Starting follow-up process for test:", test);
-    setSelectedTestForFollowUp(test);
-    setFollowUpData(prev => ({
+    const hairTestid = test.hairTestId || test.followupOf;
+    setSelectedTestForFollowUp(hairTestid);
+    console.log("test id", hairTestid);
+    setFollowUpData((prev) => ({
       ...prev,
-      followupOf: test._id,
+      followupOf: hairTestid,
     }));
     setIsFollowUpModalOpen(true);
   };
@@ -592,7 +595,7 @@ const FollowUp = () => {
       );
       const data = await response.json();
       if (data.success) {
-        const test = data.message.find(t => t._id === testId);
+        const test = data.message.find((t) => t._id === testId);
         if (test) {
           setSelectedTest(test);
           setIsCompletedModalOpen(true);
@@ -603,7 +606,7 @@ const FollowUp = () => {
     }
   };
 
-  const viewOrderDetails = async orderId => {
+  const viewOrderDetails = async (orderId) => {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/v1/admin/order-details`,
@@ -626,88 +629,88 @@ const FollowUp = () => {
       console.error("Error fetching order details:", error);
     }
   };
-//  const sendWhatsapp = async userId => {
-//    console.log("Starting WhatsApp send process for userId:", userId);
+  //  const sendWhatsapp = async userId => {
+  //    console.log("Starting WhatsApp send process for userId:", userId);
 
-//    try {
-//      const token = localStorage.getItem("token");
-//      if (!token) {
-//        console.error("No token found");
-//        toast("No authorization token found", {
-//          duration: 4000,
-//          position: "top-right",
-//          style: {
-//            background: "#EF4444",
-//            color: "#fff",
-//          },
-//        });
-//        return;
-//      }
+  //    try {
+  //      const token = localStorage.getItem("token");
+  //      if (!token) {
+  //        console.error("No token found");
+  //        toast("No authorization token found", {
+  //          duration: 4000,
+  //          position: "top-right",
+  //          style: {
+  //            background: "#EF4444",
+  //            color: "#fff",
+  //          },
+  //        });
+  //        return;
+  //      }
 
-//      if (!userId) {
-//        console.error("No userId provided");
-//        toast("User ID not found", {
-//          duration: 4000,
-//          position: "top-right",
-//          style: {
-//            background: "#EF4444",
-//            color: "#fff",
-//          },
-//        });
-//        return;
-//      }
+  //      if (!userId) {
+  //        console.error("No userId provided");
+  //        toast("User ID not found", {
+  //          duration: 4000,
+  //          position: "top-right",
+  //          style: {
+  //            background: "#EF4444",
+  //            color: "#fff",
+  //          },
+  //        });
+  //        return;
+  //      }
 
-//      console.log("Making API call to send WhatsApp...");
-//      const response = await fetch(
-//        `${BASE_URL}/admin/sendWhatsapp?userId=${userId}`,
-//        {
-//          method: "POST",
-//          headers: {
-//            Authorization: `Bearer ${token}`,
-//            "Content-Type": "application/json",
-//          },
-//        }
-//      );
+  //      console.log("Making API call to send WhatsApp...");
+  //      const response = await fetch(
+  //        `${BASE_URL}/admin/sendWhatsapp?userId=${userId}`,
+  //        {
+  //          method: "POST",
+  //          headers: {
+  //            Authorization: `Bearer ${token}`,
+  //            "Content-Type": "application/json",
+  //          },
+  //        }
+  //      );
 
-//      console.log("API Response status:", response.status);
-//      const data = await response.json();
-//      console.log("API Response data:", data);
+  //      console.log("API Response status:", response.status);
+  //      const data = await response.json();
+  //      console.log("API Response data:", data);
 
-//      if (!response.ok) {
-//        console.error("API call failed:", data);
-//        toast(data.message || "Failed to send WhatsApp message", {
-//          duration: 4000,
-//          position: "top-right",
-//          style: {
-//            background: "#EF4444",
-//            color: "#fff",
-//          },
-//        });
-//        return;
-//      }
+  //      if (!response.ok) {
+  //        console.error("API call failed:", data);
+  //        toast(data.message || "Failed to send WhatsApp message", {
+  //          duration: 4000,
+  //          position: "top-right",
+  //          style: {
+  //            background: "#EF4444",
+  //            color: "#fff",
+  //          },
+  //        });
+  //        return;
+  //      }
 
-//      console.log("API call successful, showing success toast");
-//      toast(data.message || "WhatsApp message sent successfully", {
-//        duration: 4000,
-//        position: "top-right",
-//        style: {
-//          background: "#10B981",
-//          color: "#fff",
-//        },
-//      });
-//    } catch (error) {
-//      console.error("Error in sendWhatsapp:", error);
+  //      console.log("API call successful, showing success toast");
+  //      toast(data.message || "WhatsApp message sent successfully", {
+  //        duration: 4000,
+  //        position: "top-right",
+  //        style: {
+  //          background: "#10B981",
+  //          color: "#fff",
+  //        },
+  //      });
+  //    } catch (error) {
+  //      console.error("Error in sendWhatsapp:", error);
 
-//      toast(error.message || "Error sending WhatsApp message", {
-//        duration: 4000,
-//        position: "top-right",
-//        style: {
-//          background: "#EF4444",
-//          color: "#fff",
-//        },
-//      });
-//    }
-//  };
+  //      toast(error.message || "Error sending WhatsApp message", {
+  //        duration: 4000,
+  //        position: "top-right",
+  //        style: {
+  //          background: "#EF4444",
+  //          color: "#fff",
+  //        },
+  //      });
+  //    }
+  //  };
   const handleAssignDoctor = async () => {
     if (!selectedDoctor || !selectedOrder?._id) {
       console.log("Doctor or order not selected.");
@@ -781,7 +784,7 @@ const FollowUp = () => {
     }
   };
 
-  const handleViewPrescription = async orderId => {
+  const handleViewPrescription = async (orderId) => {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/v1/admin/order-details`,
@@ -830,7 +833,7 @@ const FollowUp = () => {
                       placeholder="Search completed tests..."
                       className="px-10"
                       value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                     />
                   </div>
                 </div>
@@ -842,13 +845,13 @@ const FollowUp = () => {
                   <span className="text-sm font-medium">Rows per page:</span>
                   <select
                     value={completedRowsPerPage}
-                    onChange={e => {
+                    onChange={(e) => {
                       setCompletedRowsPerPage(Number(e.target.value));
                       setCompletedCurrentPage(1); // Reset to first page
                     }}
                     className="border rounded px-2 py-1 text-sm"
                   >
-                    {[5, 10, 25, 50].map(num => (
+                    {[5, 10, 25, 50].map((num) => (
                       <option key={num} value={num}>
                         {num}
                       </option>
@@ -930,7 +933,10 @@ const FollowUp = () => {
                             const testId = test.followupOf || test.hairTestId;
 
                             if (testId) {
-                              window.open(`${baseUrl}/${path}/${testId}`, "_blank");
+                              window.open(
+                                `${baseUrl}/${path}/${testId}`,
+                                "_blank"
+                              );
                             } else {
                               toast.error(
                                 "Missing required data for this report."
@@ -1012,7 +1018,7 @@ const FollowUp = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setCompletedCurrentPage(prev => Math.max(prev - 1, 1))
+                      setCompletedCurrentPage((prev) => Math.max(prev - 1, 1))
                     }
                     disabled={
                       completedCurrentPage === 1 || totalCompletedPages === 0
@@ -1024,7 +1030,7 @@ const FollowUp = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setCompletedCurrentPage(prev =>
+                      setCompletedCurrentPage((prev) =>
                         Math.min(prev + 1, totalCompletedPages)
                       )
                     }
@@ -1300,9 +1306,9 @@ const FollowUp = () => {
               <label className="text-sm font-medium">Doctor *</label>
               <Select
                 value={scheduleAppointment.doctorId}
-                onValueChange={value => {
+                onValueChange={(value) => {
                   console.log("Doctor selected:", value);
-                  setScheduleAppointment(prev => ({
+                  setScheduleAppointment((prev) => ({
                     ...prev,
                     doctorId: value,
                   }));
@@ -1312,7 +1318,7 @@ const FollowUp = () => {
                   <SelectValue placeholder="Select Doctor" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  {doctorsList?.map(doctor => (
+                  {doctorsList?.map((doctor) => (
                     <SelectItem key={doctor._id} value={doctor._id}>
                       {doctor.name}
                     </SelectItem>
@@ -1326,9 +1332,9 @@ const FollowUp = () => {
               <Input
                 type="date"
                 value={scheduleAppointment.appointmentDate}
-                onChange={e => {
+                onChange={(e) => {
                   console.log("Date selected:", e.target.value);
-                  setScheduleAppointment(prev => ({
+                  setScheduleAppointment((prev) => ({
                     ...prev,
                     appointmentDate: e.target.value,
                   }));
@@ -1340,9 +1346,9 @@ const FollowUp = () => {
               <label className="text-sm font-medium">Time Slot *</label>
               <Select
                 value={scheduleAppointment.timeSlot}
-                onValueChange={value => {
+                onValueChange={(value) => {
                   console.log("Time slot selected:", value);
-                  setScheduleAppointment(prev => ({
+                  setScheduleAppointment((prev) => ({
                     ...prev,
                     timeSlot: value,
                   }));
@@ -1509,13 +1515,13 @@ const FollowUp = () => {
                   <label className="text-sm font-medium">Select Doctor</label>
                   <Select
                     value={selectedDoctor}
-                    onValueChange={value => setSelectedDoctor(value)}
+                    onValueChange={(value) => setSelectedDoctor(value)}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select Doctor" />
                     </SelectTrigger>
                     <SelectContent className="bg-white">
-                      {doctorsList.map(doctor => (
+                      {doctorsList.map((doctor) => (
                         <SelectItem key={doctor._id} value={doctor._id}>
                           {doctor.name}
                         </SelectItem>
@@ -1572,8 +1578,8 @@ const FollowUp = () => {
               <label className="text-sm font-medium">Doctor *</label>
               <Select
                 value={followUpData.doctorId}
-                onValueChange={value =>
-                  setFollowUpData(prev => ({
+                onValueChange={(value) =>
+                  setFollowUpData((prev) => ({
                     ...prev,
                     doctorId: value,
                   }))
@@ -1583,7 +1589,7 @@ const FollowUp = () => {
                   <SelectValue placeholder="Select Doctor" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  {doctorsList?.map(doctor => (
+                  {doctorsList?.map((doctor) => (
                     <SelectItem key={doctor._id} value={doctor._id}>
                       {doctor.name}
                     </SelectItem>
@@ -1597,8 +1603,8 @@ const FollowUp = () => {
               <Input
                 type="date"
                 value={followUpData.appointmentDate}
-                onChange={e =>
-                  setFollowUpData(prev => ({
+                onChange={(e) =>
+                  setFollowUpData((prev) => ({
                     ...prev,
                     appointmentDate: e.target.value,
                   }))
@@ -1610,8 +1616,8 @@ const FollowUp = () => {
               <label className="text-sm font-medium">Time Slot *</label>
               <Select
                 value={followUpData.timeSlot}
-                onValueChange={value =>
-                  setFollowUpData(prev => ({
+                onValueChange={(value) =>
+                  setFollowUpData((prev) => ({
                     ...prev,
                     timeSlot: value,
                   }))
@@ -1632,8 +1638,8 @@ const FollowUp = () => {
               <label className="text-sm font-medium">Doctor Notes</label>
               <textarea
                 value={followUpData.doctorNotes}
-                onChange={e =>
-                  setFollowUpData(prev => ({
+                onChange={(e) =>
+                  setFollowUpData((prev) => ({
                     ...prev,
                     doctorNotes: e.target.value,
                   }))
