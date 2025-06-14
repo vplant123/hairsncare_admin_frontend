@@ -82,6 +82,7 @@ const HairTest = () => {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [error, setError] = useState("");
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [isAssignDoctorModalOpen, setIsAssignDoctorModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -124,20 +125,20 @@ const HairTest = () => {
   const [pendingCurrentPage, setPendingCurrentPage] = useState(1);
   const [pendingRowsPerPage, setPendingRowsPerPage] = useState(10);
 
-  const pendingTests = hairTests.filter(
-    (test) => test.status?.toLowerCase() === "pending"
-  ).filter((test) => {
-    const query = pendingSearchQuery.toLowerCase();
-    const name = test.personal?.name?.toLowerCase() || "";
-    const email = test.personal?.email?.toLowerCase() || "";
-    const phoneNumber = test.personal?.phoneNumber?.toLowerCase() || "";
+  const pendingTests = hairTests
+    .filter((test) => test.status?.toLowerCase() === "pending")
+    .filter((test) => {
+      const query = pendingSearchQuery.toLowerCase();
+      const name = test.personal?.name?.toLowerCase() || "";
+      const email = test.personal?.email?.toLowerCase() || "";
+      const phoneNumber = test.personal?.phoneNumber?.toLowerCase() || "";
 
-    return (
-      name.includes(query) ||
-      email.includes(query) ||
-      phoneNumber.includes(query)
-    );
-  });
+      return (
+        name.includes(query) ||
+        email.includes(query) ||
+        phoneNumber.includes(query)
+      );
+    });
 
   // Filter hair tests based on search query for All tab
   const filteredAllHairTests = hairTests.filter((test) => {
@@ -176,12 +177,9 @@ const HairTest = () => {
 
   const handleFetchData = async () => {
     try {
-      const response = await fetch(
-        `${BASE_URL}/hair-tests/getall`,
-        {
-          method: "GET",
-        }
-      );
+      const response = await fetch(`${BASE_URL}/hair-tests/getall`, {
+        method: "GET",
+      });
       const data = await response.json();
       console.log("Fetched Hair Tests:", data);
       setHairTests(data?.message || []);
@@ -192,12 +190,9 @@ const HairTest = () => {
 
   const handleFetchOrders = async () => {
     try {
-      const response = await fetch(
-        `${BASE_URL}/admin/getOrders`,
-        {
-          method: "GET",
-        }
-      );
+      const response = await fetch(`${BASE_URL}/admin/getOrders`, {
+        method: "GET",
+      });
       const data = await response.json();
       console.log("Fetched Orders:", data);
       setOrders(data?.data || []);
@@ -276,7 +271,7 @@ const HairTest = () => {
       });
     } catch (error) {
       console.error("Error in sendWhatsapp:", error);
-      
+
       toast(error.message || "Error sending WhatsApp message", {
         duration: 4000,
         position: "top-right",
@@ -666,6 +661,13 @@ const HairTest = () => {
     }
   };
 
+  const setAssignDoctor = (order) => {
+    console.log(order);
+    setSelectedOrder(order);
+    console.log(selectedOrder);
+    setIsAssignDoctorModalOpen(true);
+  };
+
   return (
     <DashboardLayout>
       <Toaster />
@@ -716,7 +718,7 @@ const HairTest = () => {
                       placeholder="Search tests..."
                       className="px-10"
                       value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                     />
                   </div>
                 </div>
@@ -728,13 +730,13 @@ const HairTest = () => {
                   <span className="text-sm font-medium">Rows per page:</span>
                   <select
                     value={allRowsPerPage}
-                    onChange={e => {
+                    onChange={(e) => {
                       setAllRowsPerPage(Number(e.target.value));
                       setAllCurrentPage(1); // Reset to first page
                     }}
                     className="border rounded px-2 py-1 text-sm"
                   >
-                    {[5, 10, 25, 50].map(num => (
+                    {[5, 10, 25, 50].map((num) => (
                       <option key={num} value={num}>
                         {num}
                       </option>
@@ -881,7 +883,7 @@ const HairTest = () => {
                               className="w-[180px] flex items-center justify-center gap-1 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-300 transition-colors"
                               onClick={() => {
                                 setSelectedTest(test);
-                                setScheduleAppointment(prev => ({
+                                setScheduleAppointment((prev) => ({
                                   ...prev,
                                   hairTestId: test._id,
                                 }));
@@ -953,7 +955,7 @@ const HairTest = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setAllCurrentPage(prev => Math.max(prev - 1, 1))
+                      setAllCurrentPage((prev) => Math.max(prev - 1, 1))
                     }
                     disabled={allCurrentPage === 1 || totalAllPages === 0}
                   >
@@ -963,7 +965,7 @@ const HairTest = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setAllCurrentPage(prev =>
+                      setAllCurrentPage((prev) =>
                         Math.min(prev + 1, totalAllPages)
                       )
                     }
@@ -1006,7 +1008,7 @@ const HairTest = () => {
                       placeholder="Search pending tests..."
                       className="pl-10"
                       value={pendingSearchQuery}
-                      onChange={e => setPendingSearchQuery(e.target.value)}
+                      onChange={(e) => setPendingSearchQuery(e.target.value)}
                     />
                   </div>
                   <Button variant="outline" size="icon">
@@ -1021,13 +1023,13 @@ const HairTest = () => {
                   <span className="text-sm font-medium">Rows per page:</span>
                   <select
                     value={pendingRowsPerPage}
-                    onChange={e => {
+                    onChange={(e) => {
                       setPendingRowsPerPage(Number(e.target.value));
                       setPendingCurrentPage(1); // Reset to first page
                     }}
                     className="border rounded px-2 py-1 text-sm"
                   >
-                    {[5, 10, 25, 50].map(num => (
+                    {[5, 10, 25, 50].map((num) => (
                       <option key={num} value={num}>
                         {num}
                       </option>
@@ -1158,7 +1160,7 @@ const HairTest = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setPendingCurrentPage(prev => Math.max(prev - 1, 1))
+                      setPendingCurrentPage((prev) => Math.max(prev - 1, 1))
                     }
                     disabled={
                       pendingCurrentPage === 1 || totalPendingPages === 0
@@ -1170,7 +1172,7 @@ const HairTest = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setPendingCurrentPage(prev =>
+                      setPendingCurrentPage((prev) =>
                         Math.min(prev + 1, totalPendingPages)
                       )
                     }
@@ -1232,7 +1234,7 @@ const HairTest = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {Orders.map((order,index) => (
+                  {Orders.map((order, index) => (
                     <TableRow
                       key={order._id}
                       className={`hover:bg-gray-100 ${index % 2 === 0 ? "bg-white" : "bg-gray-100"}`}
@@ -1273,7 +1275,7 @@ const HairTest = () => {
                             ? order.deliveryStatus
                                 .split(" ")
                                 .map(
-                                  word =>
+                                  (word) =>
                                     word.charAt(0).toUpperCase() +
                                     word.slice(1).toLowerCase()
                                 )
@@ -1300,7 +1302,7 @@ const HairTest = () => {
                             ? order.prescriptionDetails[0].appointment.status
                                 .split(" ")
                                 .map(
-                                  word =>
+                                  (word) =>
                                     word.charAt(0).toUpperCase() + word.slice(1)
                                 )
                                 .join(" ")
@@ -1324,17 +1326,37 @@ const HairTest = () => {
                             )
                           : ""}
                       </TableCell>
+
                       <TableCell>
                         <Button
                           variant="outline"
                           size="sm"
                           className="w-[140px] h-[32px] flex items-center justify-center gap-1 text-health-primary hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors"
-                          onClick={() => handleViewPrescription(order._id)}
+                          onClick={() => {
+                            const status =
+                              order.prescriptionDetails[0]?.appointment?.status;
+                            const appointmentId =
+                              order.prescriptionDetails[0]?.appointment?._id;
+                            if (status === "completed") {
+                              window.open(
+                                `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${appointmentId}`,
+                                "_blank"
+                              );
+                            } else {
+                              setAssignDoctor(order);
+                            }
+                          }}
                         >
-                          <Eye className="h-3.5 w-3.5" />
-                          <span>View Prescription</span>
+                          <Eye className="h-3.5 w-5" />
+                          {order.prescriptionDetails?.[0]?.appointment
+                            ?.status === "completed" ? (
+                            <span>View Prescription</span>
+                          ) : (
+                            <span>Generate Prescription</span>
+                          )}
                         </Button>
                       </TableCell>
+
                       <TableCell>
                         <Button
                           variant="outline"
@@ -1450,7 +1472,7 @@ const HairTest = () => {
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Doctor</label>
                       <div className="p-2 border rounded-md bg-gray-50">
-                        {selectedTest.appointments[0].doctorId?.name || "-"}
+                        {selectedTest.appointments[0].doctorId?.fullname || "-"}
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -1570,10 +1592,7 @@ const HairTest = () => {
                       const testId = selectedTest?._id;
 
                       if (userId && testId && appointmentId) {
-                        window.open(
-                          `${baseUrl}/${path}/${testId}`,
-                          "_blank"
-                        );
+                        window.open(`${baseUrl}/${path}/${testId}`, "_blank");
                       } else {
                         toast.error("Missing required data for this report.");
                       }
@@ -1610,9 +1629,9 @@ const HairTest = () => {
               <label className="text-sm font-medium">Doctor *</label>
               <Select
                 value={scheduleAppointment.doctorId}
-                onValueChange={value => {
+                onValueChange={(value) => {
                   console.log("Doctor selected:", value);
-                  setScheduleAppointment(prev => ({
+                  setScheduleAppointment((prev) => ({
                     ...prev,
                     doctorId: value,
                   }));
@@ -1622,7 +1641,7 @@ const HairTest = () => {
                   <SelectValue placeholder="Select Doctor" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  {doctorsList?.map(doctor => (
+                  {doctorsList?.map((doctor) => (
                     <SelectItem key={doctor._id} value={doctor._id}>
                       {doctor.name}
                     </SelectItem>
@@ -1636,9 +1655,9 @@ const HairTest = () => {
               <Input
                 type="date"
                 value={scheduleAppointment.appointmentDate}
-                onChange={e => {
+                onChange={(e) => {
                   console.log("Date selected:", e.target.value);
-                  setScheduleAppointment(prev => ({
+                  setScheduleAppointment((prev) => ({
                     ...prev,
                     appointmentDate: e.target.value,
                   }));
@@ -1650,9 +1669,9 @@ const HairTest = () => {
               <label className="text-sm font-medium">Time Slot *</label>
               <Select
                 value={scheduleAppointment.timeSlot}
-                onValueChange={value => {
+                onValueChange={(value) => {
                   console.log("Time slot selected:", value);
-                  setScheduleAppointment(prev => ({
+                  setScheduleAppointment((prev) => ({
                     ...prev,
                     timeSlot: value,
                   }));
@@ -1889,8 +1908,7 @@ const HairTest = () => {
                     </div>
                   )}
 
-                  {/* Doctor Assignment Section */}
-                  {(!selectedAppointment ||
+                  {/* {(!selectedAppointment ||
                     selectedAppointment.status === "pending") && (
                     <div className="flex flex-col space-y-2 mt-4">
                       <div className="flex justify-end space-x-2">
@@ -1902,7 +1920,7 @@ const HairTest = () => {
                             <SelectValue placeholder="Select Doctor" />
                           </SelectTrigger>
                           <SelectContent className="bg-white">
-                            {doctorsList.map(doctor => (
+                            {doctorsList.map((doctor) => (
                               <SelectItem key={doctor._id} value={doctor._id}>
                                 {doctor.name}
                               </SelectItem>
@@ -1930,7 +1948,7 @@ const HairTest = () => {
                         </div>
                       )}
                     </div>
-                  )}
+                  )} */}
                 </div>
               </div>
 
@@ -1968,16 +1986,16 @@ const HairTest = () => {
               <label className="text-sm font-medium">Doctor *</label>
               <Select
                 value={followUpData.doctorId}
-                onValueChange={value => {
+                onValueChange={(value) => {
                   console.log("Doctor selected:", value);
-                  setFollowUpData(prev => ({ ...prev, doctorId: value }));
+                  setFollowUpData((prev) => ({ ...prev, doctorId: value }));
                 }}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Doctor" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  {doctorsList?.map(doctor => (
+                  {doctorsList?.map((doctor) => (
                     <SelectItem key={doctor._id} value={doctor._id}>
                       {doctor.name}
                     </SelectItem>
@@ -1991,9 +2009,9 @@ const HairTest = () => {
               <Input
                 type="date"
                 value={followUpData.appointmentDate}
-                onChange={e => {
+                onChange={(e) => {
                   console.log("Date selected:", e.target.value);
-                  setFollowUpData(prev => ({
+                  setFollowUpData((prev) => ({
                     ...prev,
                     appointmentDate: e.target.value,
                   }));
@@ -2005,9 +2023,9 @@ const HairTest = () => {
               <label className="text-sm font-medium">Time Slot *</label>
               <Select
                 value={followUpData.timeSlot}
-                onValueChange={value => {
+                onValueChange={(value) => {
                   console.log("Time slot selected:", value);
-                  setFollowUpData(prev => ({ ...prev, timeSlot: value }));
+                  setFollowUpData((prev) => ({ ...prev, timeSlot: value }));
                 }}
               >
                 <SelectTrigger className="w-full">
@@ -2028,9 +2046,9 @@ const HairTest = () => {
               <Input
                 placeholder="Add any additional notes"
                 value={followUpData.doctorNotes}
-                onChange={e => {
+                onChange={(e) => {
                   console.log("Notes updated:", e.target.value);
-                  setFollowUpData(prev => ({
+                  setFollowUpData((prev) => ({
                     ...prev,
                     doctorNotes: e.target.value,
                   }));
@@ -2244,7 +2262,7 @@ const HairTest = () => {
             className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
             onClick={() =>
               window.open(
-                `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${selectedPrescription?.prescriptionDetails?.appointment?._id}`,
+                `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${selectedPrescription?.prescriptionDetails?.appointmentId}`,
                 "_blank"
               )
             }
@@ -2252,6 +2270,87 @@ const HairTest = () => {
             <FileText className="h-4 w-4" />
             Generate Prescription
           </Button>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isAssignDoctorModalOpen}
+        onOpenChange={setIsAssignDoctorModalOpen}
+      >
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">
+              Assign Doctor
+            </DialogTitle>
+            <DialogDescription>
+              Select a doctor to assign to this order
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-6 space-y-6">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              {/* <h3 className="text-sm font-medium mb-2">Order Details</h3> */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-gray-500">Customer Name</p>
+                  <p className="font-medium mt-1">
+                    {selectedOrder?.userId?.fullname}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Select Doctor</label>
+                <Select
+                  value={selectedDoctor}
+                  onValueChange={setSelectedDoctor}
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Choose a doctor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {doctorsList?.map((doctor) => (
+                      <SelectItem key={doctor._id} value={doctor._id}>
+                        {doctor.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className=" pt-4">
+                <Button
+                  className="bg-health-primary hover:bg-health-primary/90"
+                  onClick={handleAssignDoctor}
+                  disabled={!selectedDoctor}
+                >
+                  Assign Doctor
+                </Button>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsAssignDoctorModalOpen(false)}
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+
+            {assignResponse?.message && (
+              <div
+                className={`p-3 rounded-md text-sm ${
+                  assignResponse.type === "success"
+                    ? "bg-green-50 text-green-700"
+                    : "bg-red-50 text-red-700"
+                }`}
+              >
+                {assignResponse.message}
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </DashboardLayout>
