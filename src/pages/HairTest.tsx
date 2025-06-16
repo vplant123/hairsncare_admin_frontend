@@ -1327,7 +1327,8 @@ const HairTest = () => {
                           : ""}
                       </TableCell>
 
-                      <TableCell>
+                    
+  <TableCell>
                         <Button
                           variant="outline"
                           size="sm"
@@ -1356,7 +1357,6 @@ const HairTest = () => {
                           )}
                         </Button>
                       </TableCell>
-
                       <TableCell>
                         <Button
                           variant="outline"

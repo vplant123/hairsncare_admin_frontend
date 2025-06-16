@@ -23,12 +23,15 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Search, Filter, Eye, Stethoscope } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { renderWelcomeEmail } from "./renderEmail";
 import toast from "react-hot-toast";
+import BASE_URL from "../Config";
+import { Toaster } from "react-hot-toast";
 
 const OrdersInvoices = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,7 +46,15 @@ const OrdersInvoices = () => {
   const [loader, setLoader] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
+   const [isAssignDoctorModalOpen, setIsAssignDoctorModalOpen] =
+    useState(false);
+    const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState("");
+    const [doctorsList, setDoctorsList] = useState([]);
+const [assignResponse, setAssignResponse] = useState({
+  message: "",
+  type: "",
+});
   function formatDateArrowStyle(isoString) {
     const date = new Date(isoString);
 
@@ -72,6 +83,123 @@ const OrdersInvoices = () => {
     console.log(`Updating order ${orderId} payment status to ${newStatus}`);
     // Here you would typically make an API call to update the payment status
   };
+  
+  const handleFetchOrders = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/admin/getOrders`, {
+        method: "GET",
+      });
+      const data = await response.json();
+      console.log("Fetched Orders:", data);
+      setOrders(data?.data || []);
+    } catch (error) {
+      console.log("Error while fetching orders data", error);
+    }
+  };
+ const setAssignDoctor = order => {
+   console.log(order);
+   setSelectedOrder(order);
+   console.log(selectedOrder);
+   setIsAssignDoctorModalOpen(true);
+  };
+   const handleFetchDoctor = async () => {
+     try {
+       const response = await fetch(
+         `${import.meta.env.VITE_BASE_URL}/api/v1/admin/all-doctor-Data`,
+         {
+           method: "GET",
+           headers: {
+             Authorization: `Bearer ${localStorage.getItem("token")}`,
+             "Content-Type": "application/json",
+           },
+         }
+       );
+       const data = await response.json();
+       console.log("Doctors data:", data);
+       if (data.success) {
+         setDoctorsList(data.data);
+       } else {
+         toast.error(data.message || "Failed to fetch doctors");
+       }
+     } catch (error) {
+       console.error("Error fetching doctors:", error);
+       toast.error("Error fetching doctors list");
+     }
+   };
+   const handleAssignDoctor = async () => {
+     if (!selectedDoctor || !selectedOrder?._id) {
+       console.log("Doctor or order not selected.");
+       toast("Please select a doctor", {
+         duration: 4000,
+         position: "top-right",
+         style: {
+           background: "#EF4444",
+           color: "#fff",
+         },
+       });
+       return;
+     }
+
+     try {
+       console.log("Assigning doctor:", { doctorId: selectedDoctor, orderId: selectedOrder._id });
+       const response = await fetch(
+         `${import.meta.env.VITE_BASE_URL}/api/v1/admin/assignDoctorForPrescription`,
+         {
+           method: "POST",
+           headers: {
+             "Content-Type": "application/json",
+             Authorization: `Bearer ${localStorage.getItem("token")}`,
+           },
+           body: JSON.stringify({
+             orderId: selectedOrder._id,
+             doctorId: selectedDoctor,
+             items: selectedOrder.products,
+           }),
+         }
+       );
+
+       const result = await response.json();
+       console.log("API Response:", result);
+
+       if (response.ok) {
+         console.log("Doctor assigned successfully:", result);
+         toast(result.message || "Doctor assigned successfully", {
+           duration: 4000,
+           position: "top-right",
+           style: {
+             background: "#10B981",
+             color: "#fff",
+           },
+         });
+         setTimeout(() => {
+           setIsOrderModalOpen(false);
+           setSelectedDoctor("");
+           setAssignResponse({ message: "", type: "" });
+           handleFetchOrders();
+         }, 2000);
+       } else {
+         console.error("Failed to assign doctor:", result.message);
+         toast(result.message || "Failed to assign doctor", {
+           duration: 4000,
+           position: "top-right",
+           style: {
+             background: "#EF4444",
+             color: "#fff",
+           },
+         });
+       }
+     } catch (error) {
+       console.error("Error assigning doctor:", error);
+       toast("Error assigning doctor", {
+         duration: 4000,
+         position: "top-right",
+         style: {
+           background: "#EF4444",
+           color: "#fff",
+         },
+       });
+     }
+   };
 
   // Filter orders based on search query and filters
   const filteredOrders = orders.filter(order => {
@@ -132,6 +260,10 @@ const OrdersInvoices = () => {
     fetchOrders();
   }, []);
 
+  useEffect(() => {
+    handleFetchDoctor();
+  }, []);
+
   const handleStatusChange = async (
     orderId,
     newStatus,
@@ -178,6 +310,7 @@ const OrdersInvoices = () => {
   };
   return (
     <DashboardLayout>
+      <Toaster />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -239,7 +372,7 @@ const OrdersInvoices = () => {
                       <TableCell className="font-medium">{order._id}</TableCell>
                       <TableCell>{order.orderType}</TableCell>
                       <TableCell>{order.userId?.fullname}</TableCell>
-                      <TableCell>{order.totalAmount.toFixed(2)}</TableCell>
+                      <TableCell>{order.amount.toFixed(2)}</TableCell>
                       <TableCell>{order.mode}</TableCell>
                       <TableCell>
                         <Select
@@ -312,6 +445,38 @@ const OrdersInvoices = () => {
                         >
                           <Eye className="h-4 w-4 mr-1" /> View
                         </Button>
+                      </TableCell>
+                      <TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-[#209FD9] text-white  hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors"
+                            onClick={() => {
+                              const status =
+                                order.prescriptionDetails[0]?.appointment
+                                  ?.status;
+                              const appointmentId =
+                                order.prescriptionDetails[0]?.appointment?._id;
+                              if (status === "completed") {
+                                window.open(
+                                  `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${appointmentId}`,
+                                  "_blank"
+                                );
+                              } else {
+                                setAssignDoctor(order);
+                              }
+                            }}
+                          >
+                            <Eye className="h-3.5 w-5" />
+                            {order.prescriptionDetails?.[0]?.appointment
+                              ?.status === "completed" ? (
+                              <span>View Prescription</span>
+                            ) : (
+                              <span>Generate Prescription</span>
+                            )}
+                          </Button>
+                        </TableCell>
                       </TableCell>
                     </TableRow>
                   ))
@@ -423,7 +588,7 @@ const OrdersInvoices = () => {
                   <div>
                     <p className="text-sm text-gray-500">Total Amount</p>
                     <p className="font-medium">
-                      {selectedOrder.totalAmount.toFixed(2)} Rs
+                      {selectedOrder.amount?.toFixed(2)} Rs
                     </p>
                   </div>
                   <div>
@@ -557,6 +722,84 @@ const OrdersInvoices = () => {
           </DialogContent>
         </Dialog>
       </div>
+      <Dialog
+        open={isAssignDoctorModalOpen}
+        onOpenChange={setIsAssignDoctorModalOpen}
+      >
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">
+              Assign Doctor
+            </DialogTitle>
+            <DialogDescription>
+              Select a doctor to assign to this order
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-6 space-y-6">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              {/* <h3 className="text-sm font-medium mb-2">Order Details</h3> */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-gray-500">Customer Name</p>
+                  <p className="font-medium mt-1">
+                    {selectedOrder?.userId?.fullname}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Select Doctor</label>
+                <Select
+                  value={selectedDoctor}
+                  onValueChange={value => setSelectedDoctor(value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Doctor" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    {doctorsList?.map(doctor => (
+                      <SelectItem key={doctor._id} value={doctor._id}>
+                        {doctor.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className=" pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsAssignDoctorModalOpen(false)}
+                  className="w-full sm:w-auto px-6 hover:bg-gray-50 hover:text-gray-600 transition-colors duration-200"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleAssignDoctor}
+                  className="w-full ms-2 sm:w-auto bg-primary hover:bg-health-primary/90 text-white px-6 transition-colors duration-200"
+                >
+                  Assign Doctor
+                </Button>
+              </div>
+            </div>
+
+            {assignResponse?.message && (
+              <div
+                className={`p-3 rounded-md text-sm ${
+                  assignResponse.type === "success"
+                    ? "bg-green-50 text-green-700"
+                    : "bg-red-50 text-red-700"
+                }`}
+              >
+                {assignResponse.message}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 };
