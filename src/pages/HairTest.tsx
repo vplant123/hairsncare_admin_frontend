@@ -680,7 +680,7 @@ const HairTest = () => {
         className="space-y-4"
         onValueChange={setActiveTab}
       >
-        <TabsList className="flex gap-2 bg-gray-100 p-1 rounded-lg">
+        <TabsList className="flex gap-2 bg-gray-50 p-1 rounded-lg">
           <TabsTrigger
             value="all"
             className="px-4 py-2 rounded-md text-sm font-medium transition-colors data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700"
@@ -693,12 +693,12 @@ const HairTest = () => {
           >
             Pending Tests
           </TabsTrigger>
-          <TabsTrigger
+          {/* <TabsTrigger
             value="prescription"
             className="px-4 py-2 rounded-md text-sm font-medium transition-colors data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700"
           >
             Prescription Orders
-          </TabsTrigger>
+          </TabsTrigger> */}
         </TabsList>
 
         <TabsContent value="all" className="space-y-4">
@@ -718,7 +718,7 @@ const HairTest = () => {
                       placeholder="Search tests..."
                       className="px-10"
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={e => setSearchQuery(e.target.value)}
                     />
                   </div>
                 </div>
@@ -730,13 +730,13 @@ const HairTest = () => {
                   <span className="text-sm font-medium">Rows per page:</span>
                   <select
                     value={allRowsPerPage}
-                    onChange={(e) => {
+                    onChange={e => {
                       setAllRowsPerPage(Number(e.target.value));
                       setAllCurrentPage(1); // Reset to first page
                     }}
                     className="border rounded px-2 py-1 text-sm"
                   >
-                    {[5, 10, 25, 50].map((num) => (
+                    {[5, 10, 25, 50].map(num => (
                       <option key={num} value={num}>
                         {num}
                       </option>
@@ -761,10 +761,12 @@ const HairTest = () => {
                     <TableHead>Progress</TableHead>
                     <TableHead>Method</TableHead>
                     <TableHead>Date & Time Slot</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>Appointment Status</TableHead>
+                    <TableHead>View Hair Test</TableHead>
                     <TableHead>Action</TableHead>
-                    <TableHead></TableHead>
+                    
                     <TableHead>Final Status</TableHead>
+                    {/* <TableHead>View Final Report</TableHead> */}
                   </TableRow>
                 </TableHeader>
                 <TableBody className="whitespace-nowrap">
@@ -854,15 +856,41 @@ const HairTest = () => {
                       <TableCell>
                         <span
                           className={`inline-flex items-center justify-center w-24 h-6 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            test.status?.toLowerCase() === "pending"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : test.status?.toLowerCase() === "completed"
-                                ? "bg-green-100 text-green-700"
-                                : "bg-blue-100 text-blue-700"
+                            test.status?.toLowerCase() === "pending" && test.paymentStatus?.toLowerCase() === "pending" && test.method?.toLowerCase() === "pending"
+                              ? "bg-red-100 text-red-700"
+                              : test.status?.toLowerCase() === "pending"
+                                ? "bg-yellow-100 text-yellow-700"
+                                : test.status?.toLowerCase() === "completed"
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-blue-100 text-blue-700"
                           }`}
                         >
-                          {test.status || "Unknown"}
+                          {test.status?.toLowerCase() === "pending" && test.paymentStatus?.toLowerCase() === "pending" && test.method?.toLowerCase() === "pending"
+                            ? "Pending"
+                            : test.status?.toLowerCase() === "pending"
+                              ? "Booked"
+                              : test.status || "Unknown"}
                         </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center gap-1 text-health-primary"
+                          onClick={() => viewReport(test._id, test.status)}
+                        >
+                          {test.status?.toLowerCase() === "completed" ? (
+                            <>
+                              <FileText className="h-3 w-3" />
+                              <span>Report sent</span>
+                            </>
+                          ) : (
+                            <>
+                              <Eye className="h-3 w-3" />
+                              <span>View Hair Test</span>
+                            </>
+                          )}
+                        </Button>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex flex-col gap-2 items-end">
@@ -883,7 +911,7 @@ const HairTest = () => {
                               className="w-[180px] flex items-center justify-center gap-1 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-300 transition-colors"
                               onClick={() => {
                                 setSelectedTest(test);
-                                setScheduleAppointment((prev) => ({
+                                setScheduleAppointment(prev => ({
                                   ...prev,
                                   hairTestId: test._id,
                                 }));
@@ -895,26 +923,7 @@ const HairTest = () => {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex items-center gap-1 text-health-primary"
-                          onClick={() => viewReport(test._id, test.status)}
-                        >
-                          {test.status?.toLowerCase() === "completed" ? (
-                            <>
-                              <FileText className="h-3 w-3" />
-                              <span>Report sent</span>
-                            </>
-                          ) : (
-                            <>
-                              <Eye className="h-3 w-3" />
-                              <span>View report</span>
-                            </>
-                          )}
-                        </Button>
-                      </TableCell>
+
                       <TableCell>
                         {test.appointments?.[0]?.status?.toLowerCase() ===
                         "completed" ? (
@@ -932,6 +941,7 @@ const HairTest = () => {
                           </span>
                         )}
                       </TableCell>
+                      <TableCell></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -955,7 +965,7 @@ const HairTest = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setAllCurrentPage((prev) => Math.max(prev - 1, 1))
+                      setAllCurrentPage(prev => Math.max(prev - 1, 1))
                     }
                     disabled={allCurrentPage === 1 || totalAllPages === 0}
                   >
@@ -965,7 +975,7 @@ const HairTest = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setAllCurrentPage((prev) =>
+                      setAllCurrentPage(prev =>
                         Math.min(prev + 1, totalAllPages)
                       )
                     }
@@ -1008,7 +1018,7 @@ const HairTest = () => {
                       placeholder="Search pending tests..."
                       className="pl-10"
                       value={pendingSearchQuery}
-                      onChange={(e) => setPendingSearchQuery(e.target.value)}
+                      onChange={e => setPendingSearchQuery(e.target.value)}
                     />
                   </div>
                   <Button variant="outline" size="icon">
@@ -1023,13 +1033,13 @@ const HairTest = () => {
                   <span className="text-sm font-medium">Rows per page:</span>
                   <select
                     value={pendingRowsPerPage}
-                    onChange={(e) => {
+                    onChange={e => {
                       setPendingRowsPerPage(Number(e.target.value));
                       setPendingCurrentPage(1); // Reset to first page
                     }}
                     className="border rounded px-2 py-1 text-sm"
                   >
-                    {[5, 10, 25, 50].map((num) => (
+                    {[5, 10, 25, 50].map(num => (
                       <option key={num} value={num}>
                         {num}
                       </option>
@@ -1160,7 +1170,7 @@ const HairTest = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setPendingCurrentPage((prev) => Math.max(prev - 1, 1))
+                      setPendingCurrentPage(prev => Math.max(prev - 1, 1))
                     }
                     disabled={
                       pendingCurrentPage === 1 || totalPendingPages === 0
@@ -1172,7 +1182,7 @@ const HairTest = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setPendingCurrentPage((prev) =>
+                      setPendingCurrentPage(prev =>
                         Math.min(prev + 1, totalPendingPages)
                       )
                     }
@@ -1275,7 +1285,7 @@ const HairTest = () => {
                             ? order.deliveryStatus
                                 .split(" ")
                                 .map(
-                                  (word) =>
+                                  word =>
                                     word.charAt(0).toUpperCase() +
                                     word.slice(1).toLowerCase()
                                 )
@@ -1302,7 +1312,7 @@ const HairTest = () => {
                             ? order.prescriptionDetails[0].appointment.status
                                 .split(" ")
                                 .map(
-                                  (word) =>
+                                  word =>
                                     word.charAt(0).toUpperCase() + word.slice(1)
                                 )
                                 .join(" ")
@@ -1327,8 +1337,7 @@ const HairTest = () => {
                           : ""}
                       </TableCell>
 
-                    
-  <TableCell>
+                      <TableCell>
                         <Button
                           variant="outline"
                           size="sm"
@@ -1629,9 +1638,9 @@ const HairTest = () => {
               <label className="text-sm font-medium">Doctor *</label>
               <Select
                 value={scheduleAppointment.doctorId}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   console.log("Doctor selected:", value);
-                  setScheduleAppointment((prev) => ({
+                  setScheduleAppointment(prev => ({
                     ...prev,
                     doctorId: value,
                   }));
@@ -1641,7 +1650,7 @@ const HairTest = () => {
                   <SelectValue placeholder="Select Doctor" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  {doctorsList?.map((doctor) => (
+                  {doctorsList?.map(doctor => (
                     <SelectItem key={doctor._id} value={doctor._id}>
                       {doctor.name}
                     </SelectItem>
@@ -1655,9 +1664,9 @@ const HairTest = () => {
               <Input
                 type="date"
                 value={scheduleAppointment.appointmentDate}
-                onChange={(e) => {
+                onChange={e => {
                   console.log("Date selected:", e.target.value);
-                  setScheduleAppointment((prev) => ({
+                  setScheduleAppointment(prev => ({
                     ...prev,
                     appointmentDate: e.target.value,
                   }));
@@ -1669,9 +1678,9 @@ const HairTest = () => {
               <label className="text-sm font-medium">Time Slot *</label>
               <Select
                 value={scheduleAppointment.timeSlot}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   console.log("Time slot selected:", value);
-                  setScheduleAppointment((prev) => ({
+                  setScheduleAppointment(prev => ({
                     ...prev,
                     timeSlot: value,
                   }));
@@ -1986,16 +1995,16 @@ const HairTest = () => {
               <label className="text-sm font-medium">Doctor *</label>
               <Select
                 value={followUpData.doctorId}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   console.log("Doctor selected:", value);
-                  setFollowUpData((prev) => ({ ...prev, doctorId: value }));
+                  setFollowUpData(prev => ({ ...prev, doctorId: value }));
                 }}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Doctor" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  {doctorsList?.map((doctor) => (
+                  {doctorsList?.map(doctor => (
                     <SelectItem key={doctor._id} value={doctor._id}>
                       {doctor.name}
                     </SelectItem>
@@ -2009,9 +2018,9 @@ const HairTest = () => {
               <Input
                 type="date"
                 value={followUpData.appointmentDate}
-                onChange={(e) => {
+                onChange={e => {
                   console.log("Date selected:", e.target.value);
-                  setFollowUpData((prev) => ({
+                  setFollowUpData(prev => ({
                     ...prev,
                     appointmentDate: e.target.value,
                   }));
@@ -2023,9 +2032,9 @@ const HairTest = () => {
               <label className="text-sm font-medium">Time Slot *</label>
               <Select
                 value={followUpData.timeSlot}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   console.log("Time slot selected:", value);
-                  setFollowUpData((prev) => ({ ...prev, timeSlot: value }));
+                  setFollowUpData(prev => ({ ...prev, timeSlot: value }));
                 }}
               >
                 <SelectTrigger className="w-full">
@@ -2046,9 +2055,9 @@ const HairTest = () => {
               <Input
                 placeholder="Add any additional notes"
                 value={followUpData.doctorNotes}
-                onChange={(e) => {
+                onChange={e => {
                   console.log("Notes updated:", e.target.value);
-                  setFollowUpData((prev) => ({
+                  setFollowUpData(prev => ({
                     ...prev,
                     doctorNotes: e.target.value,
                   }));
@@ -2311,7 +2320,7 @@ const HairTest = () => {
                     <SelectValue placeholder="Choose a doctor" />
                   </SelectTrigger>
                   <SelectContent>
-                    {doctorsList?.map((doctor) => (
+                    {doctorsList?.map(doctor => (
                       <SelectItem key={doctor._id} value={doctor._id}>
                         {doctor.name}
                       </SelectItem>

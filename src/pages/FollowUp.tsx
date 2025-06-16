@@ -833,7 +833,7 @@ const FollowUp = () => {
                       placeholder="Search completed tests..."
                       className="px-10"
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={e => setSearchQuery(e.target.value)}
                     />
                   </div>
                 </div>
@@ -845,13 +845,13 @@ const FollowUp = () => {
                   <span className="text-sm font-medium">Rows per page:</span>
                   <select
                     value={completedRowsPerPage}
-                    onChange={(e) => {
+                    onChange={e => {
                       setCompletedRowsPerPage(Number(e.target.value));
                       setCompletedCurrentPage(1); // Reset to first page
                     }}
                     className="border rounded px-2 py-1 text-sm"
                   >
-                    {[5, 10, 25, 50].map((num) => (
+                    {[5, 10, 25, 50].map(num => (
                       <option key={num} value={num}>
                         {num}
                       </option>
@@ -872,11 +872,12 @@ const FollowUp = () => {
                     <TableHead>Patient Name</TableHead>
                     <TableHead>Phone Number</TableHead>
                     <TableHead>Email Id</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead></TableHead>
+                    {/* <TableHead>Status</TableHead> */}
+                    <TableHead>View Hair Test</TableHead>
                     <TableHead>FolloweUp Date</TableHead>
                     <TableHead>Action</TableHead>
                     <TableHead>Final Status</TableHead>
+                    {/* <TableHead>View Final Report</TableHead> */}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -908,21 +909,7 @@ const FollowUp = () => {
                       </TableCell>
                       <TableCell>{test.userId?.mobile || ""}</TableCell>
                       <TableCell>{test.userId?.email || ""}</TableCell>
-                      <TableCell>
-                        <span
-                          className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium ${
-                            test.status?.toLowerCase() === "completed"
-                              ? "bg-green-100 text-green-700"
-                              : test.status?.toLowerCase() === "pending"
-                                ? "bg-blue-100 text-blue-700"
-                                : test.status?.toLowerCase() === "assigned"
-                                  ? "bg-yellow-100 text-yellow-700"
-                                  : "bg-gray-100 text-gray-700"
-                          }`}
-                        >
-                          {test.status || ""}
-                        </span>
-                      </TableCell>
+
                       <TableCell>
                         <Button
                           className="w-full sm:w-auto bg-primary hover:bg-health-primary/90 text-white px-6 transition-colors duration-200 flex items-center justify-center gap-2"
@@ -992,7 +979,25 @@ const FollowUp = () => {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell></TableCell>
+                      <TableCell>
+                        {" "}
+                        <TableCell>
+                          <span
+                            className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium ${
+                              test.status?.toLowerCase() === "completed"
+                                ? "bg-green-100 text-green-700"
+                                : test.status?.toLowerCase() === "pending"
+                                  ? "bg-blue-100 text-blue-700"
+                                  : test.status?.toLowerCase() === "assigned"
+                                    ? "bg-yellow-100 text-yellow-700"
+                                    : "bg-gray-100 text-gray-700"
+                            }`}
+                          >
+                            {test.status || ""}
+                          </span>
+                        </TableCell>
+                      </TableCell>
+                      {/* <TableCell></TableCell> */}
                     </TableRow>
                   ))}
                 </TableBody>
@@ -1018,7 +1023,7 @@ const FollowUp = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setCompletedCurrentPage((prev) => Math.max(prev - 1, 1))
+                      setCompletedCurrentPage(prev => Math.max(prev - 1, 1))
                     }
                     disabled={
                       completedCurrentPage === 1 || totalCompletedPages === 0
@@ -1030,7 +1035,7 @@ const FollowUp = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setCompletedCurrentPage((prev) =>
+                      setCompletedCurrentPage(prev =>
                         Math.min(prev + 1, totalCompletedPages)
                       )
                     }
@@ -1306,9 +1311,9 @@ const FollowUp = () => {
               <label className="text-sm font-medium">Doctor *</label>
               <Select
                 value={scheduleAppointment.doctorId}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   console.log("Doctor selected:", value);
-                  setScheduleAppointment((prev) => ({
+                  setScheduleAppointment(prev => ({
                     ...prev,
                     doctorId: value,
                   }));
@@ -1318,7 +1323,7 @@ const FollowUp = () => {
                   <SelectValue placeholder="Select Doctor" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  {doctorsList?.map((doctor) => (
+                  {doctorsList?.map(doctor => (
                     <SelectItem key={doctor._id} value={doctor._id}>
                       {doctor.name}
                     </SelectItem>
@@ -1332,9 +1337,9 @@ const FollowUp = () => {
               <Input
                 type="date"
                 value={scheduleAppointment.appointmentDate}
-                onChange={(e) => {
+                onChange={e => {
                   console.log("Date selected:", e.target.value);
-                  setScheduleAppointment((prev) => ({
+                  setScheduleAppointment(prev => ({
                     ...prev,
                     appointmentDate: e.target.value,
                   }));
@@ -1346,9 +1351,9 @@ const FollowUp = () => {
               <label className="text-sm font-medium">Time Slot *</label>
               <Select
                 value={scheduleAppointment.timeSlot}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   console.log("Time slot selected:", value);
-                  setScheduleAppointment((prev) => ({
+                  setScheduleAppointment(prev => ({
                     ...prev,
                     timeSlot: value,
                   }));
@@ -1515,13 +1520,13 @@ const FollowUp = () => {
                   <label className="text-sm font-medium">Select Doctor</label>
                   <Select
                     value={selectedDoctor}
-                    onValueChange={(value) => setSelectedDoctor(value)}
+                    onValueChange={value => setSelectedDoctor(value)}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select Doctor" />
                     </SelectTrigger>
                     <SelectContent className="bg-white">
-                      {doctorsList.map((doctor) => (
+                      {doctorsList.map(doctor => (
                         <SelectItem key={doctor._id} value={doctor._id}>
                           {doctor.name}
                         </SelectItem>
@@ -1578,8 +1583,8 @@ const FollowUp = () => {
               <label className="text-sm font-medium">Doctor *</label>
               <Select
                 value={followUpData.doctorId}
-                onValueChange={(value) =>
-                  setFollowUpData((prev) => ({
+                onValueChange={value =>
+                  setFollowUpData(prev => ({
                     ...prev,
                     doctorId: value,
                   }))
@@ -1589,7 +1594,7 @@ const FollowUp = () => {
                   <SelectValue placeholder="Select Doctor" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  {doctorsList?.map((doctor) => (
+                  {doctorsList?.map(doctor => (
                     <SelectItem key={doctor._id} value={doctor._id}>
                       {doctor.name}
                     </SelectItem>
@@ -1603,8 +1608,8 @@ const FollowUp = () => {
               <Input
                 type="date"
                 value={followUpData.appointmentDate}
-                onChange={(e) =>
-                  setFollowUpData((prev) => ({
+                onChange={e =>
+                  setFollowUpData(prev => ({
                     ...prev,
                     appointmentDate: e.target.value,
                   }))
@@ -1616,8 +1621,8 @@ const FollowUp = () => {
               <label className="text-sm font-medium">Time Slot *</label>
               <Select
                 value={followUpData.timeSlot}
-                onValueChange={(value) =>
-                  setFollowUpData((prev) => ({
+                onValueChange={value =>
+                  setFollowUpData(prev => ({
                     ...prev,
                     timeSlot: value,
                   }))
@@ -1638,8 +1643,8 @@ const FollowUp = () => {
               <label className="text-sm font-medium">Doctor Notes</label>
               <textarea
                 value={followUpData.doctorNotes}
-                onChange={(e) =>
-                  setFollowUpData((prev) => ({
+                onChange={e =>
+                  setFollowUpData(prev => ({
                     ...prev,
                     doctorNotes: e.target.value,
                   }))
