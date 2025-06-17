@@ -1030,7 +1030,7 @@ const HairTest = () => {
                               size="sm"
                               className="w-[180px] flex items-center justify-center gap-1 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-300 transition-colors"
                               onClick={() => {
-                                sendReport(test.hairTestId);
+                                sendReport(test?.appointments[0]?.hairTestId);
                               }}
                             >
                               <span>Send Report</span>
