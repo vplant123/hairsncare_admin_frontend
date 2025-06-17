@@ -806,7 +806,7 @@ const HairTest = () => {
                     <TableHead>Appointment Status</TableHead>
                     <TableHead>View Hair Test</TableHead>
                     <TableHead>Action</TableHead>
-
+                    <TableHead></TableHead>
                     <TableHead>Final Status</TableHead>
                     <TableHead>View Final Report</TableHead>
                   </TableRow>
@@ -926,7 +926,7 @@ const HairTest = () => {
                           let bgClass = "bg-gray-100 text-gray-700";
                           let label = "Not Scheduled";
 
-                          if (status === "booked") {
+                          if (status === "booked" || status === "assigned") {
                             bgClass = "bg-red-100 text-red-700";
                             label = "Booked";
                           } else if (status === "completed") {
@@ -1017,55 +1017,59 @@ const HairTest = () => {
                               <span>Schedule Appointment</span>
                             </Button>
                           )}
-                          {test.appointments?.[0]?.status?.toLowerCase() ===
-                            "completed" &&
-                            test.appointments?.[0]?.isReportSent == "false" && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="w-[180px] flex items-center justify-center gap-1 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-300 transition-colors"
-                                onClick={() => {
-                                  sendReport(test.hairTestId);
-                                }}
-                              >
-                                <span>Send Report</span>
-                              </Button>
-                            )}
                         </div>
                       </TableCell>
 
                       <TableCell>
+                        {" "}
                         {test.appointments?.[0]?.status?.toLowerCase() ===
                           "completed" &&
-                        test.appointments?.[0]?.isReportSent == "false" ? (
+                          test.appointments?.[0]?.isReportSent == false && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-[180px] flex items-center justify-center gap-1 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-300 transition-colors"
+                              onClick={() => {
+                                sendReport(test.hairTestId);
+                              }}
+                            >
+                              <span>Send Report</span>
+                            </Button>
+                          )}
+                      </TableCell>
+                      <TableCell>
+                        {test.appointments?.[0]?.status?.toLowerCase() ===
+                          "completed" &&
+                        test.appointments?.[0]?.isReportSent === true ? (
                           <span className="inline-flex items-center justify-center w-36 h-7 rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-700">
-                            Report Generated
+                            Report Send Completed
                           </span>
-                        ) : test.appointments?.[0]?.status?.toLowerCase() ===
-                          "booked" ? (
+                        ) : test.appointments?.[0]?.status?.toLowerCase() !==
+                          "completed" ? (
                           <span className="inline-flex items-center justify-center w-28 h-7 rounded-full px-2.5 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-700">
-                            Report pending
+                            Report Pending
                           </span>
                         ) : (
-                          <span className="inline-flex items-center justify-center w-48 h-7 rounded-full px-2.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-700">
-                            Report Send Completed
+                          <span className="inline-flex items-center justify-center w-40 h-7 rounded-full px-2.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-700">
+                            Report Generated
                           </span>
                         )}
                       </TableCell>
+
                       <TableCell>
                         {test?.appointments?.[0]?.status?.toLowerCase() ===
                           "completed" && (
-                          <span
-                            className="text-blue-600 underline cursor-pointer"
+                          <button
                             onClick={() =>
                               window.open(
                                 `${import.meta.env.VITE_FRONTEND_URL}/doctor-analyse-report/${test.appointments[0]._id}`,
                                 "_blank"
                               )
                             }
+                            className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline transition duration-150"
                           >
                             View Report
-                          </span>
+                          </button>
                         )}
                       </TableCell>
                     </TableRow>
@@ -1246,7 +1250,11 @@ const HairTest = () => {
                           let bgClass = "bg-gray-100 text-gray-700";
                           let label = "Not Scheduled";
 
-                          if (status === "booked") {
+                          if (
+                            status === "booked" ||
+                            status === "pending" ||
+                            status === "assigned"
+                          ) {
                             bgClass = "bg-red-100 text-red-700";
                             label = "Booked";
                           } else if (status === "completed") {

@@ -46,15 +46,14 @@ const OrdersInvoices = () => {
   const [loader, setLoader] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-   const [isAssignDoctorModalOpen, setIsAssignDoctorModalOpen] =
-    useState(false);
-    const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [isAssignDoctorModalOpen, setIsAssignDoctorModalOpen] = useState(false);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState("");
-    const [doctorsList, setDoctorsList] = useState([]);
-const [assignResponse, setAssignResponse] = useState({
-  message: "",
-  type: "",
-});
+  const [doctorsList, setDoctorsList] = useState([]);
+  const [assignResponse, setAssignResponse] = useState({
+    message: "",
+    type: "",
+  });
   function formatDateArrowStyle(isoString) {
     const date = new Date(isoString);
 
@@ -73,7 +72,7 @@ const [assignResponse, setAssignResponse] = useState({
     return `${day} ${month} ${year}`;
   }
   // Handle view order details
-  const handleViewOrder = order => {
+  const handleViewOrder = (order) => {
     setSelectedOrder(order);
     setOrderDetailsOpen(true);
   };
@@ -83,7 +82,7 @@ const [assignResponse, setAssignResponse] = useState({
     console.log(`Updating order ${orderId} payment status to ${newStatus}`);
     // Here you would typically make an API call to update the payment status
   };
-  
+
   const handleFetchOrders = async () => {
     try {
       const response = await fetch(`${BASE_URL}/admin/getOrders`, {
@@ -96,113 +95,116 @@ const [assignResponse, setAssignResponse] = useState({
       console.log("Error while fetching orders data", error);
     }
   };
- const setAssignDoctor = order => {
-   console.log(order);
-   setSelectedOrder(order);
-   console.log(selectedOrder);
-   setIsAssignDoctorModalOpen(true);
+  const setAssignDoctor = (order) => {
+    console.log(order);
+    setSelectedOrder(order);
+    console.log(selectedOrder);
+    setIsAssignDoctorModalOpen(true);
   };
-   const handleFetchDoctor = async () => {
-     try {
-       const response = await fetch(
-         `${import.meta.env.VITE_BASE_URL}/api/v1/admin/all-doctor-Data`,
-         {
-           method: "GET",
-           headers: {
-             Authorization: `Bearer ${localStorage.getItem("token")}`,
-             "Content-Type": "application/json",
-           },
-         }
-       );
-       const data = await response.json();
-       console.log("Doctors data:", data);
-       if (data.success) {
-         setDoctorsList(data.data);
-       } else {
-         toast.error(data.message || "Failed to fetch doctors");
-       }
-     } catch (error) {
-       console.error("Error fetching doctors:", error);
-       toast.error("Error fetching doctors list");
-     }
-   };
-   const handleAssignDoctor = async () => {
-     if (!selectedDoctor || !selectedOrder?._id) {
-       console.log("Doctor or order not selected.");
-       toast("Please select a doctor", {
-         duration: 4000,
-         position: "top-right",
-         style: {
-           background: "#EF4444",
-           color: "#fff",
-         },
-       });
-       return;
-     }
+  const handleFetchDoctor = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/all-doctor-Data`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      console.log("Doctors data:", data);
+      if (data.success) {
+        setDoctorsList(data.data);
+      } else {
+        toast.error(data.message || "Failed to fetch doctors");
+      }
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+      toast.error("Error fetching doctors list");
+    }
+  };
+  const handleAssignDoctor = async () => {
+    if (!selectedDoctor || !selectedOrder?._id) {
+      console.log("Doctor or order not selected.");
+      toast("Please select a doctor", {
+        duration: 4000,
+        position: "top-right",
+        style: {
+          background: "#EF4444",
+          color: "#fff",
+        },
+      });
+      return;
+    }
 
-     try {
-       console.log("Assigning doctor:", { doctorId: selectedDoctor, orderId: selectedOrder._id });
-       const response = await fetch(
-         `${import.meta.env.VITE_BASE_URL}/api/v1/admin/assignDoctorForPrescription`,
-         {
-           method: "POST",
-           headers: {
-             "Content-Type": "application/json",
-             Authorization: `Bearer ${localStorage.getItem("token")}`,
-           },
-           body: JSON.stringify({
-             orderId: selectedOrder._id,
-             doctorId: selectedDoctor,
-             items: selectedOrder.products,
-           }),
-         }
-       );
+    try {
+      console.log("Assigning doctor:", {
+        doctorId: selectedDoctor,
+        orderId: selectedOrder._id,
+      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/assignDoctorForPrescription`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            orderId: selectedOrder._id,
+            doctorId: selectedDoctor,
+            items: selectedOrder.products,
+          }),
+        }
+      );
 
-       const result = await response.json();
-       console.log("API Response:", result);
+      const result = await response.json();
+      console.log("API Response:", result);
 
-       if (response.ok) {
-         console.log("Doctor assigned successfully:", result);
-         toast(result.message || "Doctor assigned successfully", {
-           duration: 4000,
-           position: "top-right",
-           style: {
-             background: "#10B981",
-             color: "#fff",
-           },
-         });
-         setTimeout(() => {
-           setIsOrderModalOpen(false);
-           setSelectedDoctor("");
-           setAssignResponse({ message: "", type: "" });
-           handleFetchOrders();
-         }, 2000);
-       } else {
-         console.error("Failed to assign doctor:", result.message);
-         toast(result.message || "Failed to assign doctor", {
-           duration: 4000,
-           position: "top-right",
-           style: {
-             background: "#EF4444",
-             color: "#fff",
-           },
-         });
-       }
-     } catch (error) {
-       console.error("Error assigning doctor:", error);
-       toast("Error assigning doctor", {
-         duration: 4000,
-         position: "top-right",
-         style: {
-           background: "#EF4444",
-           color: "#fff",
-         },
-       });
-     }
-   };
+      if (response.ok) {
+        console.log("Doctor assigned successfully:", result);
+        toast(result.message || "Doctor assigned successfully", {
+          duration: 4000,
+          position: "top-right",
+          style: {
+            background: "#10B981",
+            color: "#fff",
+          },
+        });
+        setTimeout(() => {
+          setIsOrderModalOpen(false);
+          setSelectedDoctor("");
+          setAssignResponse({ message: "", type: "" });
+          handleFetchOrders();
+        }, 2000);
+      } else {
+        console.error("Failed to assign doctor:", result.message);
+        toast(result.message || "Failed to assign doctor", {
+          duration: 4000,
+          position: "top-right",
+          style: {
+            background: "#EF4444",
+            color: "#fff",
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error assigning doctor:", error);
+      toast("Error assigning doctor", {
+        duration: 4000,
+        position: "top-right",
+        style: {
+          background: "#EF4444",
+          color: "#fff",
+        },
+      });
+    }
+  };
 
   // Filter orders based on search query and filters
-  const filteredOrders = orders.filter(order => {
+  const filteredOrders = orders.filter((order) => {
     const query = searchQuery.toLowerCase();
     const orderId = order._id?.toLowerCase() || "";
     const customerName = order.userId?.fullname?.toLowerCase() || "";
@@ -330,7 +332,7 @@ const [assignResponse, setAssignResponse] = useState({
                   placeholder="Search by order ID or customer name..."
                   className="px-10 bg-white"
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <div className="flex gap-2">
@@ -367,7 +369,7 @@ const [assignResponse, setAssignResponse] = useState({
               </TableHeader>
               <TableBody>
                 {paginatedOrders.length > 0 ? (
-                  paginatedOrders.map(order => (
+                  paginatedOrders.map((order) => (
                     <TableRow key={order._id}>
                       <TableCell className="font-medium">{order._id}</TableCell>
                       <TableCell>{order.orderType}</TableCell>
@@ -377,7 +379,7 @@ const [assignResponse, setAssignResponse] = useState({
                       <TableCell>
                         <Select
                           value={order.status}
-                          onValueChange={value =>
+                          onValueChange={(value) =>
                             handleStatusChange(order._id, null, order, value)
                           }
                         >
@@ -414,7 +416,7 @@ const [assignResponse, setAssignResponse] = useState({
                       <TableCell>
                         <Select
                           value={order.deliveryStatus}
-                          onValueChange={value =>
+                          onValueChange={(value) =>
                             handleStatusChange(
                               order._id,
                               value,
@@ -460,7 +462,7 @@ const [assignResponse, setAssignResponse] = useState({
                                 order.prescriptionDetails[0]?.appointment?._id;
                               if (status === "completed") {
                                 window.open(
-                                  `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${appointmentId}`,
+                                  `${import.meta.env.VITE_FRONTEND_URL}/order-prescription/${appointmentId}`,
                                   "_blank"
                                 );
                               } else {
@@ -496,7 +498,7 @@ const [assignResponse, setAssignResponse] = useState({
                 <p className="text-sm text-muted-foreground">Rows per page</p>
                 <Select
                   value={rowsPerPage.toString()}
-                  onValueChange={value => {
+                  onValueChange={(value) => {
                     setRowsPerPage(Number(value));
                     setCurrentPage(1);
                   }}
@@ -505,7 +507,7 @@ const [assignResponse, setAssignResponse] = useState({
                     <SelectValue placeholder={rowsPerPage} />
                   </SelectTrigger>
                   <SelectContent>
-                    {[5, 10, 25, 50].map(num => (
+                    {[5, 10, 25, 50].map((num) => (
                       <SelectItem key={num} value={num.toString()}>
                         {num}
                       </SelectItem>
@@ -532,7 +534,7 @@ const [assignResponse, setAssignResponse] = useState({
                     variant="outline"
                     className="h-8 w-8 p-0"
                     onClick={() =>
-                      setCurrentPage(prev => Math.max(prev - 1, 1))
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
                     }
                     disabled={currentPage === 1}
                   >
@@ -543,7 +545,7 @@ const [assignResponse, setAssignResponse] = useState({
                     variant="outline"
                     className="h-8 w-8 p-0"
                     onClick={() =>
-                      setCurrentPage(prev => Math.min(prev + 1, totalPages))
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                     }
                     disabled={currentPage === totalPages}
                   >
@@ -754,13 +756,13 @@ const [assignResponse, setAssignResponse] = useState({
                 <label className="text-sm font-medium">Select Doctor</label>
                 <Select
                   value={selectedDoctor}
-                  onValueChange={value => setSelectedDoctor(value)}
+                  onValueChange={(value) => setSelectedDoctor(value)}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select Doctor" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    {doctorsList?.map(doctor => (
+                    {doctorsList?.map((doctor) => (
                       <SelectItem key={doctor._id} value={doctor._id}>
                         {doctor.name}
                       </SelectItem>

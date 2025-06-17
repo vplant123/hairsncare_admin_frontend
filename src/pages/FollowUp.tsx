@@ -380,6 +380,46 @@ const FollowUp = () => {
     setIsFollowUpModalOpen(true);
   };
 
+  const sendReport = async (hairTestId) => {
+    console.log("Starting send report process for hairTestId:", hairTestId);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found");
+        toast("No authorization token found", {
+          duration: 4000,
+          position: "top-right",
+          style: {
+            background: "#EF4444",
+            color: "#fff",
+          },
+        });
+        return;
+      }
+
+      const response = await fetch(
+        `${BASE_URL}/admin/send-report?hairTestId=${hairTestId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        toast.success("Report sent successfully");
+      } else {
+        toast.error(data.message || "Failed to send report");
+      }
+    } catch (error) {
+      console.error("Error sending report:", error);
+      toast.error("Failed to send report");
+    }
+  };
+
   const handleSubmitFollowUp = async () => {
     console.log("Submit follow-up initiated");
     console.log("Current follow-up data:", followUpData);
@@ -865,54 +905,77 @@ const FollowUp = () => {
                 </div>
               </div>
 
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-[#209FD9] text-white whitespace-nowrap">
-                    <TableHead>Created Date & Time</TableHead>
-                    <TableHead>Patient Name</TableHead>
-                    <TableHead>Phone Number</TableHead>
-                    <TableHead>Email Id</TableHead>
-                    {/* <TableHead>Status</TableHead> */}
-                    <TableHead>View Hair Test</TableHead>
-                    <TableHead>FollowUp Date</TableHead>
-                    <TableHead>Action</TableHead>
-                    <TableHead>Appointment Status</TableHead>
-                    <TableHead>Final Status</TableHead>
-                    {/* <TableHead>View Final Report</TableHead> */}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {hairTests.map((test, index) => (
-                    <TableRow
-                      key={test._id}
-                      className={`hover:bg-gray-100 ${index % 2 === 0 ? "bg-white" : "bg-gray-100"}`}
-                    >
-                      <TableCell>
-                        {test.createdAt
-                          ? `${new Date(test.createdAt).toLocaleDateString(
-                              "en-GB",
-                              {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                              }
-                            )} ${new Date(test.createdAt).toLocaleTimeString(
-                              [],
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            )}`
-                          : ""}
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        {test.userId?.fullname || ""}
-                      </TableCell>
-                      <TableCell>{test.userId?.mobile || ""}</TableCell>
-                      <TableCell>{test.userId?.email || ""}</TableCell>
-                      <TableCell>
-                        {" "}
-                        <TableCell>
+              <div className="w-full overflow-x-auto">
+                <Table className="min-w-[1400px] table-auto">
+                  <TableHeader>
+                    <TableRow className="bg-[#209FD9] text-white whitespace-nowrap">
+                      <TableHead className="min-w-[180px]">
+                        Created Date & Time
+                      </TableHead>
+                      <TableHead className="min-w-[150px]">
+                        Patient Name
+                      </TableHead>
+                      <TableHead className="min-w-[130px]">
+                        Phone Number
+                      </TableHead>
+                      <TableHead className="min-w-[200px]">Email ID</TableHead>
+                      <TableHead className="min-w-[180px]">
+                        Appointment Status
+                      </TableHead>
+                      <TableHead className="min-w-[180px]">
+                        View Hair Test
+                      </TableHead>
+                      <TableHead className="min-w-[160px]">
+                        FollowUp Date
+                      </TableHead>
+                      <TableHead className="min-w-[200px]">Action</TableHead>
+                      <TableHead className="min-w-[200px]">
+                        Final Status
+                      </TableHead>
+                      <TableHead className="min-w-[180px]">
+                        View Final Report
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+
+                  <TableBody>
+                    {hairTests.map((test, index) => (
+                      <TableRow
+                        key={test._id}
+                        className={`hover:bg-gray-100 ${
+                          index % 2 === 0 ? "bg-white" : "bg-gray-100"
+                        }`}
+                      >
+                        <TableCell className="whitespace-nowrap">
+                          {test.createdAt
+                            ? `${new Date(test.createdAt).toLocaleDateString(
+                                "en-GB",
+                                {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                }
+                              )} ${new Date(test.createdAt).toLocaleTimeString(
+                                [],
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }
+                              )}`
+                            : ""}
+                        </TableCell>
+
+                        <TableCell className="font-medium whitespace-nowrap">
+                          {test.userId?.fullname || ""}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          {test.userId?.mobile || ""}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          {test.userId?.email || ""}
+                        </TableCell>
+
+                        <TableCell className="whitespace-nowrap">
                           <span
                             className={`inline-flex items-center justify-center px-4 py-1 rounded-full text-xs font-medium ${
                               test?.status?.toLowerCase() === "completed"
@@ -925,82 +988,110 @@ const FollowUp = () => {
                               : "Booked"}
                           </span>
                         </TableCell>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          className="w-full sm:w-auto bg-primary hover:bg-health-primary/90 text-white px-6 transition-colors duration-200 flex items-center justify-center gap-2"
-                          onClick={() => {
-                            const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
-                            const path = "test-results";
 
-                            const testId = test.followupOf || test.hairTestId;
-
-                            if (testId) {
-                              window.open(
-                                `${baseUrl}/${path}/${testId}`,
-                                "_blank"
-                              );
-                            } else {
-                              toast.error(
-                                "Missing required data for this report."
-                              );
-                            }
-                          }}
-                        >
-                          <Eye className="h-4 w-4" />
-                          View Test Report
-                        </Button>
-                      </TableCell>
-                      <TableCell>
-                        {test.followUpDate
-                          ? `${new Date(test.followUpDate).toLocaleDateString(
-                              "en-GB",
-                              {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
+                        <TableCell className="whitespace-nowrap">
+                          <Button
+                            className="w-full sm:w-auto bg-primary hover:bg-health-primary/90 text-white px-6 transition-colors duration-200 flex items-center justify-center gap-2"
+                            onClick={() => {
+                              const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
+                              const path = "test-results";
+                              const testId = test.followupOf || test.hairTestId;
+                              if (testId) {
+                                window.open(
+                                  `${baseUrl}/${path}/${testId}`,
+                                  "_blank"
+                                );
+                              } else {
+                                toast.error(
+                                  "Missing required data for this report."
+                                );
                               }
-                            )}`
-                          : ""}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex flex-col gap-2 items-end">
-                          {test.status?.toLowerCase() === "completed" &&
-                            test.followUpDate && (
+                            }}
+                          >
+                            <Eye className="h-4 w-4" />
+                            View Test Report
+                          </Button>
+                        </TableCell>
+
+                        <TableCell className="whitespace-nowrap">
+                          {test.followUpDate
+                            ? new Date(test.followUpDate).toLocaleDateString(
+                                "en-GB",
+                                {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                }
+                              )
+                            : ""}
+                        </TableCell>
+
+                        <TableCell className="text-right whitespace-nowrap">
+                          <div className="flex flex-col gap-2 items-end">
+                            {test.status?.toLowerCase() === "completed" &&
+                              test.followUpDate && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="w-[180px] flex items-center justify-center gap-1 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 transition-colors"
+                                  onClick={() => handleFollowUp(test)}
+                                >
+                                  <span>Schedule Follow Up</span>
+                                </Button>
+                              )}
+                            {test.status?.toLowerCase() === "pending" && (
                               <Button
                                 variant="outline"
                                 size="sm"
                                 className="w-[180px] flex items-center justify-center gap-1 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 transition-colors"
-                                onClick={() => handleFollowUp(test)}
+                                onClick={() => sendWhatsapp(test.userId?._id)}
                               >
-                                <span>Schedule Follow Up</span>
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  {/* WhatsApp Icon Path */}
+                                  <path d="M17.472 14.382..."></path>
+                                </svg>
+                                <span>Send WhatsApp</span>
                               </Button>
                             )}
-                          {test.status?.toLowerCase() === "pending" && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-[180px] flex items-center justify-center gap-1 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 transition-colors"
-                              onClick={() => sendWhatsapp(test.userId?._id)}
-                            >
-                              <svg
-                                className="w-4 h-4"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                              </svg>
-                              <span>Send WhatsApp</span>
-                            </Button>
-                          )}
-                        </div>
-                      </TableCell>
+                          </div>
+                        </TableCell>
 
-                      {/* <TableCell></TableCell> */}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                        <TableCell className="whitespace-nowrap">
+                          {test?.status?.toLowerCase() === "completed" ? (
+                            <span className="inline-flex items-center justify-center w-36 h-7 rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-700">
+                              Prescription Generated
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center justify-center w-28 h-7 rounded-full px-2.5 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-700">
+                              Prescription Pending
+                            </span>
+                          )}
+                        </TableCell>
+
+                        <TableCell className="whitespace-nowrap">
+                          {test?.status?.toLowerCase() === "completed" && (
+                            <button
+                              onClick={() =>
+                                window.open(
+                                  `${import.meta.env.VITE_FRONTEND_URL}/doctor-analyse-report/${test._id}`,
+                                  "_blank"
+                                )
+                              }
+                              className="text-blue-600 hover:text-blue-800 underline hover:no-underline transition-all duration-150 ease-in-out font-medium text-sm"
+                            >
+                              View Report
+                            </button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
 
               {/* Pagination Controls (Bottom) for Completed Hair Tests */}
               <div className="flex items-center justify-end space-x-2 py-4">
