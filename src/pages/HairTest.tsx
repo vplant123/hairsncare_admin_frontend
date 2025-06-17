@@ -182,7 +182,7 @@ const HairTest = () => {
       });
       const data = await response.json();
       console.log("Fetched Hair Tests:", data);
-      setHairTests(data?.message || []);
+      setHairTests(data?.data || []);
     } catch (error) {
       console.log("Error while fetching hair tests data", error);
     }
@@ -200,6 +200,47 @@ const HairTest = () => {
       console.log("Error while fetching orders data", error);
     }
   };
+
+  const sendReport = async (hairTestId) => {
+    console.log("Starting send report process for hairTestId:", hairTestId);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found");
+        toast("No authorization token found", {
+          duration: 4000,
+          position: "top-right",
+          style: {
+            background: "#EF4444",
+            color: "#fff",
+          },
+        });
+        return;
+      }
+
+      const response = await fetch(
+        `${BASE_URL}/admin/send-report?hairTestId=${hairTestId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        toast.success("Report sent successfully");
+      } else {
+        toast.error(data.message || "Failed to send report");
+      }
+    } catch (error) {
+      console.error("Error sending report:", error);
+      toast.error("Failed to send report");
+    }
+  };
+
   const sendWhatsapp = async (userId) => {
     console.log("Starting WhatsApp send process for userId:", userId);
 
@@ -529,7 +570,7 @@ const HairTest = () => {
       );
       const data = await response.json();
       if (data.success) {
-        const test = data.message.find((t) => t._id === testId);
+        const test = data.data?.find((t) => t?._id === testId);
         if (test) {
           setSelectedTest(test);
           setIsCompletedModalOpen(true);
@@ -718,7 +759,7 @@ const HairTest = () => {
                       placeholder="Search tests..."
                       className="px-10"
                       value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                     />
                   </div>
                 </div>
@@ -730,13 +771,13 @@ const HairTest = () => {
                   <span className="text-sm font-medium">Rows per page:</span>
                   <select
                     value={allRowsPerPage}
-                    onChange={e => {
+                    onChange={(e) => {
                       setAllRowsPerPage(Number(e.target.value));
                       setAllCurrentPage(1); // Reset to first page
                     }}
                     className="border rounded px-2 py-1 text-sm"
                   >
-                    {[5, 10, 25, 50].map(num => (
+                    {[5, 10, 25, 50].map((num) => (
                       <option key={num} value={num}>
                         {num}
                       </option>
@@ -753,20 +794,21 @@ const HairTest = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-[#209FD9] text-white whitespace-nowrap">
-                    <TableHead>Created Date & Time</TableHead>
+                    <TableHead>Hair Test Date & Time</TableHead>
                     <TableHead>Patient Name</TableHead>
                     <TableHead>Phone Number</TableHead>
                     <TableHead>Email Id</TableHead>
                     <TableHead>Payment Status</TableHead>
+                    <TableHead></TableHead>
                     <TableHead>Progress</TableHead>
                     <TableHead>Method</TableHead>
                     <TableHead>Date & Time Slot</TableHead>
                     <TableHead>Appointment Status</TableHead>
                     <TableHead>View Hair Test</TableHead>
                     <TableHead>Action</TableHead>
-                    
+
                     <TableHead>Final Status</TableHead>
-                    {/* <TableHead>View Final Report</TableHead> */}
+                    <TableHead>View Final Report</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody className="whitespace-nowrap">
@@ -776,19 +818,21 @@ const HairTest = () => {
                       className={`hover:bg-gray-100 ${index % 2 === 0 ? "bg-white" : "bg-gray-100"}`}
                     >
                       <TableCell>
-                        {test.appointments?.[0]?.createdAt
-                          ? `${new Date(
-                              test.appointments[0].createdAt
-                            ).toLocaleDateString("en-GB", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })}, ${new Date(
-                              test.appointments[0].createdAt
-                            ).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}`
+                        {test?.createdAt
+                          ? `${new Date(test.createdAt).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )}, ${new Date(test.createdAt).toLocaleTimeString(
+                              [],
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}`
                           : ""}
                       </TableCell>
                       <TableCell className="font-medium">
@@ -800,21 +844,43 @@ const HairTest = () => {
                       <TableCell>
                         <span
                           className={`inline-flex items-center justify-center w-24 h-6 rounded-full px-2.5 py-0.5 text-sm font-medium ${
-                            test.orders?.amount === 300
+                            typeof test.orders?.amount === "number" &&
+                            test.orders.amount > 0
                               ? "bg-green-100"
-                              : test.orders?.amount === 150
-                                ? "bg-blue-100"
-                                : typeof test.orders?.amount !== "number"
-                                  ? "bg-yellow-100"
-                                  : "bg-gray-100" // Default neutral if none match
+                              : "bg-yellow-100"
                           } text-gray-700`}
                         >
-                          {test.orders?.amount
+                          {typeof test.orders?.amount === "number" &&
+                          test.orders.amount > 0
                             ? `₹ ${test.orders.amount}`
-                            : "Pending"}
+                            : "Not Paid"}
                         </span>
                       </TableCell>
-                      <TableCell>{test.progress || ""}%</TableCell>
+
+                      <TableCell>
+                        {test.appointments?.[0]?.status?.toLowerCase() !==
+                          "completed" && (
+                          <div className="flex flex-row gap-2 items-center">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-[180px] flex items-center justify-center gap-1 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 transition-colors"
+                              onClick={() => sendWhatsapp(test.userId?._id)}
+                            >
+                              <svg
+                                className="w-4 h-4"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                              </svg>
+                              <span>Send WhatsApp</span>
+                            </Button>
+                          </div>
+                        )}
+                      </TableCell>
+
+                      <TableCell>{test.progress || "20"}%</TableCell>
                       <TableCell>
                         <span
                           className={`inline-flex items-center justify-center w-24 h-6 rounded-full px-2.5 py-0.5 text-sm font-medium ${
@@ -854,64 +920,94 @@ const HairTest = () => {
                       </TableCell>
 
                       <TableCell>
-                        <span
-                          className={`inline-flex items-center justify-center w-24 h-6 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            test.status?.toLowerCase() === "pending" && test.paymentStatus?.toLowerCase() === "pending" && test.method?.toLowerCase() === "pending"
-                              ? "bg-red-100 text-red-700"
-                              : test.status?.toLowerCase() === "pending"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : test.status?.toLowerCase() === "completed"
-                                  ? "bg-green-100 text-green-700"
-                                  : "bg-blue-100 text-blue-700"
-                          }`}
-                        >
-                          {test.status?.toLowerCase() === "pending" && test.paymentStatus?.toLowerCase() === "pending" && test.method?.toLowerCase() === "pending"
-                            ? "Pending"
-                            : test.status?.toLowerCase() === "pending"
-                              ? "Booked"
-                              : test.status || "Unknown"}
-                        </span>
+                        {(() => {
+                          const status =
+                            test.appointments?.[0]?.status?.toLowerCase();
+                          let bgClass = "bg-gray-100 text-gray-700";
+                          let label = "Not Scheduled";
+
+                          if (status === "booked") {
+                            bgClass = "bg-red-100 text-red-700";
+                            label = "Booked";
+                          } else if (status === "completed") {
+                            bgClass = "bg-green-100 text-green-700";
+                            label = "Completed";
+                          }
+
+                          return (
+                            <span
+                              className={`inline-flex items-center justify-center w-24 h-6 rounded-full px-2.5 py-0.5 text-xs font-medium ${bgClass}`}
+                            >
+                              {label}
+                            </span>
+                          );
+                        })()}
                       </TableCell>
+
                       <TableCell className="text-right">
                         <Button
                           variant="outline"
                           size="sm"
                           className="flex items-center gap-1 text-health-primary"
-                          onClick={() => viewReport(test._id, test.status)}
                         >
-                          {test.status?.toLowerCase() === "completed" ? (
+                          {test.appointments?.[0]?.status.toLowerCase() ===
+                          "completed" ? (
                             <>
                               <FileText className="h-3 w-3" />
-                              <span>Report sent</span>
+                              <span
+                                onClick={() =>
+                                  viewReport(test._id, test.status)
+                                }
+                              >
+                                Report sent
+                              </span>
                             </>
                           ) : (
                             <>
                               <Eye className="h-3 w-3" />
-                              <span>View Hair Test</span>
+                              <span
+                                onClick={() => {
+                                  const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
+                                  const path = "test-results";
+                                  const testId = test?._id;
+                                  const userId = test?.userId?._id;
+                                  console.log("userId", userId);
+                                  console.log("testId", testId);
+                                  // console.log("appointmentId", appointmentId);
+                                  if (userId && testId) {
+                                    console.log(
+                                      "path",
+                                      `${baseUrl}/${path}/${testId}`
+                                    );
+                                    window.open(
+                                      `${baseUrl}/${path}/${testId}`,
+                                      "_blank"
+                                    );
+                                  } else {
+                                    toast.error(
+                                      "Missing required data for this report."
+                                    );
+                                  }
+                                }}
+                              >
+                                View Hair Test
+                              </span>
                             </>
                           )}
                         </Button>
                       </TableCell>
+
                       <TableCell className="text-right">
                         <div className="flex flex-col gap-2 items-end">
-                          {/* {test.status?.toLowerCase() === "completed" && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-[180px] flex items-center justify-center gap-1 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 transition-colors"
-                              onClick={() => handleFollowUp(test)}
-                            >
-                              <span>Schedule Follow Up</span>
-                            </Button>
-                          )} */}
-                          {test.status?.toLowerCase() === "pending" && (
+                          {test.appointments?.[0]?.status?.toLowerCase() ===
+                            "booked" && (
                             <Button
                               variant="outline"
                               size="sm"
                               className="w-[180px] flex items-center justify-center gap-1 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-300 transition-colors"
                               onClick={() => {
                                 setSelectedTest(test);
-                                setScheduleAppointment(prev => ({
+                                setScheduleAppointment((prev) => ({
                                   ...prev,
                                   hairTestId: test._id,
                                 }));
@@ -921,14 +1017,29 @@ const HairTest = () => {
                               <span>Schedule Appointment</span>
                             </Button>
                           )}
+                          {test.appointments?.[0]?.status?.toLowerCase() ===
+                            "completed" &&
+                            test.appointments?.[0]?.isReportSent == "false" && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-[180px] flex items-center justify-center gap-1 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-300 transition-colors"
+                                onClick={() => {
+                                  sendReport(test.hairTestId);
+                                }}
+                              >
+                                <span>Send Report</span>
+                              </Button>
+                            )}
                         </div>
                       </TableCell>
 
                       <TableCell>
                         {test.appointments?.[0]?.status?.toLowerCase() ===
-                        "completed" ? (
+                          "completed" &&
+                        test.appointments?.[0]?.isReportSent == "false" ? (
                           <span className="inline-flex items-center justify-center w-36 h-7 rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-700">
-                            Report sent complete
+                            Report Generated
                           </span>
                         ) : test.appointments?.[0]?.status?.toLowerCase() ===
                           "booked" ? (
@@ -937,11 +1048,26 @@ const HairTest = () => {
                           </span>
                         ) : (
                           <span className="inline-flex items-center justify-center w-48 h-7 rounded-full px-2.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-700">
-                            Report generated
+                            Report Send Completed
                           </span>
                         )}
                       </TableCell>
-                      <TableCell></TableCell>
+                      <TableCell>
+                        {test?.appointments?.[0]?.status?.toLowerCase() ===
+                          "completed" && (
+                          <span
+                            className="text-blue-600 underline cursor-pointer"
+                            onClick={() =>
+                              window.open(
+                                `${import.meta.env.VITE_FRONTEND_URL}/doctor-analyse-report/${test.appointments[0]._id}`,
+                                "_blank"
+                              )
+                            }
+                          >
+                            View Report
+                          </span>
+                        )}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -965,7 +1091,7 @@ const HairTest = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setAllCurrentPage(prev => Math.max(prev - 1, 1))
+                      setAllCurrentPage((prev) => Math.max(prev - 1, 1))
                     }
                     disabled={allCurrentPage === 1 || totalAllPages === 0}
                   >
@@ -975,7 +1101,7 @@ const HairTest = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setAllCurrentPage(prev =>
+                      setAllCurrentPage((prev) =>
                         Math.min(prev + 1, totalAllPages)
                       )
                     }
@@ -1018,7 +1144,7 @@ const HairTest = () => {
                       placeholder="Search pending tests..."
                       className="pl-10"
                       value={pendingSearchQuery}
-                      onChange={e => setPendingSearchQuery(e.target.value)}
+                      onChange={(e) => setPendingSearchQuery(e.target.value)}
                     />
                   </div>
                   <Button variant="outline" size="icon">
@@ -1033,13 +1159,13 @@ const HairTest = () => {
                   <span className="text-sm font-medium">Rows per page:</span>
                   <select
                     value={pendingRowsPerPage}
-                    onChange={e => {
+                    onChange={(e) => {
                       setPendingRowsPerPage(Number(e.target.value));
                       setPendingCurrentPage(1); // Reset to first page
                     }}
                     className="border rounded px-2 py-1 text-sm"
                   >
-                    {[5, 10, 25, 50].map(num => (
+                    {[5, 10, 25, 50].map((num) => (
                       <option key={num} value={num}>
                         {num}
                       </option>
@@ -1090,7 +1216,7 @@ const HairTest = () => {
                     <TableHead>Email</TableHead>
                     <TableHead>Phone Number</TableHead>
                     <TableHead>Age Range</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>Appointment Status</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -1112,11 +1238,32 @@ const HairTest = () => {
                           test.personal?.["Select your age group"] ||
                           "N/A"}
                       </TableCell>
+
                       <TableCell>
-                        <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-700">
-                          {test.status || "Pending"}
-                        </span>
+                        {(() => {
+                          const status =
+                            test.appointments?.[0]?.status?.toLowerCase();
+                          let bgClass = "bg-gray-100 text-gray-700";
+                          let label = "Not Scheduled";
+
+                          if (status === "booked") {
+                            bgClass = "bg-red-100 text-red-700";
+                            label = "Booked";
+                          } else if (status === "completed") {
+                            bgClass = "bg-green-100 text-green-700";
+                            label = "Completed";
+                          }
+
+                          return (
+                            <span
+                              className={`inline-flex items-center justify-center w-24 h-6 rounded-full px-2.5 py-0.5 text-xs font-medium ${bgClass}`}
+                            >
+                              {label}
+                            </span>
+                          );
+                        })()}
                       </TableCell>
+
                       <TableCell>
                         <div className="flex flex-row gap-2 items-center">
                           <Button
@@ -1138,10 +1285,33 @@ const HairTest = () => {
                             variant="outline"
                             size="sm"
                             className="w-[180px] flex items-center justify-center gap-1 text-health-primary"
-                            onClick={() => viewReport(test._id, test.status)}
+                            // onClick={() => viewReport(test._id, test.status)}
+                            onClick={() => {
+                              const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
+                              const path = "test-results";
+                              const testId = test?._id;
+                              const userId = test?.userId?._id;
+                              console.log("userId", userId);
+                              console.log("testId", testId);
+                              // console.log("appointmentId", appointmentId);
+                              if (userId && testId) {
+                                console.log(
+                                  "path",
+                                  `${baseUrl}/${path}/${testId}`
+                                );
+                                window.open(
+                                  `${baseUrl}/${path}/${testId}`,
+                                  "_blank"
+                                );
+                              } else {
+                                toast.error(
+                                  "Missing required data for this report."
+                                );
+                              }
+                            }}
                           >
                             <Eye className="h-3 w-3" />
-                            <span>View report</span>
+                            <span>View Hair Test</span>
                           </Button>
                         </div>
                       </TableCell>
@@ -1170,7 +1340,7 @@ const HairTest = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setPendingCurrentPage(prev => Math.max(prev - 1, 1))
+                      setPendingCurrentPage((prev) => Math.max(prev - 1, 1))
                     }
                     disabled={
                       pendingCurrentPage === 1 || totalPendingPages === 0
@@ -1182,7 +1352,7 @@ const HairTest = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setPendingCurrentPage(prev =>
+                      setPendingCurrentPage((prev) =>
                         Math.min(prev + 1, totalPendingPages)
                       )
                     }
@@ -1285,7 +1455,7 @@ const HairTest = () => {
                             ? order.deliveryStatus
                                 .split(" ")
                                 .map(
-                                  word =>
+                                  (word) =>
                                     word.charAt(0).toUpperCase() +
                                     word.slice(1).toLowerCase()
                                 )
@@ -1312,7 +1482,7 @@ const HairTest = () => {
                             ? order.prescriptionDetails[0].appointment.status
                                 .split(" ")
                                 .map(
-                                  word =>
+                                  (word) =>
                                     word.charAt(0).toUpperCase() + word.slice(1)
                                 )
                                 .join(" ")
@@ -1400,43 +1570,6 @@ const HairTest = () => {
                   View and manage completed test report
                 </DialogDescription>
               </DialogHeader>
-
-              {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Patient Name</label>
-                  <div className="p-2 border rounded-md bg-gray-50">
-                    {selectedTest.personal?.name || "N/A"}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Email</label>
-                  <div className="p-2 border rounded-md bg-gray-50">
-                    {selectedTest.personal?.email || "N/A"}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Phone Number</label>
-                  <div className="p-2 border rounded-md bg-gray-50">
-                    {selectedTest.personal?.phoneNumber || "N/A"}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Age Range</label>
-                  <div className="p-2 border rounded-md bg-gray-50">
-                    {selectedTest.personal?.ageRange ||
-                      selectedTest.personal?.["Select your age group"] ||
-                      "N/A"}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Status</label>
-                  <div className="p-2 border rounded-md bg-gray-50">
-                    <span className="text-green-600">
-                      {selectedTest.status || "Completed"}
-                    </span>
-                  </div>
-                </div>
-              </div> */}
 
               {/* Appointment Details Section */}
               <div>
@@ -1595,12 +1728,13 @@ const HairTest = () => {
                     onClick={() => {
                       const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
                       const path = "test-results";
-                      const userId = selectedTest?.userId?._id;
-                      const appointmentId =
-                        selectedTest?.appointments?.[0]?._id;
                       const testId = selectedTest?._id;
-
-                      if (userId && testId && appointmentId) {
+                      const userId = selectedTest?.userId?._id;
+                      console.log("userId", userId);
+                      console.log("testId", testId);
+                      // console.log("appointmentId", appointmentId);
+                      if (userId && testId) {
+                        console.log("path", `${baseUrl}/${path}/${testId}`);
                         window.open(`${baseUrl}/${path}/${testId}`, "_blank");
                       } else {
                         toast.error("Missing required data for this report.");
@@ -1608,7 +1742,7 @@ const HairTest = () => {
                     }}
                   >
                     <Eye className="h-4 w-4" />
-                    View Test Report
+                    View Hair Test
                   </Button>
                 </div>
               </div>
@@ -1638,9 +1772,9 @@ const HairTest = () => {
               <label className="text-sm font-medium">Doctor *</label>
               <Select
                 value={scheduleAppointment.doctorId}
-                onValueChange={value => {
+                onValueChange={(value) => {
                   console.log("Doctor selected:", value);
-                  setScheduleAppointment(prev => ({
+                  setScheduleAppointment((prev) => ({
                     ...prev,
                     doctorId: value,
                   }));
@@ -1650,7 +1784,7 @@ const HairTest = () => {
                   <SelectValue placeholder="Select Doctor" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  {doctorsList?.map(doctor => (
+                  {doctorsList?.map((doctor) => (
                     <SelectItem key={doctor._id} value={doctor._id}>
                       {doctor.name}
                     </SelectItem>
@@ -1664,9 +1798,9 @@ const HairTest = () => {
               <Input
                 type="date"
                 value={scheduleAppointment.appointmentDate}
-                onChange={e => {
+                onChange={(e) => {
                   console.log("Date selected:", e.target.value);
-                  setScheduleAppointment(prev => ({
+                  setScheduleAppointment((prev) => ({
                     ...prev,
                     appointmentDate: e.target.value,
                   }));
@@ -1678,9 +1812,9 @@ const HairTest = () => {
               <label className="text-sm font-medium">Time Slot *</label>
               <Select
                 value={scheduleAppointment.timeSlot}
-                onValueChange={value => {
+                onValueChange={(value) => {
                   console.log("Time slot selected:", value);
-                  setScheduleAppointment(prev => ({
+                  setScheduleAppointment((prev) => ({
                     ...prev,
                     timeSlot: value,
                   }));
@@ -1995,16 +2129,16 @@ const HairTest = () => {
               <label className="text-sm font-medium">Doctor *</label>
               <Select
                 value={followUpData.doctorId}
-                onValueChange={value => {
+                onValueChange={(value) => {
                   console.log("Doctor selected:", value);
-                  setFollowUpData(prev => ({ ...prev, doctorId: value }));
+                  setFollowUpData((prev) => ({ ...prev, doctorId: value }));
                 }}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Doctor" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  {doctorsList?.map(doctor => (
+                  {doctorsList?.map((doctor) => (
                     <SelectItem key={doctor._id} value={doctor._id}>
                       {doctor.name}
                     </SelectItem>
@@ -2018,9 +2152,9 @@ const HairTest = () => {
               <Input
                 type="date"
                 value={followUpData.appointmentDate}
-                onChange={e => {
+                onChange={(e) => {
                   console.log("Date selected:", e.target.value);
-                  setFollowUpData(prev => ({
+                  setFollowUpData((prev) => ({
                     ...prev,
                     appointmentDate: e.target.value,
                   }));
@@ -2032,9 +2166,9 @@ const HairTest = () => {
               <label className="text-sm font-medium">Time Slot *</label>
               <Select
                 value={followUpData.timeSlot}
-                onValueChange={value => {
+                onValueChange={(value) => {
                   console.log("Time slot selected:", value);
-                  setFollowUpData(prev => ({ ...prev, timeSlot: value }));
+                  setFollowUpData((prev) => ({ ...prev, timeSlot: value }));
                 }}
               >
                 <SelectTrigger className="w-full">
@@ -2055,9 +2189,9 @@ const HairTest = () => {
               <Input
                 placeholder="Add any additional notes"
                 value={followUpData.doctorNotes}
-                onChange={e => {
+                onChange={(e) => {
                   console.log("Notes updated:", e.target.value);
-                  setFollowUpData(prev => ({
+                  setFollowUpData((prev) => ({
                     ...prev,
                     doctorNotes: e.target.value,
                   }));
@@ -2320,7 +2454,7 @@ const HairTest = () => {
                     <SelectValue placeholder="Choose a doctor" />
                   </SelectTrigger>
                   <SelectContent>
-                    {doctorsList?.map(doctor => (
+                    {doctorsList?.map((doctor) => (
                       <SelectItem key={doctor._id} value={doctor._id}>
                         {doctor.name}
                       </SelectItem>
