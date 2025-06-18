@@ -880,7 +880,7 @@ const HairTest = () => {
                         )}
                       </TableCell>
 
-                      <TableCell>{test.progress || "20"}%</TableCell>
+                      <TableCell>{test.progress || ""}%</TableCell>
                       <TableCell>
                         <span
                           className={`inline-flex items-center justify-center w-24 h-6 rounded-full px-2.5 py-0.5 text-sm font-medium ${
