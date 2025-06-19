@@ -54,6 +54,8 @@ const OrdersInvoices = () => {
     message: "",
     type: "",
   });
+  const [selectedTest, setSelectedTest] = useState(null);
+  const [isCompletedModalOpen, setIsCompletedModalOpen] = useState(false);
   function formatDateArrowStyle(isoString) {
     const date = new Date(isoString);
 
@@ -72,7 +74,7 @@ const OrdersInvoices = () => {
     return `${day} ${month} ${year}`;
   }
   // Handle view order details
-  const handleViewOrder = (order) => {
+  const handleViewOrder = order => {
     setSelectedOrder(order);
     setOrderDetailsOpen(true);
   };
@@ -95,7 +97,7 @@ const OrdersInvoices = () => {
       console.log("Error while fetching orders data", error);
     }
   };
-  const setAssignDoctor = (order) => {
+  const setAssignDoctor = order => {
     console.log(order);
     setSelectedOrder(order);
     console.log(selectedOrder);
@@ -204,7 +206,7 @@ const OrdersInvoices = () => {
   };
 
   // Filter orders based on search query and filters
-  const filteredOrders = orders.filter((order) => {
+  const filteredOrders = orders.filter(order => {
     const query = searchQuery.toLowerCase();
     const orderId = order._id?.toLowerCase() || "";
     const customerName = order.userId?.fullname?.toLowerCase() || "";
@@ -310,6 +312,46 @@ const OrdersInvoices = () => {
       console.error("Error:", error);
     }
   };
+
+  const sendReport = async orderId => {
+    console.log("Starting send report process for orderId:", orderId);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found");
+        toast("No authorization token found", {
+          duration: 4000,
+          position: "top-right",
+          style: {
+            background: "#EF4444",
+            color: "#fff",
+          },
+        });
+        return;
+      }
+
+      const response = await fetch(
+        `${BASE_URL}/admin/send-order-prescription?orderId=${orderId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        toast.success("Report sent successfully");
+      } else {
+        toast.error(data.message || "Failed to send report");
+      }
+    } catch (error) {
+      console.error("Error sending report:", error);
+      toast.error("Failed to send report");
+    }
+  };
   return (
     <DashboardLayout>
       <Toaster />
@@ -332,7 +374,7 @@ const OrdersInvoices = () => {
                   placeholder="Search by order ID or customer name..."
                   className="px-10 bg-white"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                 />
               </div>
               <div className="flex gap-2">
@@ -369,7 +411,7 @@ const OrdersInvoices = () => {
               </TableHeader>
               <TableBody>
                 {paginatedOrders.length > 0 ? (
-                  paginatedOrders.map((order) => (
+                  paginatedOrders.map(order => (
                     <TableRow key={order._id}>
                       <TableCell className="font-medium">{order._id}</TableCell>
                       <TableCell>{order.orderType}</TableCell>
@@ -379,7 +421,7 @@ const OrdersInvoices = () => {
                       <TableCell>
                         <Select
                           value={order.status}
-                          onValueChange={(value) =>
+                          onValueChange={value =>
                             handleStatusChange(order._id, null, order, value)
                           }
                         >
@@ -416,7 +458,7 @@ const OrdersInvoices = () => {
                       <TableCell>
                         <Select
                           value={order.deliveryStatus}
-                          onValueChange={(value) =>
+                          onValueChange={value =>
                             handleStatusChange(
                               order._id,
                               value,
@@ -449,11 +491,19 @@ const OrdersInvoices = () => {
                         </Button>
                       </TableCell>
                       <TableCell>
+                        <TableCell></TableCell>
                         <TableCell>
                           <Button
                             variant="outline"
                             size="sm"
-                            className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-[#209FD9] text-white  hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors"
+                            className={`w-[170px] h-[32px] flex items-center justify-center gap-1 
+                              ${
+                                order.prescriptionDetails?.[0]?.appointment
+                                  ?.status === "completed"
+                                  ? "bg-green-500 text-white hover:bg-green-600"
+                                  : "bg-yellow-500 text-white hover:bg-yellow-600"
+                              }
+                              transition-colors`}
                             onClick={() => {
                               const status =
                                 order.prescriptionDetails[0]?.appointment
@@ -478,6 +528,28 @@ const OrdersInvoices = () => {
                               <span>Generate Prescription</span>
                             )}
                           </Button>
+
+                          {order.prescriptionDetails?.[0]?.appointment
+                            ?.status === "completed" &&
+                            order.prescriptionDetails?.[0]?.appointment
+                              ?.isReportSent === false && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-blue-500 text-white hover:bg-blue-600 mt-2"
+                                onClick={() => {
+                                  // const hairTestId = order?.prescriptionDetails?.[0]?.appointment?.hairTestId;
+                                  // if (hairTestId) {
+                                  sendReport(order._id);
+                                  console.log(order);
+                                  // } else {
+                                  //  console.log(order._id)
+                                  // }
+                                }}
+                              >
+                                Report Sent
+                              </Button>
+                            )}
                         </TableCell>
                       </TableCell>
                     </TableRow>
@@ -498,7 +570,7 @@ const OrdersInvoices = () => {
                 <p className="text-sm text-muted-foreground">Rows per page</p>
                 <Select
                   value={rowsPerPage.toString()}
-                  onValueChange={(value) => {
+                  onValueChange={value => {
                     setRowsPerPage(Number(value));
                     setCurrentPage(1);
                   }}
@@ -507,7 +579,7 @@ const OrdersInvoices = () => {
                     <SelectValue placeholder={rowsPerPage} />
                   </SelectTrigger>
                   <SelectContent>
-                    {[5, 10, 25, 50].map((num) => (
+                    {[5, 10, 25, 50].map(num => (
                       <SelectItem key={num} value={num.toString()}>
                         {num}
                       </SelectItem>
@@ -534,7 +606,7 @@ const OrdersInvoices = () => {
                     variant="outline"
                     className="h-8 w-8 p-0"
                     onClick={() =>
-                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      setCurrentPage(prev => Math.max(prev - 1, 1))
                     }
                     disabled={currentPage === 1}
                   >
@@ -545,7 +617,7 @@ const OrdersInvoices = () => {
                     variant="outline"
                     className="h-8 w-8 p-0"
                     onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      setCurrentPage(prev => Math.min(prev + 1, totalPages))
                     }
                     disabled={currentPage === totalPages}
                   >
@@ -756,13 +828,13 @@ const OrdersInvoices = () => {
                 <label className="text-sm font-medium">Select Doctor</label>
                 <Select
                   value={selectedDoctor}
-                  onValueChange={(value) => setSelectedDoctor(value)}
+                  onValueChange={value => setSelectedDoctor(value)}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select Doctor" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    {doctorsList?.map((doctor) => (
+                    {doctorsList?.map(doctor => (
                       <SelectItem key={doctor._id} value={doctor._id}>
                         {doctor.name}
                       </SelectItem>

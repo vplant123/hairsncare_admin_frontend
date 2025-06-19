@@ -127,8 +127,8 @@ const HairTestsCopy = () => {
   const [pendingRowsPerPage, setPendingRowsPerPage] = useState(10);
 
   const pendingTests = hairTests
-    .filter((test) => test.status?.toLowerCase() === "pending")
-    .filter((test) => {
+    .filter(test => test.status?.toLowerCase() === "pending")
+    .filter(test => {
       const query = pendingSearchQuery.toLowerCase();
       const name = test.personal?.name?.toLowerCase() || "";
       const email = test.personal?.email?.toLowerCase() || "";
@@ -142,7 +142,7 @@ const HairTestsCopy = () => {
     });
 
   // Filter hair tests based on search query for All tab
-  const filteredAllHairTests = hairTests.filter((test) => {
+  const filteredAllHairTests = hairTests.filter(test => {
     const query = searchQuery.toLowerCase();
     const name = test.personal?.name?.toLowerCase() || "";
     const email = test.personal?.email?.toLowerCase() || "";
@@ -182,6 +182,15 @@ const HairTestsCopy = () => {
   const [planType, setplanType] = useState("");
   const [paymentStatus, setPaymentStatus] = useState("");
   const [amount, setAmount] = useState("");
+  const [userId, setUserId] = useState(null);
+  const [hairTestId, setHairTestId] = useState(null);
+
+  const handlepaymentstatus = test => {
+    console.log(test, "show");
+    setIsPaymentModalOpen(true);
+    setUserId(test.userId._id);
+    setHairTestId(test._id);
+  };
 
   const handleFetchData = async () => {
     try {
@@ -209,7 +218,7 @@ const HairTestsCopy = () => {
     }
   };
 
-  const sendReport = async (hairTestId) => {
+  const sendReport = async hairTestId => {
     console.log("Starting send report process for hairTestId:", hairTestId);
     try {
       const token = localStorage.getItem("token");
@@ -249,7 +258,7 @@ const HairTestsCopy = () => {
     }
   };
 
-  const sendWhatsapp = async (userId) => {
+  const sendWhatsapp = async userId => {
     console.log("Starting WhatsApp send process for userId:", userId);
 
     try {
@@ -356,7 +365,7 @@ const HairTestsCopy = () => {
   const handleFollowUp = (test: HairTest) => {
     console.log("Starting follow-up process for test:", test);
     setSelectedTestForFollowUp(test);
-    setFollowUpData((prev) => ({
+    setFollowUpData(prev => ({
       ...prev,
       followupOf: test._id,
     }));
@@ -578,7 +587,7 @@ const HairTestsCopy = () => {
       );
       const data = await response.json();
       if (data.success) {
-        const test = data.data?.find((t) => t?._id === testId);
+        const test = data.data?.find(t => t?._id === testId);
         if (test) {
           setSelectedTest(test);
           setIsCompletedModalOpen(true);
@@ -589,7 +598,7 @@ const HairTestsCopy = () => {
     }
   };
 
-  const viewOrderDetails = async (orderId) => {
+  const viewOrderDetails = async orderId => {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/v1/admin/order-details`,
@@ -686,7 +695,7 @@ const HairTestsCopy = () => {
     }
   };
 
-  const setAssignDoctor = (order) => {
+  const setAssignDoctor = order => {
     console.log(order);
     setSelectedOrder(order);
     console.log(selectedOrder);
@@ -697,10 +706,60 @@ const HairTestsCopy = () => {
     setIsModalOpen(false);
   };
 
-  const handleSubmit = () => {
-    // Handle the form submission for updating payment details here
-    console.log(paymentStatus, paymentMode, planType, amount);
-    handleCloseModal();
+  const [isLoading, setIsLoading] = useState(false);
+ 
+  const handleSubmit = async () => {
+    if (
+      !paymentStatus ||
+      !paymentMode ||
+      !planType ||
+      !amount ||
+      !userId ||
+      !hairTestId
+    ) {
+      // alert("Please fill in all fields.");
+      console.log("Please fill in all fields.", hairTestId);
+      return;
+    }
+ 
+    const data = {
+      userId,
+      hairTestId,
+      paymentMode,
+      planType,
+      paymentStatus,
+      amount: parseFloat(amount),
+    };
+
+  const token = localStorage.getItem("token");
+    try {
+      setIsLoading(true); // Set loading to true while waiting for the response
+ 
+      const response = await fetch(`${BASE_URL}/payment/update-order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log("Payment details updated successfully", responseData);
+        handleCloseModal(); // Close the modal
+        window.location.reload(); // Refresh the page
+      } else {
+        const errorData = await response.json();
+        console.error("Error updating payment details:", errorData);
+       
+      }
+    } catch (error) {
+      console.error("Error making the API request:", error);
+    
+    } finally {
+      setIsLoading(false); // Reset loading state
+    }
   };
 
   return (
@@ -753,7 +812,7 @@ const HairTestsCopy = () => {
                       placeholder="Search tests..."
                       className="px-10"
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={e => setSearchQuery(e.target.value)}
                     />
                   </div>
                 </div>
@@ -765,13 +824,13 @@ const HairTestsCopy = () => {
                   <span className="text-sm font-medium">Rows per page:</span>
                   <select
                     value={allRowsPerPage}
-                    onChange={(e) => {
+                    onChange={e => {
                       setAllRowsPerPage(Number(e.target.value));
                       setAllCurrentPage(1); // Reset to first page
                     }}
                     className="border rounded px-2 py-1 text-sm"
                   >
-                    {[5, 10, 25, 50].map((num) => (
+                    {[5, 10, 25, 50].map(num => (
                       <option key={num} value={num}>
                         {num}
                       </option>
@@ -849,7 +908,7 @@ const HairTestsCopy = () => {
                             `₹ ${test.orders.amount}`
                           ) : (
                             <button
-                              onClick={() => setIsPaymentModalOpen(true)}
+                              onClick={() => handlepaymentstatus(test)}
                               className="w-full h-full hover:bg-yellow-200 transition-colors rounded-full"
                             >
                               Not Paid
@@ -1008,7 +1067,7 @@ const HairTestsCopy = () => {
                               className="w-[180px] flex items-center justify-center gap-1 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-300 transition-colors"
                               onClick={() => {
                                 setSelectedTest(test);
-                                setScheduleAppointment((prev) => ({
+                                setScheduleAppointment(prev => ({
                                   ...prev,
                                   hairTestId: test._id,
                                 }));
@@ -1096,7 +1155,7 @@ const HairTestsCopy = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setAllCurrentPage((prev) => Math.max(prev - 1, 1))
+                      setAllCurrentPage(prev => Math.max(prev - 1, 1))
                     }
                     disabled={allCurrentPage === 1 || totalAllPages === 0}
                   >
@@ -1106,7 +1165,7 @@ const HairTestsCopy = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setAllCurrentPage((prev) =>
+                      setAllCurrentPage(prev =>
                         Math.min(prev + 1, totalAllPages)
                       )
                     }
@@ -1149,7 +1208,7 @@ const HairTestsCopy = () => {
                       placeholder="Search pending tests..."
                       className="pl-10"
                       value={pendingSearchQuery}
-                      onChange={(e) => setPendingSearchQuery(e.target.value)}
+                      onChange={e => setPendingSearchQuery(e.target.value)}
                     />
                   </div>
                   <Button variant="outline" size="icon">
@@ -1164,13 +1223,13 @@ const HairTestsCopy = () => {
                   <span className="text-sm font-medium">Rows per page:</span>
                   <select
                     value={pendingRowsPerPage}
-                    onChange={(e) => {
+                    onChange={e => {
                       setPendingRowsPerPage(Number(e.target.value));
                       setPendingCurrentPage(1); // Reset to first page
                     }}
                     className="border rounded px-2 py-1 text-sm"
                   >
-                    {[5, 10, 25, 50].map((num) => (
+                    {[5, 10, 25, 50].map(num => (
                       <option key={num} value={num}>
                         {num}
                       </option>
@@ -1349,7 +1408,7 @@ const HairTestsCopy = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setPendingCurrentPage((prev) => Math.max(prev - 1, 1))
+                      setPendingCurrentPage(prev => Math.max(prev - 1, 1))
                     }
                     disabled={
                       pendingCurrentPage === 1 || totalPendingPages === 0
@@ -1361,7 +1420,7 @@ const HairTestsCopy = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setPendingCurrentPage((prev) =>
+                      setPendingCurrentPage(prev =>
                         Math.min(prev + 1, totalPendingPages)
                       )
                     }
@@ -1464,7 +1523,7 @@ const HairTestsCopy = () => {
                             ? order.deliveryStatus
                                 .split(" ")
                                 .map(
-                                  (word) =>
+                                  word =>
                                     word.charAt(0).toUpperCase() +
                                     word.slice(1).toLowerCase()
                                 )
@@ -1491,7 +1550,7 @@ const HairTestsCopy = () => {
                             ? order.prescriptionDetails[0].appointment.status
                                 .split(" ")
                                 .map(
-                                  (word) =>
+                                  word =>
                                     word.charAt(0).toUpperCase() + word.slice(1)
                                 )
                                 .join(" ")
@@ -1781,9 +1840,9 @@ const HairTestsCopy = () => {
               <label className="text-sm font-medium">Doctor *</label>
               <Select
                 value={scheduleAppointment.doctorId}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   console.log("Doctor selected:", value);
-                  setScheduleAppointment((prev) => ({
+                  setScheduleAppointment(prev => ({
                     ...prev,
                     doctorId: value,
                   }));
@@ -1793,7 +1852,7 @@ const HairTestsCopy = () => {
                   <SelectValue placeholder="Select Doctor" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  {doctorsList?.map((doctor) => (
+                  {doctorsList?.map(doctor => (
                     <SelectItem key={doctor._id} value={doctor._id}>
                       {doctor.name}
                     </SelectItem>
@@ -1807,9 +1866,9 @@ const HairTestsCopy = () => {
               <Input
                 type="date"
                 value={scheduleAppointment.appointmentDate}
-                onChange={(e) => {
+                onChange={e => {
                   console.log("Date selected:", e.target.value);
-                  setScheduleAppointment((prev) => ({
+                  setScheduleAppointment(prev => ({
                     ...prev,
                     appointmentDate: e.target.value,
                   }));
@@ -1821,9 +1880,9 @@ const HairTestsCopy = () => {
               <label className="text-sm font-medium">Time Slot *</label>
               <Select
                 value={scheduleAppointment.timeSlot}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   console.log("Time slot selected:", value);
-                  setScheduleAppointment((prev) => ({
+                  setScheduleAppointment(prev => ({
                     ...prev,
                     timeSlot: value,
                   }));
@@ -2138,16 +2197,16 @@ const HairTestsCopy = () => {
               <label className="text-sm font-medium">Doctor *</label>
               <Select
                 value={followUpData.doctorId}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   console.log("Doctor selected:", value);
-                  setFollowUpData((prev) => ({ ...prev, doctorId: value }));
+                  setFollowUpData(prev => ({ ...prev, doctorId: value }));
                 }}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Doctor" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  {doctorsList?.map((doctor) => (
+                  {doctorsList?.map(doctor => (
                     <SelectItem key={doctor._id} value={doctor._id}>
                       {doctor.name}
                     </SelectItem>
@@ -2161,9 +2220,9 @@ const HairTestsCopy = () => {
               <Input
                 type="date"
                 value={followUpData.appointmentDate}
-                onChange={(e) => {
+                onChange={e => {
                   console.log("Date selected:", e.target.value);
-                  setFollowUpData((prev) => ({
+                  setFollowUpData(prev => ({
                     ...prev,
                     appointmentDate: e.target.value,
                   }));
@@ -2175,9 +2234,9 @@ const HairTestsCopy = () => {
               <label className="text-sm font-medium">Time Slot *</label>
               <Select
                 value={followUpData.timeSlot}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   console.log("Time slot selected:", value);
-                  setFollowUpData((prev) => ({ ...prev, timeSlot: value }));
+                  setFollowUpData(prev => ({ ...prev, timeSlot: value }));
                 }}
               >
                 <SelectTrigger className="w-full">
@@ -2198,9 +2257,9 @@ const HairTestsCopy = () => {
               <Input
                 placeholder="Add any additional notes"
                 value={followUpData.doctorNotes}
-                onChange={(e) => {
+                onChange={e => {
                   console.log("Notes updated:", e.target.value);
-                  setFollowUpData((prev) => ({
+                  setFollowUpData(prev => ({
                     ...prev,
                     doctorNotes: e.target.value,
                   }));
@@ -2463,7 +2522,7 @@ const HairTestsCopy = () => {
                     <SelectValue placeholder="Choose a doctor" />
                   </SelectTrigger>
                   <SelectContent>
-                    {doctorsList?.map((doctor) => (
+                    {doctorsList?.map(doctor => (
                       <SelectItem key={doctor._id} value={doctor._id}>
                         {doctor.name}
                       </SelectItem>
@@ -2525,7 +2584,7 @@ const HairTestsCopy = () => {
             <select
               id="paymentStatus"
               value={paymentStatus}
-              onChange={(e) => setPaymentStatus(e.target.value)}
+              onChange={e => setPaymentStatus(e.target.value)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md"
             >
               <option value="">Select Status</option>
@@ -2543,7 +2602,7 @@ const HairTestsCopy = () => {
             <select
               id="paymentMode"
               value={paymentMode}
-              onChange={(e) => setPaymentMode(e.target.value)}
+              onChange={e => setPaymentMode(e.target.value)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md"
             >
               <option value="">Select Mode</option>
@@ -2562,7 +2621,7 @@ const HairTestsCopy = () => {
             <select
               id="planType"
               value={planType}
-              onChange={(e) => setplanType(e.target.value)}
+              onChange={e => setplanType(e.target.value)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md"
             >
               <option value="">Select Plan</option>
@@ -2582,7 +2641,7 @@ const HairTestsCopy = () => {
               type="number"
               id="amount"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={e => setAmount(e.target.value)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md"
             />
           </div>
@@ -2597,7 +2656,7 @@ const HairTestsCopy = () => {
             <Button
               onClick={() => {
                 if (!paymentStatus || !paymentMode || !planType || !amount) {
-                  alert("Please fill in all fields.");
+               
                   return;
                 }
                 handleSubmit();
