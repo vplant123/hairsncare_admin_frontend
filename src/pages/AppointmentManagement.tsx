@@ -347,8 +347,8 @@ const AppointmentManagement = () => {
                             }}
                           >
                             {appointment?.status === "completed"
-                              ? "Prescription Sent"
-                              : "Generate Prescription"}
+                              ? "Report Sent"
+                              : "Generate Report"}
                           </Button>
                         ) : (
                           "N/A"

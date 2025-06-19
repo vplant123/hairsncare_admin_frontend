@@ -26,6 +26,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 
 import {
@@ -72,7 +73,7 @@ interface HairTest {
   }>;
 }
 
-const HairTest = () => {
+const HairTestsCopy = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [selectedTest, setSelectedTest] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -175,6 +176,13 @@ const HairTest = () => {
   const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
   const [selectedPrescription, setSelectedPrescription] = useState(null);
 
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
+  const [paymentMode, setPaymentMode] = useState("");
+  const [planType, setplanType] = useState("");
+  const [paymentStatus, setPaymentStatus] = useState("");
+  const [amount, setAmount] = useState("");
+
   const handleFetchData = async () => {
     try {
       const response = await fetch(`${BASE_URL}/hair-tests/getall`, {
@@ -232,7 +240,6 @@ const HairTest = () => {
       const data = await response.json();
       if (data.success) {
         toast.success("Report sent successfully");
-        await handleFetchData();
       } else {
         toast.error(data.message || "Failed to send report");
       }
@@ -679,35 +686,21 @@ const HairTest = () => {
     }
   };
 
-  const handleViewPrescription = async (orderId) => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/order-details`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ orderId }),
-        }
-      );
-      const data = await response.json();
-      if (data.success) {
-        setSelectedPrescription(data.data.order);
-        setIsPrescriptionModalOpen(true);
-      }
-    } catch (error) {
-      console.error("Error fetching prescription details:", error);
-      toast.error("Error fetching prescription details");
-    }
-  };
-
   const setAssignDoctor = (order) => {
     console.log(order);
     setSelectedOrder(order);
     console.log(selectedOrder);
     setIsAssignDoctorModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleSubmit = () => {
+    // Handle the form submission for updating payment details here
+    console.log(paymentStatus, paymentMode, planType, amount);
+    handleCloseModal();
   };
 
   return (
@@ -837,11 +830,7 @@ const HairTest = () => {
                           : ""}
                       </TableCell>
                       <TableCell className="font-medium">
-                        {test.personal?.name || ""}, (
-                        {test.personal?.ageRange ||
-                          test.personal?.["Select your age group"] ||
-                          "N/A"}
-                        )
+                        {test.personal?.name || ""}
                       </TableCell>
                       <TableCell>{test.personal?.phoneNumber || ""}</TableCell>
                       <TableCell>{test.personal?.email || ""}</TableCell>
@@ -856,9 +845,16 @@ const HairTest = () => {
                           } text-gray-700`}
                         >
                           {typeof test.orders?.amount === "number" &&
-                          test.orders.amount > 0
-                            ? `₹ ${test.orders.amount}`
-                            : "Not Paid"}
+                          test.orders.amount > 0 ? (
+                            `₹ ${test.orders.amount}`
+                          ) : (
+                            <button
+                              onClick={() => setIsPaymentModalOpen(true)}
+                              className="w-full h-full hover:bg-yellow-200 transition-colors rounded-full"
+                            >
+                              Not Paid
+                            </button>
+                          )}
                         </span>
                       </TableCell>
 
@@ -1004,10 +1000,8 @@ const HairTest = () => {
 
                       <TableCell className="text-right">
                         <div className="flex flex-col gap-2 items-end">
-                          {(test.appointments?.[0]?.status?.toLowerCase() ===
-                            "booked" ||
-                            test.appointments?.[0]?.status?.toLowerCase() ===
-                              "pending") && (
+                          {test.appointments?.[0]?.status?.toLowerCase() !=
+                            "completed" && (
                             <Button
                               variant="outline"
                               size="sm"
@@ -1242,7 +1236,7 @@ const HairTest = () => {
                       </TableCell>
                       <TableCell>{test.personal?.email || "N/A"}</TableCell>
                       <TableCell>
-                        {test.personal?.phoneNumber || "N/A"}{" "}
+                        {test.personal?.phoneNumber || "N/A"}
                       </TableCell>
                       <TableCell>
                         {test.personal?.ageRange ||
@@ -1437,7 +1431,7 @@ const HairTest = () => {
                       <TableCell className="font-medium">
                         {order._id || "N/A"}
                       </TableCell>
-                      <TableCell>{order.userId?.fullname || "N/A"},</TableCell>
+                      <TableCell>{order.userId?.fullname || "N/A"}</TableCell>
                       <TableCell>{order.orderType || "N/A"}</TableCell>
                       {/* <TableCell>
                         <span
@@ -1547,7 +1541,7 @@ const HairTest = () => {
                             ?.status === "completed" ? (
                             <span>View Prescription</span>
                           ) : (
-                            <span>Generate Prescription</span>
+                            <span> Prescription</span>
                           )}
                         </Button>
                       </TableCell>
@@ -1686,7 +1680,7 @@ const HairTest = () => {
                       }
                     >
                       <FileText className="h-4 w-4" />
-                      Generate Assessment Report
+                      Assessment Report
                     </Button>
                     <Button
                       variant="outline"
@@ -1699,7 +1693,7 @@ const HairTest = () => {
                       }
                     >
                       <FileText className="h-4 w-4" />
-                      Generate Management Report
+                      Management Report
                     </Button>
 
                     <Button
@@ -1713,7 +1707,7 @@ const HairTest = () => {
                       }
                     >
                       <FileText className="h-4 w-4" />
-                      Generate Prescription
+                      Prescription
                     </Button>
 
                     {/* The following button is removed as per user request */}
@@ -2511,8 +2505,111 @@ const HairTest = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={isPaymentModalOpen} onOpenChange={setIsPaymentModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Payment Information</DialogTitle>
+            <DialogDescription>
+              Enter the payment details below
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="">
+            <label
+              htmlFor="paymentStatus"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Payment Status
+            </label>
+            <select
+              id="paymentStatus"
+              value={paymentStatus}
+              onChange={(e) => setPaymentStatus(e.target.value)}
+              className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+            >
+              <option value="">Select Status</option>
+              <option value="paid">Paid</option>
+            </select>
+          </div>
+
+          <div className="">
+            <label
+              htmlFor="paymentMode"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Payment Mode
+            </label>
+            <select
+              id="paymentMode"
+              value={paymentMode}
+              onChange={(e) => setPaymentMode(e.target.value)}
+              className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+            >
+              <option value="">Select Mode</option>
+              <option value="online">Online</option>
+              <option value="cash">Cash</option>
+            </select>
+          </div>
+
+          <div className="">
+            <label
+              htmlFor="planType"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Plan Name
+            </label>
+            <select
+              id="planType"
+              value={planType}
+              onChange={(e) => setplanType(e.target.value)}
+              className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+            >
+              <option value="">Select Plan</option>
+              <option value="Local Plan">Local Plan</option>
+              <option value="Premium Plan">Premium Plan</option>
+            </select>
+          </div>
+
+          <div>
+            <label
+              htmlFor="Amount"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Amount
+            </label>
+            <input
+              type="number"
+              id="amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+            />
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsPaymentModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                if (!paymentStatus || !paymentMode || !planType || !amount) {
+                  alert("Please fill in all fields.");
+                  return;
+                }
+                handleSubmit();
+              }}
+            >
+              Submit
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 };
 
-export default HairTest;
+export default HairTestsCopy;

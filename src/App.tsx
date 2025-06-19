@@ -49,6 +49,8 @@ import HairTestPage from "./pages/HairTestPage";
 import AdminDashboard from "./pages/admin-dashboard/AdminDashboard.jsx";
 import Blogs from "./pages/Blogs";
 
+import HairTestsCopy from "./pages/HairTestsCopy";
+
 // Updated ProtectedRoute component
 const ProtectedRoute = ({
   requiredRoles,
@@ -161,7 +163,8 @@ const App = () => (
                   requiredRoles={["admin", "subadmin"]}
                   requiredPermissionKey="hairTest"
                 >
-                  <HairTest />
+                  {/* <HairTest /> */}
+                  <HairTestsCopy />
                 </ProtectedRoute>
               }
             />
@@ -189,10 +192,13 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            <Route path="/Generate-Prescription-for-Orders"
-              element={<ProtectedRoute requiredRoles={["admin","doctor"]}>
-                <DoctorOrdeerReport/>
-              </ProtectedRoute>}
+            <Route
+              path="/Generate-Prescription-for-Orders"
+              element={
+                <ProtectedRoute requiredRoles={["admin", "doctor"]}>
+                  <DoctorOrdeerReport />
+                </ProtectedRoute>
+              }
             />
             {/* PatientTestResult and related report routes might need more granular permission/role checks */}
             <Route
