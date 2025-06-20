@@ -246,7 +246,9 @@ const DoctorFollowUp = () => {
                 ) : (
                   paginatedAppointments.map((appointment) => (
                     <TableRow key={appointment._id}>
-                      <TableCell>{appointment.appointmentDate}</TableCell>
+                      <TableCell>
+                        {formatDateArrowStyle(appointment.appointmentDate)}
+                      </TableCell>
                       <TableCell className="font-medium">
                         {appointment.userId?.fullname || "N/A"}
                       </TableCell>
@@ -301,29 +303,6 @@ const DoctorFollowUp = () => {
                         {appointment.appointmentType || "Follow Up Patient"}
                       </TableCell>
 
-                      {/* <TableCell>
-                        {appointment.status ? (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-24 h-8 text-xs font-medium"
-                            style={{
-                              backgroundColor:
-                                appointment.status === "completed"
-                                  ? "#22c55e"
-                                  : "#eab308",
-                              color: "white",
-                              border: "none",
-                            }}
-                          >
-                            {appointment.status.charAt(0).toUpperCase() +
-                              appointment.status.slice(1)}
-                          </Button>
-                        ) : (
-                          "N/A"
-                        )}
-                      </TableCell> */}
-
                       <TableCell>
                         {formatDateArrowStyle(appointment.appointmentDate) ||
                           ""}{" "}
@@ -331,48 +310,79 @@ const DoctorFollowUp = () => {
                           ? `(${appointment.timeSlot})`
                           : ""}
                       </TableCell>
+
                       <TableCell>
                         {appointment?.status ? (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-32 h-8 text-xs font-medium"
-                            style={{
-                              backgroundColor:
-                                appointment?.status === "completed"
-                                  ? "#22c55e"
-                                  : "#3b82f6",
-                              color: "white",
-                              border: "none",
-                            }}
-                            onClick={() => {
-                              const userId = appointment.userId?._id;
-                              const appointmentId = appointment._id;
-                              const testId = appointment.followupOf;
+                          <>
+                            {appointment?.status === "completed" ? (
+                              <>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="w20 h-8 text-xs font-medium"
+                                  style={{
+                                    backgroundColor: "#22c55e",
+                                    color: "white",
+                                    border: "none",
+                                  }}
+                                  disabled
+                                >
+                                  Prescription Sent
+                                </Button>
 
-                              if (!userId || !testId) {
-                                toast({
-                                  variant: "destructive",
-                                  title: "Error",
-                                  description:
-                                    "Missing required data for this appointment",
-                                });
-                                return;
-                              }
+                                {/* View Prescription Button */}
+                                <Button
+                                  variant="outline"
+                                  className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
+                                  onClick={() =>
+                                    window.open(
+                                      `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${appointment._id}`,
+                                      "_blank"
+                                    )
+                                  }
+                                >
+                                  {/* <FileText className="h-4 w-4" /> */}
+                                  View Prescription
+                                </Button>
+                              </>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-32 h-8 text-xs font-medium"
+                                style={{
+                                  backgroundColor: "#3b82f6",
+                                  color: "white",
+                                  border: "none",
+                                }}
+                                onClick={() => {
+                                  const userId = appointment.userId?._id;
+                                  const appointmentId = appointment._id;
+                                  const testId = appointment.followupOf;
 
-                              const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
-                              const path = "followup/patient-test-result";
+                                  if (!userId || !testId) {
+                                    toast({
+                                      variant: "destructive",
+                                      title: "Error",
+                                      description:
+                                        "Missing required data for this appointment",
+                                    });
+                                    return;
+                                  }
 
-                              window.open(
-                                `${baseUrl}/${path}/${userId},${appointmentId},${testId}`,
-                                "_blank"
-                              );
-                            }}
-                          >
-                            {appointment?.status === "completed"
-                              ? "Prescription Sent"
-                              : "Generate Prescription"}
-                          </Button>
+                                  const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
+                                  const path = "followup/patient-test-result";
+
+                                  window.open(
+                                    `${baseUrl}/${path}/${userId},${appointmentId},${testId}`,
+                                    "_blank"
+                                  );
+                                }}
+                              >
+                                Generate Prescription
+                              </Button>
+                            )}
+                          </>
                         ) : (
                           "N/A"
                         )}

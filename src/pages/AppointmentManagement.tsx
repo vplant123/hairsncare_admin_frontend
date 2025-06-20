@@ -223,7 +223,8 @@ const AppointmentManagement = () => {
                   <TableHead>Method</TableHead>
                   <TableHead>Date & Time Slot</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>FollowUp Date & Time</TableHead>
+                  <TableHead>FollowUp Date</TableHead>
+                  <TableHead>Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -309,6 +310,13 @@ const AppointmentManagement = () => {
                       {/* <TableCell>{appointment.appointmentType || ""}</TableCell> */}
 
                       <TableCell>
+                        {appointment?.followUpDate &&
+                        appointment?.followUpDate !== ""
+                          ? formatDateArrowStyle(appointment?.followUpDate)
+                          : "N/A"}
+                      </TableCell>
+
+                      <TableCell>
                         {appointment?.status ? (
                           <Button
                             variant="outline"
@@ -345,6 +353,7 @@ const AppointmentManagement = () => {
                                 "_blank"
                               );
                             }}
+                            disabled={appointment?.status === "completed"} // Disable button if status is completed
                           >
                             {appointment?.status === "completed"
                               ? "Report Sent"

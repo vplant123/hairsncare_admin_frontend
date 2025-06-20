@@ -14,7 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import UserManagement from "./pages/UserManagement";
 import PatientManagement from "./pages/PatientManagement";
 import DoctorManagement from "./pages/DoctorManagement";
-import Appointments from "./pages/Appointments";
+import Appointments from "./pages/Appointments.js";
 import Reports from "./pages/Reports";
 import ProductInventory from "./pages/ProductInventory";
 import AddProduct from "./pages/AddProduct";
