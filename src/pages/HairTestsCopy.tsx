@@ -857,7 +857,7 @@ const HairTestsCopy = () => {
                     <TableHead>Method</TableHead>
                     <TableHead>Date & Time Slot</TableHead>
                     <TableHead>Appointment Status</TableHead>
-                    <TableHead>View Hair Test</TableHead>
+                    {/* <TableHead>View Hair Test</TableHead> */}
                     <TableHead>Action</TableHead>
                     <TableHead></TableHead>
                     <TableHead>Final Status</TableHead>
@@ -1004,58 +1004,6 @@ const HairTestsCopy = () => {
                         })()}
                       </TableCell>
 
-                      <TableCell className="text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex items-center gap-1 text-health-primary"
-                        >
-                          {test.appointments?.[0]?.status.toLowerCase() ===
-                          "completed" ? (
-                            <>
-                              <FileText className="h-3 w-3" />
-                              <span
-                                onClick={() =>
-                                  viewReport(test._id, test.status)
-                                }
-                              >
-                                Report sent
-                              </span>
-                            </>
-                          ) : (
-                            <>
-                              <Eye className="h-3 w-3" />
-                              <span
-                                onClick={() => {
-                                  const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
-                                  const path = "test-results";
-                                  const testId = test?._id;
-                                  const userId = test?.userId?._id;
-                                  console.log("userId", userId);
-                                  console.log("testId", testId);
-                                  // console.log("appointmentId", appointmentId);
-                                  if (userId && testId) {
-                                    console.log(
-                                      "path",
-                                      `${baseUrl}/${path}/${testId}`
-                                    );
-                                    window.open(
-                                      `${baseUrl}/${path}/${testId}`,
-                                      "_blank"
-                                    );
-                                  } else {
-                                    toast.error(
-                                      "Missing required data for this report."
-                                    );
-                                  }
-                                }}
-                              >
-                                View Hair Test
-                              </span>
-                            </>
-                          )}
-                        </Button>
-                      </TableCell>
 
                       <TableCell className="text-right">
                         <div className="flex flex-col gap-2 items-end">
@@ -1116,7 +1064,7 @@ const HairTestsCopy = () => {
                         )}
                       </TableCell>
 
-                      <TableCell>
+                      {/* <TableCell>
                         {test?.appointments?.[0]?.status?.toLowerCase() ===
                           "completed" && (
                           <button
@@ -1131,6 +1079,58 @@ const HairTestsCopy = () => {
                             View Report
                           </button>
                         )}
+                      </TableCell> */}
+                      <TableCell className="text-right">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center gap-1 text-health-primary"
+                        >
+                          {test.appointments?.[0]?.status.toLowerCase() ===
+                          "completed" ? (
+                            <>
+                              <FileText className="h-3 w-3" />
+                              <span
+                                onClick={() =>
+                                  viewReport(test._id, test.status)
+                                }
+                              >
+                                Report sent
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <Eye className="h-3 w-3" />
+                              <span
+                                onClick={() => {
+                                  const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
+                                  const path = "test-results";
+                                  const testId = test?._id;
+                                  const userId = test?.userId?._id;
+                                  console.log("userId", userId);
+                                  console.log("testId", testId);
+                                  // console.log("appointmentId", appointmentId);
+                                  if (userId && testId) {
+                                    console.log(
+                                      "path",
+                                      `${baseUrl}/${path}/${testId}`
+                                    );
+                                    window.open(
+                                      `${baseUrl}/${path}/${testId}`,
+                                      "_blank"
+                                    );
+                                  } else {
+                                    toast.error(
+                                      "Missing required data for this report."
+                                    );
+                                  }
+                                }}
+                              >
+                                View Hair Test
+                              </span>
+                            </>
+                          )}
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}

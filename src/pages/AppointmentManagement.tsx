@@ -20,6 +20,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Eye } from "lucide-react";
 
 const AppointmentManagement = () => {
   const navigate = useNavigate();
@@ -30,6 +32,8 @@ const AppointmentManagement = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isTestReportDialogOpen, setIsTestReportDialogOpen] = useState(false);
+  const [selectedTestReport, setSelectedTestReport] = useState(null);
 
   function formatDateArrowStyle(isoString) {
     const date = new Date(isoString);
@@ -249,7 +253,7 @@ const AppointmentManagement = () => {
                 ) : (
                   paginatedAppointments.map((appointment) => (
                     <TableRow key={appointment._id}>
-                      <TableCell>{appointment.appointmentDate}</TableCell>
+                      <TableCell>{formatDateArrowStyle (appointment.appointmentDate)}</TableCell>
                       <TableCell className="font-medium">
                         {appointment.userId?.fullname || "N/A"}
                       </TableCell>
@@ -313,54 +317,62 @@ const AppointmentManagement = () => {
                         {appointment?.followUpDate &&
                         appointment?.followUpDate !== ""
                           ? formatDateArrowStyle(appointment?.followUpDate)
-                          : "N/A"}
+                          : ""}
                       </TableCell>
 
                       <TableCell>
                         {appointment?.status ? (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-32 h-8 text-xs font-medium"
-                            style={{
-                              backgroundColor:
-                                appointment?.status === "completed"
-                                  ? "#22c55e"
-                                  : "#3b82f6",
-                              color: "white",
-                              border: "none",
-                            }}
-                            onClick={() => {
-                              const userId = appointment.userId?._id;
-                              const appointmentId = appointment._id;
-                              const testId = appointment.hairTestId;
-
-                              if (!userId || !testId) {
-                                toast({
-                                  variant: "destructive",
-                                  title: "Error",
-                                  description:
-                                    "Missing required data for this appointment",
-                                });
-                                return;
-                              }
-
-                              const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
-                              const path = "patient-test-result";
-
-                              window.open(
-                                `${baseUrl}/${path}/${userId},${appointmentId},${testId}`,
-                                "_blank"
-                              );
-                            }}
-                            disabled={appointment?.status === "completed"} // Disable button if status is completed
-                          >
-                            {appointment?.status === "completed"
-                              ? "Report Sent"
-                              : "Generate Report"}
-                          </Button>
+                          appointment?.status === "completed" ? (
+                            <>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-32 h-8 text-xs font-medium"
+                                style={{ backgroundColor: "#22c55e", color: "white", border: "none" }}
+                                disabled
+                              >
+                                Report Sent
+                              </Button>
+                              <Button
+                                variant="outline"
+                                className="h-8 hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2 mt-2"
+                                onClick={() => {
+                                  setSelectedTestReport(appointment);
+                                  setIsTestReportDialogOpen(true);
+                                }}
+                              >
+                                <Eye className="h-4 w-4" />
+                                View Report
+                              </Button>
+                            </>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-32 h-8 text-xs font-medium"
+                              style={{ backgroundColor: "#3b82f6", color: "white", border: "none" }}
+                              onClick={() => {
+                                const userId = appointment.userId?._id;
+                                const appointmentId = appointment._id;
+                                const testId = appointment.hairTestId;
+                                if (!userId || !testId) {
+                                  toast({
+                                    variant: "destructive",
+                                    title: "Error",
+                                    description: "Missing required data for this appointment",
+                                  });
+                                  return;
+                                }
+                                const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
+                                const path = "patient-test-result";
+                                window.open(`${baseUrl}/${path}/${userId},${appointmentId},${testId}`, "_blank");
+                              }}
+                            >
+                              Generate Report
+                            </Button>
+                          )
                         ) : (
-                          "N/A"
+                          ""
                         )}
                       </TableCell>
                     </TableRow>
@@ -371,6 +383,133 @@ const AppointmentManagement = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Test Report Dialog */}
+      <Dialog open={isTestReportDialogOpen} onOpenChange={setIsTestReportDialogOpen}>
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+          {selectedTestReport && (
+            <div className="space-y-6 overflow-y-auto">
+              <DialogHeader className="sticky top-0 z-10 pb-4">
+                <DialogTitle>Completed Test Report</DialogTitle>
+                <DialogDescription>
+                  View and manage completed test report
+                </DialogDescription>
+              </DialogHeader>
+              {/* Appointment Details Section */}
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Appointment Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Appointment ID</label>
+                    <div className="p-2 border rounded-md bg-gray-50">
+                      {selectedTestReport._id || "-"}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Status</label>
+                    <div className="p-2 border rounded-md bg-gray-50">
+                      <span className={
+                        selectedTestReport.status?.toLowerCase() === "pending"
+                          ? "text-yellow-600"
+                          : selectedTestReport.status?.toLowerCase() === "completed"
+                          ? "text-green-600"
+                          : "text-blue-600"
+                      }>
+                        {selectedTestReport.status || "Unknown"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Time Slot</label>
+                    <div className="p-2 border rounded-md bg-gray-50">
+                      {selectedTestReport.timeSlot || "-"}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Doctor</label>
+                    <div className="p-2 border rounded-md bg-gray-50">
+                      {selectedTestReport.doctorId?.fullname || "-"}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Appointment Date</label>
+                    <div className="p-2 border rounded-md bg-gray-50">
+                      {selectedTestReport.appointmentDate
+                        ? new Date(selectedTestReport.appointmentDate).toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })
+                        : ""}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Created At</label>
+                    <div className="p-2 border rounded-md bg-gray-50">
+                      {selectedTestReport.createdAt
+                        ? new Date(selectedTestReport.createdAt).toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })
+                        : ""}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="border-t pt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Button
+                    variant="outline"
+                    className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
+                    onClick={() =>
+                      window.open(
+                        `${import.meta.env.VITE_FRONTEND_URL}/doctor-analyse-report/${selectedTestReport._id}`,
+                        "_blank"
+                      )
+                    }
+                  >
+                    Assessment Report
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
+                    onClick={() =>
+                      window.open(
+                        `${import.meta.env.VITE_FRONTEND_URL}/management-report/${selectedTestReport._id}`,
+                        "_blank"
+                      )
+                    }
+                  >
+                     Management Report
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
+                    onClick={() =>
+                      window.open(
+                        `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${selectedTestReport._id}`,
+                        "_blank"
+                      )
+                    }
+                  >
+                     Prescription
+                  </Button>
+                </div>
+                <div className="flex flex-col sm:flex-row justify-end gap-3  mt-4 sticky bottom-0  ">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsTestReportDialogOpen(false)}
+                    className="w-full sm:w-auto px-6 hover:bg-gray-50 hover:text-gray-600 transition-colors duration-200"
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 };

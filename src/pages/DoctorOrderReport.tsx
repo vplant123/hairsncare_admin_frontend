@@ -290,49 +290,51 @@ const AppointmentManagement = () => {
                       </TableCell> */}
                       <TableCell>
                         {appointment?.status ? (
-                    <Button
-                      variant="outline"
-                            size="sm"
-                            className="w-32 h-8 text-xs font-medium"
-                            style={{
-                              backgroundColor:
-                                appointment?.status === "completed"
-                                  ? "#22c55e"
-                                  : "#3b82f6",
-                              color: "white",
-                              border: "none",
-                            }}
-                            onClick={() => {
-                              const userId = appointment.userId?._id;
-                              const appointmentId = appointment._id;
-                              const testId = appointment.orderId;
-
-                              if (!userId || !testId) {
-                                toast({
-                                  variant: "destructive",
-                                  title: "Error",
-                                  description:
-                                    "Missing required data for this appointment",
-                                });
-                                return;
-                              }
-
-                      const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
-                              const path = "prescription_only";
-
-                        window.open(
-                          `${baseUrl}/${path}/${userId},${appointmentId},${testId}`,
-                          "_blank"
-                        );
-                    }}
-                  >
-                            {appointment?.status === "completed"
-                              ? "Generate Prescription"
-                              : "Generate Prescription"}
-                  </Button>
-                        ) : (
-                          "N/A"
-                        )}
+                    appointment?.status === "completed" ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-32 h-8 text-xs font-medium"
+                        style={{ backgroundColor: "#22c55e", color: "white", border: "none" }}
+                        onClick={() => {
+                          const appointmentId = appointment._id;
+                          window.open(
+                            `${import.meta.env.VITE_FRONTEND_URL}/order-prescription/${appointmentId}`,
+                            "_blank"
+                          );
+                        }}
+                      >
+                        View Prescription
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-32 h-8 text-xs font-medium"
+                        style={{ backgroundColor: "#3b82f6", color: "white", border: "none" }}
+                        onClick={() => {
+                          const userId = appointment.userId?._id;
+                          const appointmentId = appointment._id;
+                          const testId = appointment.orderId;
+                          if (!userId || !testId) {
+                            toast({
+                              variant: "destructive",
+                              title: "Error",
+                              description: "Missing required data for this appointment",
+                            });
+                            return;
+                          }
+                          const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
+                          const path = "prescription_only";
+                          window.open(`${baseUrl}/${path}/${userId},${appointmentId},${testId}`, "_blank");
+                        }}
+                      >
+                        Generate Prescription
+                      </Button>
+                    )
+                  ) : (
+                    "N/A"
+                  )}
                       </TableCell>
                     </TableRow>
                   ))
