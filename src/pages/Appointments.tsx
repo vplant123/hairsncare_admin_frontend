@@ -136,11 +136,7 @@ const Appointments = () => {
                   defaultValue="month"
                   onValueChange={v => setView(v as any)}
                 >
-                  <TabsList>
-                    <TabsTrigger value="month">Month</TabsTrigger>
-                    <TabsTrigger value="week">Week</TabsTrigger>
-                    <TabsTrigger value="day">Day</TabsTrigger>
-                  </TabsList>
+                 
                 </Tabs>
               </div>
               <CardDescription>
@@ -176,18 +172,7 @@ const Appointments = () => {
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setDate(new Date())}
-                  >
-                    Today
-                  </Button>
-                  <Button variant="outline" size="icon">
-                    <Filter className="h-4 w-4" />
-                  </Button>
-                </div>
+               
               </div>
 
               <div className="border rounded-lg overflow-hidden">
@@ -217,17 +202,7 @@ const Appointments = () => {
             <CardHeader className="pb-3">
               <div className="flex justify-between items-center">
                 <CardTitle>{format(date, "EEEE, MMMM d")}</CardTitle>
-                <Select defaultValue="all">
-                  <SelectTrigger className="w-[130px]">
-                    <SelectValue placeholder="Filter" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="confirmed">Confirmed</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                  </SelectContent>
-                </Select>
+              
               </div>
               <CardDescription>
                 {todaysAppointments.length} appointments scheduled
@@ -268,9 +243,7 @@ const Appointments = () => {
                         <User className="h-3 w-3 mr-1" />
                         {appointment.patient}
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        {appointment.doctor}
-                      </div>
+                    
                     </div>
                   ))}
                 </div>
@@ -370,21 +343,12 @@ const Appointments = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <h4 className="text-sm font-medium text-muted-foreground">
-                    Doctor
-                  </h4>
+               
                   <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
-                    <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                      {selectedAppointment.doctor
-                        .split(" ")
-                        .map((n: string) => n[0])
-                        .join("")}
-                    </div>
+                    
                     <div>
-                      <p className="text-sm font-medium">
-                        {selectedAppointment.doctor}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
+                     
+                      <p className="text-xs mt-8 text-muted-foreground">
                         Appointment Type: {selectedAppointment.type}
                       </p>
                     </div>
@@ -413,9 +377,7 @@ const Appointments = () => {
                   </Button> */}
                   {/* <Button variant="outline">Reschedule</Button> */}
                 </div>
-                <Button className="bg-health-primary hover:bg-health-primary/90">
-                  Edit Details
-                </Button>
+            
               </div>
             </div>
           )}

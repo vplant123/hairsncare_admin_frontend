@@ -333,7 +333,7 @@ const DoctorFollowUp = () => {
                                 {/* View Prescription Button */}
                                 <Button
                                   variant="outline"
-                                  className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
+                                  className= "h-8 mt-2 text-xs hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
                                   onClick={() =>
                                     window.open(
                                       `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${appointment._id}`,
