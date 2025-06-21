@@ -19,7 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Eye, Search, Filter, FileText, CheckCircle } from "lucide-react";
+import { Eye, Search, Filter, FileText, CheckCircle, ChevronDown } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -907,12 +907,14 @@ const HairTestsCopy = () => {
                           test.orders.amount > 0 ? (
                             `₹ ${test.orders.amount}`
                           ) : (
-                            <button
-                              onClick={() => handlepaymentstatus(test)}
-                              className="w-full h-full hover:bg-yellow-200 transition-colors rounded-full"
-                            >
-                              Not Paid
-                            </button>
+                           <button
+  onClick={() => handlepaymentstatus(test)}
+  className="w-full h-full transition-colors rounded-full flex items-center"
+>
+  <span className="mr-2">Not Paid</span> 
+  <ChevronDown className="h-4 w-4" />
+</button>
+
                           )}
                         </span>
                       </TableCell>

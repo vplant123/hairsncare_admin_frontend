@@ -860,7 +860,7 @@ const FollowUp = () => {
                   </TableHeader>
 
                   <TableBody>
-                    {hairTests.map((test, index) => (
+                    {paginatedCompletedTests.map((test, index) => (
                       <TableRow
                         key={test._id}
                         className={`hover:bg-gray-100 ${
@@ -1035,7 +1035,7 @@ const FollowUp = () => {
               {/* Pagination Controls (Bottom) for Completed Hair Tests */}
               <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
-                  {hairTests.length} total results.
+                  {totalCompletedTests} total results.
                 </div>
                 <div className="space-x-2">
                   <Button

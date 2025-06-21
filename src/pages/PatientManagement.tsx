@@ -45,6 +45,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AddPatientModal from "@/components/AddPatientModal";
 import { useToast } from "@/components/ui/use-toast";
 import html2pdf from "html2pdf.js";
+import { format } from "date-fns";
 
 const PatientManagement = () => {
   const [patients, setPatients] = useState([]);
@@ -63,23 +64,25 @@ const PatientManagement = () => {
   const [prescriptionViewOpen, setPrescriptionViewOpen] = useState(false);
   const [currentPrescription, setCurrentPrescription] = useState<any>(null);
 
-  function formatDateArrowStyle(isoString) {
-    const date = new Date(isoString);
-
-    // Check if the date is invalid
-    if (isNaN(date.getTime())) {
-      return ""; // Return an empty string if the date is invalid
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    try {
+      return format(new Date(dateString), "dd MMM yyyy");
+    } catch (error) {
+      console.error("Invalid date:", dateString);
+      return "Invalid Date";
     }
+  };
 
-    const day = date.getUTCDate().toString().padStart(2, "0");
-    const month = date.toLocaleString("en-US", {
-      month: "short",
-      timeZone: "UTC",
-    });
-    const year = date.getUTCFullYear();
-
-    return `${day} ${month} ${year}`;
-  }
+  const formatTime = (dateString) => {
+    if (!dateString) return "N/A";
+    try {
+      return format(new Date(dateString), "p"); // hh:mm a
+    } catch (error) {
+      console.error("Invalid time:", dateString);
+      return "Invalid Time";
+    }
+  };
 
   // Fetch patients
   useEffect(() => {
@@ -94,8 +97,9 @@ const PatientManagement = () => {
             },
           }
         );
-        console.log("response pat:", res);
+       
         const data = await res.json();
+         console.log("response pat:", data);
         // Sort patients by lastLogin date in descending order
         const sortedPatients = (data?.data || []).sort((a, b) => {
           const dateA = new Date(a.lastLogin || 0);
@@ -127,42 +131,47 @@ const PatientManagement = () => {
   }, [searchQuery, patients]);
 
   const fetchPatientDetails = async (patientId) => {
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/get-patient-Data`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({ userId: patientId }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch patient details");
+  try {
+    setLoading(true);
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/api/v1/admin/get-patient-Data`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ userId: patientId }),
       }
+    );
 
-      const data = await response.json();
-      if (data.success) {
-        setPatientDetails(data.data);
-        setUserDetailsOpen(true);
-      } else {
-        throw new Error(data.message || "Failed to fetch patient details");
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message || "Failed to fetch patient details",
-        className: "bg-white",
-      });
-    } finally {
-      setLoading(false);
+    if (!response.ok) {
+      throw new Error("Failed to fetch patient details");
     }
-  };
+
+    const data = await response.json();
+
+    // Log the data to the console
+    console.log("API Response Data:", data);
+    
+    if (data.success) {
+      setPatientDetails(data.data);
+      setUserDetailsOpen(true);
+    } else {
+      throw new Error(data.message || "Failed to fetch patient details");
+    }
+  } catch (error) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description: error.message || "Failed to fetch patient details",
+      className: "bg-white",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const viewUserDetails = (user) => {
     setSelectedUser(user);
@@ -419,7 +428,7 @@ const PatientManagement = () => {
                       </TableCell>
 
                       <TableCell>
-                        {formatDateArrowStyle(patient.lastLogin)}
+                        {formatDate(patient.lastLogin)}
                       </TableCell>
                       <TableCell>
                         {/* <div className="flex items-center">
@@ -601,9 +610,7 @@ const PatientManagement = () => {
                               <TableHead className="text-xs sm:text-sm">
                                 Device
                               </TableHead>
-                              <TableHead className="text-xs sm:text-sm">
-                                Location
-                              </TableHead>
+                             
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -615,19 +622,17 @@ const PatientManagement = () => {
                               </TableRow>
                             ) : patientDetails?.loginHistory?.length > 0 ? (
                               patientDetails.loginHistory.map((log, index) => (
-                                <TableRow key={index}>
+                                <TableRow key={log.loginTime + index}>
                                   <TableCell className="text-xs sm:text-sm">
-                                    {log.date}
+                                    {formatDate(log.loginTime)}
                                   </TableCell>
                                   <TableCell className="text-xs sm:text-sm">
-                                    {log.time}
+                                    {formatTime(log.loginTime)}
                                   </TableCell>
                                   <TableCell className="text-xs sm:text-sm">
-                                    {log.device}
+                                    {log.os}
                                   </TableCell>
-                                  <TableCell className="text-xs sm:text-sm">
-                                    {log.location}
-                                  </TableCell>
+                                  
                                 </TableRow>
                               ))
                             ) : (
@@ -652,11 +657,9 @@ const PatientManagement = () => {
                                 Date
                               </TableHead>
                               <TableHead className="text-xs sm:text-sm">
-                                Result
+                                Progress
                               </TableHead>
-                              <TableHead className="text-xs sm:text-sm">
-                                Doctor
-                              </TableHead>
+                              
                               <TableHead className="text-xs sm:text-sm">
                                 Status
                               </TableHead>
@@ -673,17 +676,15 @@ const PatientManagement = () => {
                               patientDetails.hairTests.map((test) => (
                                 <TableRow key={test.id}>
                                   <TableCell className="text-xs sm:text-sm">
-                                    {test.id}
+                                    {test._id}
                                   </TableCell>
                                   <TableCell className="text-xs sm:text-sm">
-                                    {test.date}
+                                  {formatDate (test.createdAt)}
                                   </TableCell>
                                   <TableCell className="text-xs sm:text-sm">
-                                    {test.result}
+                                    {test.progress}%
                                   </TableCell>
-                                  <TableCell className="text-xs sm:text-sm">
-                                    {test.doctor}
-                                  </TableCell>
+                                 
                                   <TableCell className="text-xs sm:text-sm">
                                     {test.status}
                                   </TableCell>
@@ -736,7 +737,7 @@ const PatientManagement = () => {
                                       {order._id}
                                     </TableCell>
                                     <TableCell className="text-xs sm:text-sm">
-                                      {formatDateArrowStyle(order.createdAt)}
+                                      {formatDate(order.createdAt)}
                                     </TableCell>
                                     <TableCell className="text-xs sm:text-sm">
                                       Rs. {order.totalAmount}
@@ -777,9 +778,7 @@ const PatientManagement = () => {
                                         </p>
                                         <p>
                                           <strong>Date:</strong>{" "}
-                                          {formatDateArrowStyle(
-                                            order.createdAt
-                                          )}
+                                          {formatDate(order.createdAt)}
                                         </p>
                                         <p>
                                           <strong>Total Amount:</strong> Rs.{" "}
@@ -1032,7 +1031,7 @@ const PatientManagement = () => {
                     </h1>
                     <p style={{ fontSize: "14px", color: "#555" }}>
                       Date:{" "}
-                      {formatDateArrowStyle(
+                      {formatDate(
                         currentPrescription?.createdAt || new Date()
                       )}
                     </p>

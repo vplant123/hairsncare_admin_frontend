@@ -29,6 +29,7 @@ import { Search, Plus, Edit, Trash2, Eye, EyeOff } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
+import { constructNow } from "date-fns";
 
 // Define a type for the admin data including _id
 interface AdminData {
@@ -276,6 +277,7 @@ const Admins = () => {
         }
       );
       const data = await response.json();
+      console.log(data);
 
       // Check for success status codes (200 OK or 201 Created)
       if (data.statusCode === 200 || data.statusCode === 201) {
@@ -288,7 +290,8 @@ const Admins = () => {
         });
       } else {
         // Handle API errors
-        const errorMessage = data.message || "Failed to add admin.";
+        const errorMessage = data.isOperational || "Failed to add admin.";
+        console.log(errorMessage)
         setErrorMessages([{ msg: errorMessage }]);
         toast({
           title: "Error",
