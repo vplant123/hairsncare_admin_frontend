@@ -493,58 +493,53 @@ const OrdersInvoices = () => {
                       <TableCell>
                         <TableCell></TableCell>
                         <TableCell>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className={`w-[170px] h-[32px] flex items-center justify-center gap-1 
-                              ${
-                                order.prescriptionDetails?.[0]?.appointment
-                                  ?.status === "completed"
-                                  ? "bg-green-500 text-white hover:bg-green-600"
-                                  : "bg-yellow-500 text-white hover:bg-yellow-600"
-                              }
-                              transition-colors`}
-                            onClick={() => {
-                              const status =
-                                order.prescriptionDetails[0]?.appointment
-                                  ?.status;
-                              const appointmentId =
-                                order.prescriptionDetails[0]?.appointment?._id;
-                              if (status === "completed") {
+                          {order.prescriptionDetails?.[0]?.appointment?.status === "completed" ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-green-500 text-white hover:bg-green-600 transition-colors"
+                              onClick={() => {
+                                const appointmentId = order.prescriptionDetails[0]?.appointment?._id;
                                 window.open(
                                   `${import.meta.env.VITE_FRONTEND_URL}/order-prescription/${appointmentId}`,
                                   "_blank"
                                 );
-                              } else {
-                                setAssignDoctor(order);
-                              }
-                            }}
-                          >
-                            <Eye className="h-3.5 w-5" />
-                            {order.prescriptionDetails?.[0]?.appointment
-                              ?.status === "completed" ? (
+                              }}
+                            >
+                              <Eye className="h-3.5 w-5" />
                               <span>View Prescription</span>
-                            ) : (
+                            </Button>
+                          ) : order.prescriptionDetails?.[0]?.appointment?.status === "assigned" && order.prescriptionDetails?.[0]?.appointment?.appointmentDate ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-yellow-500 text-white hover:bg-yellow-600 transition-colors"
+                              disabled
+                            >
+                              
+                              <span>Assigned</span>
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-yellow-500 text-white hover:bg-yellow-600 transition-colors"
+                              onClick={() => setAssignDoctor(order)}
+                            >
+                              <Eye className="h-3.5 w-5" />
                               <span>Generate Prescription</span>
-                            )}
-                          </Button>
+                            </Button>
+                          )}
 
-                          {order.prescriptionDetails?.[0]?.appointment
-                            ?.status === "completed" &&
-                            order.prescriptionDetails?.[0]?.appointment
-                              ?.isReportSent === false && (
+                          {order.prescriptionDetails?.[0]?.appointment?.status === "completed" &&
+                            order.prescriptionDetails?.[0]?.appointment?.isReportSent === false && (
                               <Button
                                 variant="outline"
                                 size="sm"
                                 className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-blue-500 text-white hover:bg-blue-600 mt-2"
                                 onClick={() => {
-                                  // const hairTestId = order?.prescriptionDetails?.[0]?.appointment?.hairTestId;
-                                  // if (hairTestId) {
                                   sendReport(order._id);
                                   console.log(order);
-                                  // } else {
-                                  //  console.log(order._id)
-                                  // }
                                 }}
                               >
                                 Report Sent
@@ -580,7 +575,7 @@ const OrdersInvoices = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {[5, 10, 25, 50].map(num => (
-                      <SelectItem key={num} value={num.toString()}>
+                      <SelectItem key={num} value={num.toString()} className="bg-white">
                         {num}
                       </SelectItem>
                     ))}
@@ -833,7 +828,7 @@ const OrdersInvoices = () => {
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select Doctor" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white">
+                  <SelectContent className="bg-white max-h-60 overflow-y-auto">
                     {doctorsList?.map(doctor => (
                       <SelectItem key={doctor._id} value={doctor._id}>
                         {doctor.name}

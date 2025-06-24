@@ -340,7 +340,7 @@ const AddInvoice = () => {
                   <SelectTrigger id="doctor">
                     <SelectValue placeholder="Select a doctor" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white">
+                  <SelectContent className="bg-white max-h-60 overflow-y-auto">
                     {doctorsList.map(doctor => (
                       <SelectItem key={doctor._id} value={doctor._id}>
                         {doctor.name}
@@ -386,7 +386,7 @@ const AddInvoice = () => {
                           <SelectTrigger id="product">
                             <SelectValue placeholder="Select a product" />
                           </SelectTrigger>
-                          <SelectContent className="bg-white">
+                          <SelectContent className="bg-white max-h-60 overflow-y-auto">
                             {productList?.map(product => (
                               <SelectItem key={product._id} value={product._id}>
                                 {product.name}

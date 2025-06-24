@@ -170,7 +170,20 @@ const Admins = () => {
               reviews: true,
               admin: true,
             }
-          : prev.permission,
+          : prev.role === "subadmin"
+          ? prev.permission
+          : {
+              hairTest: false,
+              doctor: false,
+              patient: false,
+              website: false,
+              coupon: false,
+              orders: false,
+              contactus: false,
+              product: false,
+              reviews: false,
+              admin: false,
+            },
     }));
   };
 

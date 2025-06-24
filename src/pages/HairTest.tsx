@@ -800,14 +800,14 @@ const HairTest = () => {
                     <TableHead>Phone Number</TableHead>
                     <TableHead>Email Id</TableHead>
                     <TableHead>Payment Status</TableHead>
-                    <TableHead></TableHead>
+                 
                     <TableHead>Progress</TableHead>
                     <TableHead>Method</TableHead>
                     <TableHead>Date & Time Slot</TableHead>
                     <TableHead>Appointment Status</TableHead>
                     <TableHead>View Hair Test</TableHead>
                     <TableHead>Action</TableHead>
-                    <TableHead></TableHead>
+                   
                     <TableHead>Final Status</TableHead>
                     <TableHead>View Final Report</TableHead>
                   </TableRow>
@@ -858,7 +858,8 @@ const HairTest = () => {
                           {typeof test.orders?.amount === "number" &&
                           test.orders.amount > 0
                             ? `₹ ${test.orders.amount}`
-                            : "Not Paid"}
+                            : "Not Paid"} 
+                          
                         </span>
                       </TableCell>
 
