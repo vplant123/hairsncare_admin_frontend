@@ -59,6 +59,8 @@ const AddDoctor = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({}); // State to hold field-specific errors
   const [showPassword, setShowPassword] = useState(false); // Add state for password visibility
+  const [removedAwards, setRemovedAwards] = useState([]);
+  const [removedProfileImage, setRemovedProfileImage] = useState(false);
 
   useEffect(() => {
     if (isEdit && doctorData) {
@@ -287,8 +289,11 @@ const AddDoctor = () => {
 
       const payload = {
         ...formData,
-        image: uploadedProfileImage,
-        awards: [...(doctorData?.awards || []), ...filteredUploadedAwards],
+        image: removedProfileImage ? null : uploadedProfileImage,
+        awards: [
+          ...(doctorData?.awards?.filter(a => !removedAwards.includes(a)) || []),
+          ...filteredUploadedAwards
+        ],
         showOnDashboard: formData.showOnDashboard
       };
 
@@ -369,23 +374,35 @@ const AddDoctor = () => {
   const handleRemoveProfileImage = () => {
     setProfileImage(null);
     setProfileImagePreview(null);
+    setRemovedProfileImage(true);
+    setFormData(prev => ({
+      ...prev,
+      image: ""
+    }));
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""; // Clear the file input
+      fileInputRef.current.value = "";
     }
   };
 
   const handleRemoveAwardImage = (indexToRemove) => {
-    setAwardsImagesPreviews(prevPreviews =>
-      prevPreviews.filter((_, index) => index !== indexToRemove)
-    );
-    // If you need to handle the File objects for actual submission, you'll need a similar filter for awardsImages
-    setAwardsImages(prevImages => {
-      const newImages = prevImages.filter((_, index) => index !== indexToRemove);
-      if (newImages.length === 0 && awardsFileInputRef.current) {
-        awardsFileInputRef.current.value = "";
+    setAwardsImagesPreviews(prevPreviews => {
+      const removed = prevPreviews[indexToRemove];
+      // If it's a URL (string), add to removedAwards
+      if (typeof removed === 'string' && removed.startsWith('http')) {
+        setRemovedAwards(prev => [...prev, removed]);
       }
-      return newImages;
+      return prevPreviews.filter((_, index) => index !== indexToRemove);
     });
+    setAwardsImages(prevImages =>
+      prevImages.filter((_, index) => index !== indexToRemove)
+    );
+    setFormData(prev => ({
+      ...prev,
+      awards: prev.awards.filter((_, index) => index !== indexToRemove)
+    }));
+    if (awardsFileInputRef.current) {
+      awardsFileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -445,10 +462,10 @@ const AddDoctor = () => {
                     onChange={e => handleImageUpload(e, "profile")}
                     ref={fileInputRef}
                   />
-                  {(profileImagePreview || (isEdit && doctorData?.image)) && (
+                  {(profileImagePreview) && (
                     <div className="mt-2 relative inline-block">
                       <img
-                        src={profileImagePreview || doctorData?.image}
+                        src={profileImagePreview}
                         alt="Profile preview"
                         className="w-20 h-20 object-cover rounded"
                       />
@@ -673,13 +690,9 @@ const AddDoctor = () => {
                 onChange={e => handleImageUpload(e, "awards")}
                 disabled={awardsImagesPreviews.length > 0}
               />
-              {(awardsImagesPreviews.length > 0 ||
-                (isEdit && doctorData?.awards?.length > 0)) && (
+              {awardsImagesPreviews.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-3">
-                  {(awardsImagesPreviews.length > 0
-                    ? awardsImagesPreviews
-                    : doctorData?.awards
-                  )?.map((award, index) => (
+                  {awardsImagesPreviews.map((award, index) => (
                     <div key={index} className="relative">
                       <img
                         src={award}

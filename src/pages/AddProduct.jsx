@@ -472,6 +472,7 @@ function AddProduct() {
                     onValueChange={(value) =>
                       setFormData((prev) => ({ ...prev, category: value }))
                     }
+                     required
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
@@ -646,6 +647,7 @@ function AddProduct() {
                     value={formData.slug}
                     onChange={(e) => handleChange(e, "slug")}
                     placeholder="Enter slug"
+                     required
                   />
                 </div>
                 <div className="space-y-2">

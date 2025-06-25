@@ -176,7 +176,7 @@ const OrdersInvoices = () => {
           },
         });
         setTimeout(() => {
-          setIsOrderModalOpen(false);
+          setIsAssignDoctorModalOpen(false);
           setSelectedDoctor("");
           setAssignResponse({ message: "", type: "" });
           handleFetchOrders();
