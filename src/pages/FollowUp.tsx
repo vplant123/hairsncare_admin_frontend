@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -26,6 +27,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 
 import {
@@ -226,6 +228,11 @@ const FollowUp = () => {
     (prescriptionCurrentPage - 1) * prescriptionRowsPerPage,
     prescriptionCurrentPage * prescriptionRowsPerPage
   );
+
+  // Add state for edit follow-up date modal
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedTestForEdit, setSelectedTestForEdit] = useState(null);
+  const [editFollowUpDate, setEditFollowUpDate] = useState("");
 
   const handleFetchData = async () => {
     try {
@@ -769,6 +776,41 @@ const FollowUp = () => {
     }
   };
 
+  const handleUpdateFollowUpDate = async () => {
+    if (!editFollowUpDate || !selectedTestForEdit) return;
+    
+    try {
+     
+      const response = await fetch(`${BASE_URL}/api/v1/admin/update-followup-date?appointmentId=${selectedTestForEdit._id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          followUpDate: editFollowUpDate
+        })
+      });
+      
+      if (response.ok) {
+        // Update local state
+        // Refresh data or update the specific test
+        setIsEditModalOpen(false);
+        setSelectedTestForEdit(null);
+        setEditFollowUpDate("");
+        // Optionally refresh your data
+        toast.success("Follow up date updated successfully");
+        handleFetchData(); // Refresh the data
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.message || "Failed to update follow up date");
+      }
+    } catch (error) {
+      console.error('Error updating follow up date:', error);
+      toast.error("Error updating follow up date");
+    }
+  };
+
   return (
     <DashboardLayout>
       <Toaster />
@@ -945,12 +987,22 @@ const FollowUp = () => {
                                 }
                               )
                             : ""}
+                          <Button 
+                            className="ms-2 p-2 h-8 bg-yellow-500 hover:bg-yellow-400"
+                            onClick={() => {
+                              setSelectedTestForEdit(test);
+                              setEditFollowUpDate(test.followUpDate || "");
+                              setIsEditModalOpen(true);
+                            }}
+                          >
+                            edit date
+                          </Button>
                         </TableCell>
 
                         <TableCell className="text-right whitespace-nowrap">
                           <div className="flex flex-row gap-2 items-end">
                             {test.status?.toLowerCase() === "completed" &&
-                              test.followUpDate && (
+                              test.followUpDate && (  
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -1699,6 +1751,40 @@ const FollowUp = () => {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Follow Up Date Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit Follow Up Date</DialogTitle>
+            <DialogDescription>
+              Update the follow up date for this test
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="followUpDate" className="text-right">
+                Date
+              </Label>
+              <Input
+                id="followUpDate"
+                type="date"
+                value={editFollowUpDate}
+                onChange={(e) => setEditFollowUpDate(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleUpdateFollowUpDate}>
+              Update Date
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </DashboardLayout>

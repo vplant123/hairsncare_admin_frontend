@@ -56,23 +56,33 @@ const OrdersInvoices = () => {
   });
   const [selectedTest, setSelectedTest] = useState(null);
   const [isCompletedModalOpen, setIsCompletedModalOpen] = useState(false);
-  function formatDateArrowStyle(isoString) {
-    const date = new Date(isoString);
+ function formatDateArrowStyle(isoString) {
+  const date = new Date(isoString);
 
-    // Check if the date is invalid
-    if (isNaN(date.getTime())) {
-      return ""; // Return an empty string if the date is invalid
-    }
-
-    const day = date.getUTCDate().toString().padStart(2, "0");
-    const month = date.toLocaleString("en-US", {
-      month: "short",
-      timeZone: "UTC",
-    });
-    const year = date.getUTCFullYear();
-
-    return `${day} ${month} ${year}`;
+  // Check if the date is invalid
+  if (isNaN(date.getTime())) {
+    return ""; // Return an empty string if the date is invalid
   }
+
+  const day = date.getUTCDate().toString().padStart(2, "0");
+  const month = date.toLocaleString("en-US", {
+    month: "short",
+    timeZone: "Asia/Kolkata", // IST timezone
+  });
+  const year = date.getUTCFullYear();
+
+  // Convert to IST (Indian Standard Time)
+  const options = {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "Asia/Kolkata", // IST timezone
+  };
+ const time = date.toLocaleTimeString("en-US", options);
+
+  return `${day} ${month} ${year}, ${time}`;
+}
+
   // Handle view order details
   const handleViewOrder = order => {
     setSelectedOrder(order);
@@ -436,7 +446,7 @@ const OrdersInvoices = () => {
                           </SelectContent>
                         </Select>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="whitespace-nowrap">
                         {formatDateArrowStyle(order.createdAt)}
                       </TableCell>
                       {/* <TableCell> */}
