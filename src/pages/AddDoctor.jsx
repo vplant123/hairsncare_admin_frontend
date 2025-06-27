@@ -289,7 +289,7 @@ const AddDoctor = () => {
 
       const payload = {
         ...formData,
-        image: removedProfileImage ? null : uploadedProfileImage,
+        image: removedProfileImage ? null : (uploadedProfileImage || doctorData?.image),
         awards: [
           ...(doctorData?.awards?.filter(a => !removedAwards.includes(a)) || []),
           ...filteredUploadedAwards

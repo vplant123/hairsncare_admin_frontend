@@ -369,8 +369,9 @@ const DoctorManagement = () => {
                         <div className="p-2.5 border rounded-md bg-gray-50/50 flex justify-center">
                           <img
                             src={
-                              selectedUser.image ||
-                              "/placeholder-doctor.jpg"
+                              selectedUser.image && selectedUser.image.trim() !== ""
+                                ? selectedUser.image
+                                : "/dummy-doc.jpg"
                             }
                             alt={selectedUser.name}
                             className="w-20 h-20 rounded-full object-cover border border-gray-200"

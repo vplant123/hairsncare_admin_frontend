@@ -513,17 +513,17 @@ const Coupons = () => {
   const formatDate = (isoString?: string) => {
     if (!isoString) return "-";
     const date = new Date(isoString);
-    return date.toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "2-digit",
-    });
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = date.toLocaleString("en-US", { month: "short" });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
   };
 
   // Filter coupons by search, status, and expiry
   const filteredCoupons = coupons.filter((coupon) => {
     const now = new Date();
     const expiry = new Date(coupon.validity);
+    expiry.setHours(23, 59, 59, 999); // Set to end of the validity day
     const isExpired = expiry < now;
     const isMaxedOut =
       coupon.usageLimit && coupon.usageCount >= coupon.usageLimit;
@@ -602,7 +602,7 @@ const Coupons = () => {
                   <SelectContent className="bg-white">
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value="expired">Expired</SelectItem>
                   </SelectContent>
                 </Select>
                 {/* <Select value={expiryFilter} onValueChange={setExpiryFilter}>
@@ -656,8 +656,9 @@ const Coupons = () => {
                       </TableRow>
                     ) : (
                       currentCoupons.map((coupon) => {
-                        const isExpired =
-                          new Date(coupon.validity) < new Date();
+                        const expiry = new Date(coupon.validity);
+                        expiry.setHours(23, 59, 59, 999); // Set to end of the validity day
+                        const isExpired = expiry < new Date();
                         return (
                           <TableRow key={coupon._id}>
                             <TableCell className="font-medium">
@@ -670,12 +671,12 @@ const Coupons = () => {
                             <TableCell>
                               <Badge
                                 className={`${
-                                  coupon.isActive
+                                  !isExpired && coupon.isActive
                                     ? "bg-green-100 text-green-800"
                                     : "bg-red-100 text-red-800"
                                 } px-3 py-1 text-sm rounded-full font-medium`}
                               >
-                                {coupon.isActive ? "Active" : "Not Active"}
+                                {!isExpired && coupon.isActive ? "Active" : "Not Active"}
                               </Badge>
                             </TableCell>
                             <TableCell>
@@ -685,10 +686,9 @@ const Coupons = () => {
                             </TableCell>
                             <TableCell>
                               <Switch
-                                checked={coupon.isActive === true}
-                                onCheckedChange={() =>
-                                  handleToggleCouponStatus(coupon._id)
-                                }
+                                checked={!isExpired && coupon.isActive}
+                                disabled={isExpired}
+                                onCheckedChange={() => handleToggleCouponStatus(coupon._id)}
                               />
                             </TableCell>
                             <TableCell>

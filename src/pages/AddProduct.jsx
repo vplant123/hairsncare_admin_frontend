@@ -48,7 +48,7 @@ function AddProduct() {
     weight: "",
     height: "",
     width: "",
-    slug: "",
+    seoMetaSlug: "",
     canonical: "",
     seoMetaTitle: "",
     seoMetaDesc: "",
@@ -58,6 +58,7 @@ function AddProduct() {
     shortDes: "",
     benefitsMain: "",
     ingredientMain: "",
+    slug: "",
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -78,6 +79,7 @@ function AddProduct() {
             canonical: data.metaCanonical || "",
             seoMetaTitle: data.metaTitle || "",
             seoMetaDesc: data.metaDesc || "",
+            seoMetaSlug: data.metaSlug || "",
             kit: data.kit || [],
             userReview: data.userReview || [],
             shortDes: data.shortDes || "",
@@ -118,7 +120,8 @@ function AddProduct() {
       weight: "Weight",
       height: "Height",
       width: "Width",
-      stock: "Stock"
+      stock: "Stock",
+      
     };
 
     // Check each required field
@@ -342,7 +345,7 @@ function AddProduct() {
         productDisplay: formData.productDisplay,
         metaTitle: formData.seoMetaTitle,
         metaDesc: formData.seoMetaDesc,
-        metaSlug: formData.slug,
+        seoMetaSlug: formData.seoMetaSlug,
         metaCanonical: formData.canonical,
         benefits: formData.benefits, // Now an array of objects
         ingredient: formData.ingredients, // Now an array of objects
@@ -350,6 +353,7 @@ function AddProduct() {
         filter: formData.filterTag
           ? formData.filterTag.split(",").map((tag) => tag.trim())
           : [],
+        metaSlug: formData.slug,
       };
       console.log("Prepared data:", dataToSend);
 
@@ -647,7 +651,7 @@ function AddProduct() {
                     value={formData.slug}
                     onChange={(e) => handleChange(e, "slug")}
                     placeholder="Enter slug"
-                     required
+                    required
                   />
                 </div>
                 <div className="space-y-2">

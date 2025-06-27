@@ -781,7 +781,7 @@ const FollowUp = () => {
     
     try {
      
-      const response = await fetch(`${BASE_URL}/api/v1/admin/update-followup-date?appointmentId=${selectedTestForEdit._id}`, {
+      const response = await fetch(`${BASE_URL}/admin/update-followup-date?appointmentId=${selectedTestForEdit._id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -988,21 +988,30 @@ const FollowUp = () => {
                               )
                             : ""}
                           <Button 
-                            className="ms-2 p-2 h-8 bg-yellow-500 hover:bg-yellow-400"
+                            className="ms-2 p-1 h-7 bg-yellow-100 text-orange-500 hover:bg-yellow-200 "
                             onClick={() => {
                               setSelectedTestForEdit(test);
                               setEditFollowUpDate(test.followUpDate || "");
                               setIsEditModalOpen(true);
                             }}
                           >
-                            edit date
+                            Edit Date
                           </Button>
                         </TableCell>
 
                         <TableCell className="text-right whitespace-nowrap">
                           <div className="flex flex-row gap-2 items-end">
-                            {test.status?.toLowerCase() === "completed" &&
-                              test.followUpDate && (  
+                            {test.status?.toLowerCase() === "completed" && test.followUpDate && (
+                              new Date(test.followUpDate) <= new Date() ? (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  disabled
+                                  className="w-[180px] flex items-center justify-center gap-1 bg-green-100 text-green-700 border-green-200"
+                                >
+                                  <span>Scheduled</span>
+                                </Button>
+                              ) : (
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -1011,7 +1020,8 @@ const FollowUp = () => {
                                 >
                                   <span>Schedule Follow Up</span>
                                 </Button>
-                              )}
+                              )
+                            )}
                             {test.status?.toLowerCase() === "pending" && (
                               <Button
                                 variant="outline"
@@ -1774,6 +1784,7 @@ const FollowUp = () => {
                 value={editFollowUpDate}
                 onChange={(e) => setEditFollowUpDate(e.target.value)}
                 className="col-span-3"
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
           </div>
