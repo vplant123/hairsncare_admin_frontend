@@ -383,83 +383,102 @@ const PatientManagement = () => {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Patient Name</TableHead>
-                  <TableHead>Email ID</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Orders</TableHead>
-                  <TableHead>Order Amount</TableHead>
-                  <TableHead>Com HairTest</TableHead>
-                  <TableHead>Last Login</TableHead>
-                  {/* <TableHead>Cart</TableHead> */}
-                  {/* <TableHead className="text-right">Actions</TableHead> */}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={11}>Loading...</TableCell>
-                  </TableRow>
-                ) : error ? (
-                  <TableRow>
-                    <TableCell colSpan={11} className="text-red-500">
-                      {error}
-                    </TableCell>
-                  </TableRow>
-                ) : paginatedPatients.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={11}>No patients found.</TableCell>
-                  </TableRow>
-                ) : (
-                  paginatedPatients.map((patient: any) => (
-                    <TableRow key={patient._id}>
-                      <TableCell className="font-medium">
-                        {patient.fullname}
-                      </TableCell>
-                      <TableCell>{patient.email}</TableCell>
-                      <TableCell>{patient.mobile}</TableCell>
-                      <TableCell>{patient.orders}</TableCell>
-                      <TableCell>₹ {patient.orderAmount}</TableCell>
-                      <TableCell>
-                        {patient.completedHairTest ? "Yes" : "No"}
-                      </TableCell>
-
-                      <TableCell>
-                        {formatDate(patient.lastLogin)}
-                      </TableCell>
-                      <TableCell>
-                        {/* <div className="flex items-center">
-                          <ShoppingCart className="h-4 w-4 mr-1" />
-                          <span>{patient.cartItems}</span>
-                        </div> */}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => viewUserDetails(patient)}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          {/* <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-red-500"
-                            onClick={() => deleteUser(patient._id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button> */}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+          <div className="bg-white rounded-lg shadow">
+            <div className="overflow-x-auto">
+              <div className="min-w-full inline-block align-middle">
+                <div className="overflow-hidden">
+                  <Table className="min-w-full divide-y divide-gray-200">
+                    <TableHeader>
+                      <TableRow className="bg-gray-50">
+                        <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                          Patient Name
+                        </TableHead>
+                        <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                          Email ID
+                        </TableHead>
+                        <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                          Phone
+                        </TableHead>
+                        <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                          Orders
+                        </TableHead>
+                        <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                          Order Amount
+                        </TableHead>
+                        <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                          Com HairTest
+                        </TableHead>
+                        <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                          Last Login
+                        </TableHead>
+                        <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                          Actions
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody className="bg-white divide-y divide-gray-200">
+                      {loading ? (
+                        <TableRow>
+                          <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                            Loading...
+                          </TableCell>
+                        </TableRow>
+                      ) : error ? (
+                        <TableRow>
+                          <TableCell colSpan={8} className="text-center py-8 text-red-500">
+                            {error}
+                          </TableCell>
+                        </TableRow>
+                      ) : paginatedPatients.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                            No patients found.
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        paginatedPatients.map((patient: any) => (
+                          <TableRow key={patient._id} className="hover:bg-gray-50">
+                            <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                              {patient.fullname}
+                            </TableCell>
+                            <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {patient.email}
+                            </TableCell>
+                            <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {patient.mobile}
+                            </TableCell>
+                            <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {patient.orders}
+                            </TableCell>
+                            <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                              ₹ {patient.orderAmount}
+                            </TableCell>
+                            <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {patient.completedHairTest ? "Yes" : "No"}
+                            </TableCell>
+                            <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {formatDate(patient.lastLogin)}
+                            </TableCell>
+                            <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                              <div className="flex justify-end gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => viewUserDetails(patient)}
+                                  className="h-8 w-8"
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Pagination Controls (Bottom) */}

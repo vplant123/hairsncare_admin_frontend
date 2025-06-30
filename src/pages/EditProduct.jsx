@@ -63,6 +63,21 @@ const EditProduct = () => {
   const [imageFiles, setImageFiles] = useState([]);
   const [errors, setErrors] = useState({});
 
+  // Helper function to format date for HTML date input
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return "";
+    console.log("Original date string:", dateString);
+    const date = new Date(dateString);
+    console.log("Parsed date:", date);
+    if (isNaN(date.getTime())) {
+      console.log("Invalid date detected");
+      return "";
+    }
+    const formattedDate = date.toISOString().split('T')[0];
+    console.log("Formatted date for input:", formattedDate);
+    return formattedDate;
+  };
+
   const quillModules = {
     toolbar: [
       [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -290,7 +305,7 @@ const EditProduct = () => {
       console.log("Response Headers:", [...response.headers.entries()]);
 
       const data = await response.json();
-      console.log("Response Data:", data);
+    
 
       if (data.success) {
         toast({
@@ -466,15 +481,11 @@ const EditProduct = () => {
                 <Label>Expiry Date</Label>
                 <Input
                   type="date"
-                  value={product?.expiryDate || ""}
+                  value={formatDateForInput(product?.expiryDate)}
                   onChange={(e) =>
                     setProduct({ ...product, expiryDate: e.target.value })
                   }
-                  min={
-                    new Date(new Date().setDate(new Date().getDate() + 1))
-                      .toISOString()
-                      .split("T")[0]
-                  }
+                  min={formatDateForInput(new Date(new Date().setDate(new Date().getDate() + 1)))}
                   className="hover:border-primary transition-colors"
                 />
               </div>
@@ -549,28 +560,14 @@ const EditProduct = () => {
               <div className="space-y-2">
                 <Label>Slug</Label>
                 <Input
-                  value={product?.slug || ""}
+                  value={product?.metaSlug || ""}
                   onChange={(e) =>
                     setProduct({ ...product, slug: e.target.value })
                   }
                   className="hover:border-primary transition-colors"
                 />
               </div>
-
-              <div className="space-y-2">
-                <Label>Canonical URL</Label>
-                <Input
-                  value={product?.canonical || ""}
-                  onChange={(e) =>
-                    setProduct({ ...product, canonical: e.target.value })
-                  }
-                  className="hover:border-primary transition-colors"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
+ <div className="space-y-2">
                 <Label>Discount (Rs)</Label>
                 <Input
                   type="number"
@@ -583,6 +580,20 @@ const EditProduct = () => {
                   className="hover:border-primary transition-colors"
                 />
               </div>
+              {/* <div className="space-y-2">
+                <Label>Canonical URL</Label>
+                <Input
+                  value={product?.canonical || ""}
+                  onChange={(e) =>
+                    setProduct({ ...product, canonical: e.target.value })
+                  }
+                  className="hover:border-primary transition-colors"
+                />
+              </div> */}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+             
 
               <div className="space-y-2">
                 <Label>Stock</Label>
@@ -596,8 +607,7 @@ const EditProduct = () => {
                   className="hover:border-primary transition-colors"
                 />
               </div>
-            </div>
-
+              
             <div className="space-y-2">
               <Label>GST (%)</Label>
               <Input
@@ -610,11 +620,13 @@ const EditProduct = () => {
                 className="hover:border-primary transition-colors"
               />
             </div>
+            </div>
+
 
             <div className="space-y-2">
               <Label>SEO Meta Title</Label>
               <Input
-                value={product?.seoMetaTitle || ""}
+                value={product?.metaTitle || ""}
                 onChange={(e) =>
                   setProduct({ ...product, seoMetaTitle: e.target.value })
                 }
@@ -625,7 +637,7 @@ const EditProduct = () => {
             <div className="space-y-2">
               <Label>SEO Meta Description</Label>
               <Textarea
-                value={product?.seoMetaDesc || ""}
+                value={product?.metaDesc || ""}
                 onChange={(e) =>
                   setProduct({ ...product, seoMetaDesc: e.target.value })
                 }

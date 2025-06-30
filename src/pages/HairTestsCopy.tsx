@@ -1023,6 +1023,7 @@ const HairTestsCopy = () => {
                                 }));
                                 setIsModalOpen(true);
                               }}
+                              // disabled={test.appointments?.length > 0}
                             >
                               <span>Schedule Appointment</span>
                             </Button>
@@ -1293,16 +1294,16 @@ const HairTestsCopy = () => {
                       className={`hover:bg-gray-100 ${index % 2 === 0 ? "bg-white" : "bg-gray-100"}`}
                     >
                       <TableCell className="font-medium">
-                        {test.personal?.name || "N/A"}
+                        {test.personal?.name || ""}
                       </TableCell>
-                      <TableCell>{test.personal?.email || "N/A"}</TableCell>
+                      <TableCell>{test.personal?.email || ""}</TableCell>
                       <TableCell>
-                        {test.personal?.phoneNumber || "N/A"}
+                        {test.personal?.phoneNumber || ""}
                       </TableCell>
                       <TableCell>
                         {test.personal?.ageRange ||
                           test.personal?.["Select your age group"] ||
-                          "N/A"}
+                          ""}
                       </TableCell>
 
                       <TableCell>

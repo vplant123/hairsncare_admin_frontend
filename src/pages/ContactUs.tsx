@@ -24,7 +24,7 @@ interface ContactRow {
   name: string;
   email: string;
   phone: string;
-  message: string;
+  msg: string;
   method: string;
 }
 
@@ -63,6 +63,7 @@ const ContactUs: React.FC = () => {
       }
 
       const data = await response.json();
+      console.log("Contact",data)
       setRows(data.data || []);
     } catch (error) {
       console.error("Error fetching contact details:", error);
@@ -153,7 +154,7 @@ const ContactUs: React.FC = () => {
     <DashboardLayout>
       <div className="w-full p-6">
         <h1 className="text-2xl font-bold mb-6">Contact Submissions</h1>
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-white rounded-lg shadow" >
           <Table>
             <TableHeader>
               <TableRow>
@@ -181,7 +182,7 @@ const ContactUs: React.FC = () => {
                     <TableCell>{row.name}</TableCell>
                     <TableCell>{row.email}</TableCell>
                     <TableCell>{row.phone}</TableCell>
-                    <TableCell>{row.message}</TableCell>
+                    <TableCell>{row.msg}</TableCell>
                     <TableCell>{row.method}</TableCell>
                     <TableCell>
                       <Button
@@ -191,7 +192,7 @@ const ContactUs: React.FC = () => {
                         className="text-destructive hover:text-destructive hover:bg-destructive/10"
                         aria-label="Delete"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4 text-red-600" />
                       </Button>
                     </TableCell>
                   </TableRow>

@@ -334,63 +334,120 @@ const Invoice = () => {
           <Button onClick={() => navigate("/addinvoices")}>Add Invoice</Button>
         </div>
 
-        <div className="overflow-x-auto rounded-lg shadow bg-white p-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Invoice No</TableHead>
-                <TableHead>Payee Name</TableHead>
-                <TableHead>Mobile</TableHead>
-                <TableHead>Doctor</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Paid Amount</TableHead>
-                <TableHead>Dues</TableHead>
-                <TableHead>Payment Mode</TableHead>
-                <TableHead>Order ID</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Items</TableHead>
-                <TableHead>View</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {invoices.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={10} className="text-center py-4">
-                    No invoices found.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                invoices?.map(invoice => (
-                  <TableRow key={invoice._id}>
-                    <TableCell>{invoice.invoiceNo}</TableCell>
-                    <TableCell>{invoice.name}</TableCell>
-                    <TableCell>{invoice.mobile}</TableCell>
-                    <TableCell>{invoice?.doctor?.name || "-"}</TableCell>
-                    <TableCell>₹ {formatNumberToTwoDecimals(invoice.totalAmount)}</TableCell>
-                    <TableCell>₹ {formatNumberToTwoDecimals(invoice.paidAmt)}</TableCell>
-                    <TableCell>₹ {formatNumberToTwoDecimals(invoice.dues)}</TableCell>
-                    <TableCell>{invoice.paymentMode}</TableCell>
-                    <TableCell>{invoice.orderId}</TableCell>
-                    <TableCell>{formatDateArrowStyle(invoice.date)}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleViewDetails(invoice.items)}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                    <TableCell>
-                      <Button onClick={() => handleViewInvoice(invoice)}>
-                        <FileText className="h-3 w-3 " />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+        <div className="bg-white rounded-lg shadow">
+          <div className="overflow-x-auto">
+            <div className="min-w-full inline-block align-middle">
+              <div className="overflow-hidden">
+                <Table className="min-w-full divide-y divide-gray-200">
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                        Invoice No
+                      </TableHead>
+                      <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                        Payee Name
+                      </TableHead>
+                      <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                        Mobile
+                      </TableHead>
+                      <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                        Doctor
+                      </TableHead>
+                      <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                        Total
+                      </TableHead>
+                      <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                        Paid Amount
+                      </TableHead>
+                      <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                        Dues
+                      </TableHead>
+                      <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                        Payment Mode
+                      </TableHead>
+                      <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                        Order ID
+                      </TableHead>
+                      <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                        Date
+                      </TableHead>
+                      <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                        Items
+                      </TableHead>
+                      <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                        View
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody className="bg-white divide-y divide-gray-200">
+                    {invoices.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={12} className="text-center py-8 text-gray-500">
+                          No invoices found.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      invoices?.map(invoice => (
+                        <TableRow key={invoice._id} className="hover:bg-gray-50">
+                          <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {invoice.invoiceNo}
+                          </TableCell>
+                          <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {invoice.name}
+                          </TableCell>
+                          <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {invoice.mobile}
+                          </TableCell>
+                          <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {invoice?.doctor?.name || "-"}
+                          </TableCell>
+                          <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ₹ {formatNumberToTwoDecimals(invoice.totalAmount)}
+                          </TableCell>
+                          <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ₹ {formatNumberToTwoDecimals(invoice.paidAmt)}
+                          </TableCell>
+                          <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ₹ {formatNumberToTwoDecimals(invoice.dues)}
+                          </TableCell>
+                          <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {invoice.paymentMode}
+                          </TableCell>
+                          <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {invoice.orderId}
+                          </TableCell>
+                          <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {formatDateArrowStyle(invoice.date)}
+                          </TableCell>
+                          <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleViewDetails(invoice.items)}
+                              className="h-8 w-8"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                          <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <Button 
+                              onClick={() => handleViewInvoice(invoice)}
+                              variant="outline"
+                              size="sm"
+                              className="h-8 px-2"
+                            >
+                              <FileText className="h-3 w-3 mr-1" />
+                              View
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -30,6 +30,7 @@ const ProductInventory = () => {
           `${import.meta.env.VITE_BASE_URL}/api/v1/admin/product`
         );
         const data = await response.json();
+        console.log("product data ", data);
         if (data.statusCode === 200) {
           setProductsList(data.message);
         } else {

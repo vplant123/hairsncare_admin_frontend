@@ -47,6 +47,7 @@ const AddInvoice = () => {
   const [address, setAddress] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState("");
   const [productList, setProductList] = useState([]);
+  const [paymentMethod, setPaymentMethod] = useState(""); // Add payment method state
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -312,6 +313,7 @@ const AddInvoice = () => {
                   }}
                 />
               </div>
+              <div >
               <div>
                 <Label htmlFor="address">Address</Label>
                 <Input
@@ -321,6 +323,22 @@ const AddInvoice = () => {
                   onChange={e => setAddress(e.target.value)}
                 />
               </div>
+              <div>
+                <Label htmlFor="paymentMethod">Payment Method</Label>
+                <Select
+                  value={paymentMethod}
+                  onValueChange={setPaymentMethod}
+                >
+                  <SelectTrigger id="paymentMethod">
+                    <SelectValue placeholder="Select payment method" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="cash">Cash</SelectItem>
+                    <SelectItem value="online">Online</SelectItem>
+                  </SelectContent>
+                </Select>
+                </div>
+                </div>
             </div>
             <div className="space-y-4">
               <div>
