@@ -423,7 +423,7 @@ const OrdersInvoices = () => {
                 {paginatedOrders.length > 0 ? (
                   paginatedOrders.map(order => (
                     <TableRow key={order._id}>
-                      <TableCell className="font-medium">{order._id}</TableCell>
+                      <TableCell className="font-medium">{order.orderNumber}</TableCell>
                       <TableCell>{order.orderType}</TableCell>
                       <TableCell>{order.userId?.fullname}</TableCell>
                       <TableCell>{order.amount.toFixed(2)}</TableCell>

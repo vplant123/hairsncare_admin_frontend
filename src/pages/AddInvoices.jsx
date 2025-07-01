@@ -45,6 +45,7 @@ const AddInvoice = () => {
   const [payeeName, setPayeeName] = useState(""); // Initially empty, to be set based on product
   const [mobile, setMobile] = useState("");
   const [address, setAddress] = useState("");
+  const[orderid,setOrderid] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState("");
   const [productList, setProductList] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState(""); // Add payment method state
@@ -53,6 +54,9 @@ const AddInvoice = () => {
 
   // State for managing total amount (adapted from user's code)
   const [totalAmt, setTotalAmt] = useState(0);
+
+  // New coupon discount state
+  const [couponDiscount, setCouponDiscount] = useState(0); // Default 0, update as needed
 
   // Fetch Doctor Data
   const handleDoctorData = async () => {
@@ -75,6 +79,7 @@ const AddInvoice = () => {
         { method: "GET" }
       );
       const data = await response.json();
+      console.log("products",data)
       setProductList(data?.message); // Set the fetched product list
     } catch (error) {
       console.log("Error while fetching product data", error);
@@ -101,6 +106,8 @@ const AddInvoice = () => {
       if (selectedProduct) {
         currentItem["description"] = selectedProduct._id; // Store the product ID
         currentItem["rate"] = parseFloat(selectedProduct.price || 0);
+       currentItem["batchNo"] = selectedProduct.batchNo || ""; // Set batchNo
+    currentItem["expiryDate"] = selectedProduct.expiryDate || "";
         currentItem["gst"] = parseFloat(selectedProduct.gst || 0);
         // Assuming product discount from API is an amount. Adjust if it's a percentage.
         currentItem["discount"] = parseFloat(selectedProduct.discount || 0);
@@ -114,6 +121,8 @@ const AddInvoice = () => {
       } else {
         // Reset values if product not found or selection cleared
         currentItem["description"] = "";
+          currentItem["batchNo"] = "";
+    currentItem["expiryDate"] = "";
         currentItem["rate"] = 0;
         currentItem["gst"] = 0;
         currentItem["discount"] = 0;
@@ -125,7 +134,8 @@ const AddInvoice = () => {
     if (fieldName === "discountPercent" || fieldName === "rate") {
       const rate = parseFloat(currentItem["rate"] || 0);
       const discountPercent = parseFloat(currentItem["discountPercent"] || 0);
-      currentItem["discount"] = ((rate * discountPercent) / 100)?.toFixed(2);
+      const discountAmount = rate * (discountPercent / 100);
+      currentItem["discount"] = discountAmount?.toFixed(2);
     }
 
     // Recalculate discount percentage if discount amount changes (applies after direct input or product select)
@@ -208,16 +218,22 @@ const AddInvoice = () => {
       name: name, // Payee name will be set to the selected product's name
       mobile: mobile,
       address: address,
+      orderNumber: orderid,
       date: new Date().toISOString(),
       doctor: selectedDoctor,
       items: invoiceItems.map(item => ({
         item: item.description, // Store product's _id as item
-        quantity: item.quantity.toString(),
-        rate: item.rate.toString(),
-        gst: item.gst.toString(),
-        discount: item.discount.toString(),
-        discountPercent: item.discountPercent.toString(),
-        total: item.total.toString(),
+        quantity: item.quantity?.toString() || "",
+        rate: item.rate?.toString() || "",
+        gst: item.gst?.toString() || "",
+        discount: item.discount?.toString() || "",
+       
+        total: item.total?.toString() || "",
+        batchNo: item.batchNo || "",
+        expiryDate: item.expiryDate || "",
+        hsnNo: item.hsnNo || "",
+       
+   
       })),
       total: totalAmount,
       paid: true,
@@ -225,9 +241,9 @@ const AddInvoice = () => {
       dues: 0,
       orderId: orderId,
       orderDate: orderDate,
-      couponDiscount: 100,
+      // couponDiscount: 100,
       paymentMode: "cash",
-      deliveryCharges: 50,
+      // deliveryCharges: 50,
       totalDiscount: 100,
       totalAmount: totalAmount,
       isActive: true,
@@ -265,6 +281,41 @@ const AddInvoice = () => {
     setPaidAmount(grandTotal);
     console.log("Invoice saved and marked as paid");
   };
+
+  const shippingCharges = totalAmt < 2000 ? 200 : 0;
+  const grandTotal = totalAmt + shippingCharges;
+
+  const totalGST = invoiceItems.reduce((sum, item) => {
+    // Calculate GST for each item: (rate - discount) * quantity * (gst / 100)
+    const rate = parseFloat(item.rate || 0);
+    const discount = parseFloat(item.discount || 0);
+    const quantity = parseFloat(item.quantity || 0);
+    const gst = parseFloat(item.gst || 0);
+
+    const taxableAmount = (rate - discount) * quantity;
+    const gstAmount = taxableAmount * (gst / 100);
+    return sum + gstAmount;
+  }, 0);
+
+  const totalAfterCoupon = totalAmt - couponDiscount;
+
+  const totalMRP = invoiceItems.reduce((sum, item) => {
+    const rate = parseFloat(item.rate || 0);
+    const quantity = parseFloat(item.quantity || 0);
+    return sum + rate * quantity;
+  }, 0);
+
+
+
+  const totalProductDiscount = invoiceItems.reduce((sum, item) => {
+    const rate = parseFloat(item.rate || 0);
+    const discountPercent = parseFloat(item.discount || 0);
+    const quantity = parseFloat(item.quantity || 0);
+    const discountAmount = rate * (discountPercent / 100) * quantity;
+    return sum + discountAmount;
+  }, 0);
+
+  const totalSavings = totalProductDiscount + couponDiscount;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -320,7 +371,8 @@ const AddInvoice = () => {
                   id="address"
                   placeholder="Enter address"
                   value={address}
-                  onChange={e => setAddress(e.target.value)}
+                    onChange={e => setAddress(e.target.value)}
+                    
                 />
               </div>
               <div>
@@ -338,7 +390,19 @@ const AddInvoice = () => {
                   </SelectContent>
                 </Select>
                 </div>
-                </div>
+              </div>
+              <div>
+                 <Label htmlFor="address">Order ID</Label>
+                <Input
+                  id="orderid"
+                  placeholder="Enter order ID"
+                  value={orderid}
+                  onChange={e => setOrderid(e.target.value)}
+                />
+              </div>
+              
+
+              
             </div>
             <div className="space-y-4">
               <div>
@@ -374,25 +438,35 @@ const AddInvoice = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Rate</TableHead>
-                  <TableHead>GST (%)</TableHead>
-                  <TableHead>Discount (%)</TableHead>
-                  <TableHead>Discount Amount</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Action</TableHead>
+                  <TableHead className="2 py-1 border font-semibold">PARTICULARS</TableHead>
+                 
+                  <TableHead className="2 py-1 border font-semibold">BATCH NO</TableHead>
+                  <TableHead className="2 py-1 border font-semibold">EXPIRY DATE</TableHead>
+                  <TableHead className="2 py-1 border font-semibold">HSN/SAC CODE</TableHead>
+                  <TableHead className="2 py-1 border font-semibold">MRP( ₹)</TableHead>
+                  <TableHead className="2 py-1 border font-semibold">DISCOUNT(%)</TableHead>
+                  <TableHead className="2 py-1 border font-semibold">AFTER DISCOUNT AMT.( ₹)</TableHead>
+                   <TableHead className="2 py-1 border font-semibold">QTY</TableHead>
+                  <TableHead className="2 py-1 border font-semibold">TAXABLE AMOUNT( ₹)</TableHead>
+                  <TableHead className="2 py-1 border font-semibold">GST RATE(%)</TableHead>
+                  <TableHead className="2 py-1 border font-semibold">GST AMT( ₹)</TableHead>
+                  <TableHead className="2 py-1 border font-semibold">TOTAL AMT.( ₹)</TableHead>
+                   <TableHead className="2 py-1 border font-semibold">DELETE</TableHead>
                 </TableRow>
+                
               </TableHeader>
               <TableBody>
+
+             
                 {invoiceItems.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-4">
+                    <TableCell colSpan={14} className="text-center py-4">
                       No items added. Click "Add Item" to add invoice items.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  invoiceItems.map((item, index) => (
+                    invoiceItems.map((item, index) => (
+                    
                     <TableRow key={item.id}>
                       <TableCell>
                         <Select
@@ -404,16 +478,63 @@ const AddInvoice = () => {
                           <SelectTrigger id="product">
                             <SelectValue placeholder="Select a product" />
                           </SelectTrigger>
-                          <SelectContent className="bg-white max-h-60 overflow-y-auto">
+                          <SelectContent className="bg-white max-h-60 overflow-y-auto ">
                             {productList?.map(product => (
-                              <SelectItem key={product._id} value={product._id}>
+                              <SelectItem key={product._id} value={product._id} >
                                 {product.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                       </TableCell>
+                     
                       <TableCell>
+                        <Input
+                          type="text"
+                          value={item.batchNo}
+                          onChange={e =>
+                            handleItemChange(index, e.target.value, "batchNo")
+                          }
+                          className="w-auto"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        {item.expiryDate
+                          ? new Date(item.expiryDate).toLocaleDateString()
+                          : ""}
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="text"
+                          value={item.hsnNo || ""}
+                          onChange={e =>
+                            handleItemChange(index, e.target.value, "hsnNo")
+                          }
+                          placeholder="Enter HSN number"
+                          className="w-auto"
+                        />
+                      </TableCell>
+                     <TableCell>
+  <Input
+    type="number"
+    value={item.rate}
+    onChange={e =>
+      handleItemChange(index, e.target.value, "rate")
+    }
+                            min="0"
+   max="100"
+    className="w-auto"
+  />
+</TableCell>
+<TableCell>
+  {parseFloat(item.discount || 0).toFixed(2)}%
+</TableCell>
+<TableCell>
+  {(parseFloat(item.rate || 0) - (parseFloat(item.rate || 0) * parseFloat(item.discount || 0) / 100)).toFixed(2)}
+</TableCell>
+              
+                    
+                    <TableCell>
                         <Input
                           type="number"
                           value={item.quantity}
@@ -421,19 +542,14 @@ const AddInvoice = () => {
                             handleItemChange(index, e.target.value, "quantity")
                           }
                           min="1"
+                          className="w-auto"
                         />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          type="number"
-                          value={item.rate}
-                          onChange={e =>
-                            handleItemChange(index, e.target.value, "rate")
-                          }
-                          min="1"
-                        />
-                      </TableCell>
-                      <TableCell>
+                        </TableCell>
+                        <TableCell>
+                          {((parseFloat(item.rate || 0) - (parseFloat(item.rate || 0) * parseFloat(item.discount || 0) / 100)) * parseFloat(item.quantity || 0)).toFixed(2)}
+                        </TableCell>
+                       
+                        <TableCell>
                         <Input
                           type="number"
                           value={item.gst}
@@ -444,28 +560,25 @@ const AddInvoice = () => {
                           max="100"
                         />
                       </TableCell>
+                     <TableCell>
+                          {(
+                            ((parseFloat(item.rate || 0) - (parseFloat(item.rate || 0) * parseFloat(item.discount || 0) / 100)) *
+                              parseFloat(item.quantity || 0) *
+                              parseFloat(item.gst || 0)) /
+                            100
+                          ).toFixed(2)}
+                        </TableCell>
                       <TableCell>
-                        <Input
-                          type="number"
-                          value={item.discountPercent}
-                          onChange={e =>
-                            handleItemChange(
-                              index,
-                              e.target.value,
-                              "discountPercent"
-                            )
-                          }
-                          min="1"
-                          max="100"
-                          placeholder="%"
-                        />
+                        {(
+                          ((parseFloat(item.rate || 0) - (parseFloat(item.rate || 0) * parseFloat(item.discount || 0) / 100)) *
+                            parseFloat(item.quantity || 0)) +
+                          (((parseFloat(item.rate || 0) - (parseFloat(item.rate || 0) * parseFloat(item.discount || 0) / 100)) *
+                            parseFloat(item.quantity || 0) *
+                            parseFloat(item.gst || 0)) /
+                            100)
+                        ).toFixed(2)}
                       </TableCell>
-                      <TableCell>
-                        {parseFloat(item.discount || 0).toFixed(2)}
-                      </TableCell>
-                      <TableCell>
-                        {parseFloat(item.total || 0).toFixed(2)}
-                      </TableCell>
+                    
                       <TableCell>
                         <Button
                           variant="ghost"
@@ -491,19 +604,49 @@ const AddInvoice = () => {
                 Save
               </Button>
             </div>
-            <div className="bg-gray-50 p-4 rounded-md w-full md:w-64">
+            <div className="bg-gray-50 p-4 rounded-md w-70  ">
               <div className="flex justify-between py-2">
-                <span className="font-medium">Grand Total:</span>
-                <span className="font-bold">{totalAmt.toFixed(2)}</span>
+                <span className="font-medium">Total MRP:</span>
+                <span className="font-bold ms-10">{totalMRP.toFixed(2)}</span>
+              </div>
+           
+              <div className="flex justify-between py-2">
+                <span className="font-medium">Subtotal(After Product Discounts):</span>
+           
+               
+              </div>
+               <div className="flex justify-between py-2">
+                <span className="font-medium">Coupon Code Discount:</span>
+                <span className="font-bold">₹{couponDiscount.toFixed(2)}</span>
+              </div>
+               <div className="flex justify-between py-2">
+                <span className="font-medium">Total After Coupon Discount:</span>
+                <span className="font-bold">₹{totalAfterCoupon.toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-2">
-                <span className="font-medium">Paid Amount:</span>
-                <span className="font-bold">{paidAmount.toFixed(2)}</span>
+                <span className="font-medium">Taxable Amount:</span>
+                 <span className="font-bold ms-10">{totalAmt.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between py-2">
+                <span className="font-medium">GST</span>
+                <span className="font-bold">{totalGST.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between py-2">
+                <span className="font-medium">Shipping Charges:</span>
+                <span className="font-bold">{shippingCharges > 0 ? `₹${shippingCharges}` : "Free"}</span>
+              </div>
+               <div className="flex justify-between py-2">
+                <span className="font-medium">Grand Total (Payable):</span>
+                <span className="font-bold">₹{grandTotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between py-2">
+                <span className="font-medium">Total Savings (Product  + Coupon ):</span>
+                <span className="font-bold">{totalSavings.toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-2 border-t border-gray-200 mt-2 pt-2">
                 <span className="font-medium">Due:</span>
                 <span className="font-bold">
-                  {(totalAmt - paidAmount).toFixed(2)}
+                  {(grandTotal - paidAmount).toFixed(2)}
                 </span>
               </div>
             </div>

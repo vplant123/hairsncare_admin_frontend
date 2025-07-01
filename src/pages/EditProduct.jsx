@@ -120,7 +120,8 @@ const EditProduct = () => {
       weight: "Weight",
       height: "Height",
       width: "Width",
-      stock: "Stock"
+      stock: "Stock",
+      hsnNo: "HSN number",
     };
 
     // Check each required field
@@ -263,6 +264,7 @@ const EditProduct = () => {
         gst: product.gst ? Number(product.gst) : undefined,
         expiryDate: product.expiryDate,
         batchNo: product.batchNo,
+        hsnNo: product.hsnNo,
         mfgName: product.mfgName,
         weight: product.weight ? Number(product.weight) : undefined,
         height: product.height ? Number(product.height) : undefined,
@@ -504,6 +506,22 @@ const EditProduct = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
+                <Label>HSN Number</Label>
+                <Input
+                  value={product?.hsnNo || ""}
+                  onChange={(e) =>
+                    setProduct({ ...product, hsnNo: e.target.value })
+                  }
+                  placeholder="Enter HSN number"
+                  required
+                  className="hover:border-primary transition-colors"
+                />
+                {errors.hsnNo && (
+                  <p className="text-red-500 text-sm">{errors.hsnNo}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
                 <Label>Manufacturer Name</Label>
                 <Input
                   value={product?.mfgName || ""}
@@ -513,7 +531,9 @@ const EditProduct = () => {
                   className="hover:border-primary transition-colors"
                 />
               </div>
+            </div>
 
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Weight (in grams)</Label>
                 <Input
@@ -526,9 +546,7 @@ const EditProduct = () => {
                   className="hover:border-primary transition-colors"
                 />
               </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Height (in cm)</Label>
                 <Input
@@ -541,7 +559,9 @@ const EditProduct = () => {
                   className="hover:border-primary transition-colors"
                 />
               </div>
+            </div>
 
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Width (in cm)</Label>
                 <Input
@@ -554,9 +574,7 @@ const EditProduct = () => {
                   className="hover:border-primary transition-colors"
                 />
               </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Slug</Label>
                 <Input
@@ -567,7 +585,10 @@ const EditProduct = () => {
                   className="hover:border-primary transition-colors"
                 />
               </div>
- <div className="space-y-2">
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
                 <Label>Discount (Rs)</Label>
                 <Input
                   type="number"
@@ -580,20 +601,6 @@ const EditProduct = () => {
                   className="hover:border-primary transition-colors"
                 />
               </div>
-              {/* <div className="space-y-2">
-                <Label>Canonical URL</Label>
-                <Input
-                  value={product?.canonical || ""}
-                  onChange={(e) =>
-                    setProduct({ ...product, canonical: e.target.value })
-                  }
-                  className="hover:border-primary transition-colors"
-                />
-              </div> */}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-             
 
               <div className="space-y-2">
                 <Label>Stock</Label>
@@ -607,7 +614,8 @@ const EditProduct = () => {
                   className="hover:border-primary transition-colors"
                 />
               </div>
-              
+            </div>
+
             <div className="space-y-2">
               <Label>GST (%)</Label>
               <Input
@@ -620,8 +628,6 @@ const EditProduct = () => {
                 className="hover:border-primary transition-colors"
               />
             </div>
-            </div>
-
 
             <div className="space-y-2">
               <Label>SEO Meta Title</Label>

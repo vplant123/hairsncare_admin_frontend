@@ -64,19 +64,22 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between mb-2 gap-2 ">
             <div>
+              <div>
+                
+              </div>
               <div className="font-bold text-sm py-2">TAX INVOICE</div>
               <div className="mt-1 space-y-0.5 leading-relaxed">
                 <div className="text-xs">INVOICE No. {invoice.invoiceNo}</div>
-                <div className="text-xs">Order ID: {invoice.orderId}</div>
+                <div className="text-xs">Order ID: {invoice.orderNumber}</div>
                 <div className="text-xs">
                   Invoice Date: {new Date(invoice.date).toLocaleDateString()}
                 </div>
-                <div className="text-xs">Name: {invoice.name}</div>
+                <div className="text-xs"> Patient Name: {invoice.name}</div>
                 <div className="text-xs">
                   Shipping Address: {invoice.address}
                 </div>
                 <div className="text-xs">
-                  GST NO: {/* Add GST if available */}
+                  GST NO: 27AOVPA1 631 G2Z1
                 </div>
               </div>
             </div>
@@ -105,16 +108,19 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
             <table className="min-w-full text-xs md:text-xs">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="2 py-1 border font-semibold">SL.</th>
-                  <th className="2 py-1 border font-semibold">MEDICINE NAME</th>
+                  <th className="2 py-1 border font-semibold">SR.NO</th>
+                  <th className="2 py-1 border font-semibold">PARTICULARS</th>
+                  <th className="2 py-1 border font-semibold">QTY</th>
                   <th className="2 py-1 border font-semibold">BATCH NO</th>
                   <th className="2 py-1 border font-semibold">EXPIRY DATE</th>
-                  <th className="2 py-1 border font-semibold">HSN CODE</th>
-                  <th className="2 py-1 border font-semibold">QTY.</th>
-                  <th className="2 py-1 border font-semibold">GST</th>
-                  <th className="2 py-1 border font-semibold">RATE</th>
-                  <th className="2 py-1 border font-semibold">DISCOUNT</th>
-                  <th className="2 py-1 border font-semibold">AMOUNT</th>
+                  <th className="2 py-1 border font-semibold">HSN/SAC CODE</th>
+                  <th className="2 py-1 border font-semibold">MRP(R)</th>
+                  <th className="2 py-1 border font-semibold">DISCOUNT AMOUNT(%)</th>
+                  <th className="2 py-1 border font-semibold">AFTER DISCOUNT AMT.(R)</th>                  
+                
+                  <th className="2 py-1 border font-semibold">GST RATE(%)</th>
+                
+                  <th className="2 py-1 border font-semibold">TOTAL AMT.(R)</th>
                 </tr>
               </thead>
               <tbody>
@@ -129,6 +135,7 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                     <td className="border px-2 py-2">
                       {item.item?.name || ""}
                     </td>
+                     <td className="border px-2 py-2">{item.quantity}</td>
                     <td className="border px-2 py-2">{item.batchNo || ""}</td>
                     <td className="border px-2 py-2">
                       {item.expiryDate
@@ -136,17 +143,17 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                         : ""}
                     </td>
                     <td className="border px-2 py-2">{item.hsnCode || ""}</td>
-                    <td className="border px-2 py-2">{item.quantity}</td>
-                    <td className="border px-2 py-2">{item.gst || 0}%</td>
+                   
+                  
                     <td className="border px-2 py-2">₹ {item.rate}</td>
-                    <td className="border px-2 py-2">₹ {item.discount || 0}</td>
-                    <td className="border px-2 py-2">
-                      ₹{" "}
-                      {(
-                        item.quantity * item.rate -
-                        (item.discount || 0)
-                      ).toFixed(2)}
+                    <td className="border px-2 py-2"> {item.discount || 0}%</td>
+                    <td>
+                      ₹ {(parseFloat(item.rate || 0) - (parseFloat(item.rate || 0) * parseFloat(item.discount || 0) / 100)).toFixed(2)}
                     </td>
+                 
+                    <td className="border px-2 py-2">{item.gst || 0}%</td>
+                  
+                    <td className="border px-2 py-2"> { item.total}</td>
                   </tr>
                 ))}
               </tbody>
@@ -170,31 +177,38 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
             </div>
             <div className="bg-gray-50 p-2 rounded-md w-full md:w-64 mt-2 md:mt-0 text-xs">
               <div className="flex justify-between py-1">
-                <span className="font-medium">MRP Total</span>
+                <span className="font-medium">Subtotal</span>
                 <span className="font-bold">
-                  ₹ {Math.max(invoice.totalAmount, 0).toFixed(2)}
+                  ₹ {Number(invoice.subtotal || 0).toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="font-medium">Coupon Discount</span>
+                <span className="font-medium">Total Discount </span>
                 <span className="font-bold">
-                  ₹ {Math.max(invoice.couponDiscount || 0, 0).toFixed(2)}
+                  ₹ {Number(invoice.totalDiscount || 0).toFixed(2)}
+                </span>
+              </div>
+              <div className="flex justify-between py-1">
+                <span className="font-medium">Total GST </span>
+                <span className="font-bold">
+                  ₹ {Number(invoice.totalGST || 0).toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between py-1 border-t border-gray-200 mt-1 pt-1">
                 <span className="font-medium">Total Invoice Amount</span>
-                <span className="font-bold">
-                  ₹{" "}
-                  {Math.max(
-                    invoice.totalAmount - (invoice.couponDiscount || 0),
-                    0
-                  ).toFixed(2)}
+                 <span className="font-bold">
+                  ₹ {Number(invoice.total || 0).toFixed(2)}
                 </span>
               </div>
             </div>
           </div>
           {/* Thank you note */}
-          <div className="mt-4 text-center font-semibold text-xs md:text-sm">
+         
+
+          <div className="text-right mt-16">
+            <h3 className="">Pharmacist Signature</h3>
+          </div>
+           <div className="mt-4 text-center font-semibold text-xs md:text-sm">
             Thank you very much for choosing us.
           </div>
         </div>

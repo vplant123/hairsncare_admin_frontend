@@ -243,7 +243,7 @@ const FollowUp = () => {
         }
       );
       const data = await response.json();
-      console.log("Fetched data:", data);
+      console.log("FollowUP", data);
       let filterdata = data.data?.filter((item) => {
         return (
           (item.followupOf !== null && item.followupOf !== undefined) ||

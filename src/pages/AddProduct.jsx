@@ -48,6 +48,7 @@ function AddProduct() {
     weight: "",
     height: "",
     width: "",
+    hsnNo: "",
     seoMetaSlug: "",
     canonical: "",
     seoMetaTitle: "",
@@ -121,7 +122,7 @@ function AddProduct() {
       height: "Height",
       width: "Width",
       stock: "Stock",
-      
+      hsnNo: "HSN number",
     };
 
     // Check each required field
@@ -338,6 +339,7 @@ function AddProduct() {
         gst: formData.gst ? parseFloat(formData.gst) : 0, // Align with schema
         expiryDate: formData.expiryDate || undefined,
         batchNo: formData.batchNo,
+        hsnNo: formData.hsnNo,
         mfgName: formData.mfgName,
         width: formData.width ? parseFloat(formData.width) : 0, // Align with schema
         height: formData.height ? parseFloat(formData.height) : 0, // Align with schema
@@ -586,6 +588,19 @@ function AddProduct() {
                     onChange={(e) => handleChange(e, "batchNo")}
                     placeholder="Enter batch number"
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label>HSN Number</Label>
+                  <Input
+                    name="hsnNo"
+                    value={formData.hsnNo}
+                    onChange={(e) => handleChange(e, "hsnNo")}
+                    placeholder="Enter HSN number"
+                    required
+                  />
+                  {errors.hsnNo && (
+                    <p className="text-red-500 text-sm">{errors.hsnNo}</p>
+                  )}
                 </div>
               </div>
 

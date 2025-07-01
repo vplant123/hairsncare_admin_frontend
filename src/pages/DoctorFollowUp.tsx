@@ -75,6 +75,7 @@ const DoctorFollowUp = () => {
         }
 
         const data = await response.json();
+        console.log("followup",data)
         console.log(data?.data);
         if (data?.success) {
           const filteredData = data?.data?.filter((appointment) => {
@@ -247,10 +248,10 @@ const DoctorFollowUp = () => {
                   paginatedAppointments.map((appointment) => (
                     <TableRow key={appointment._id}>
                       <TableCell>
-                        {formatDateArrowStyle(appointment.appointmentDate)}
+                        {formatDateArrowStyle(appointment.createdAt)}
                       </TableCell>
                       <TableCell className="font-medium">
-                        {appointment.userId?.fullname || "N/A"}
+                        {appointment.userId?.fullname || ""}
                       </TableCell>
                       <TableCell>{appointment.userId?.mobile || ""}</TableCell>
                       <TableCell>{appointment.userId?.email || ""}</TableCell>
