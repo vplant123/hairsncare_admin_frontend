@@ -56,7 +56,12 @@ const AddInvoice = () => {
   const [totalAmt, setTotalAmt] = useState(0);
 
   // New coupon discount state
-  const [couponDiscount, setCouponDiscount] = useState(0); // Default 0, update as needed
+  const [couponData, setCouponData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const [consultationFee, setConsultationFee] = useState(0);
+  const [consultationGST, setConsultationGST] = useState(0);
 
   // Fetch Doctor Data
   const handleDoctorData = async () => {
@@ -87,8 +92,16 @@ const AddInvoice = () => {
   };
 
   const handleDoctorChange = value => {
-    console.log(value);
-    setSelectedDoctor(value); // Update the selected doctor ID
+    setSelectedDoctor(value);
+    // Fetch consultation fee and GST for the selected doctor
+    const doctor = doctorsList.find(doc => doc._id === value);
+    if (doctor) {
+      setConsultationFee(doctor.consultationFee || 0);
+      setConsultationGST(doctor.consultationGST || 0);
+    } else {
+      setConsultationFee(0);
+      setConsultationGST(0);
+    }
   };
 
   // New handleItem logic based on user's code, refined for accuracy
@@ -232,8 +245,8 @@ const AddInvoice = () => {
         batchNo: item.batchNo || "",
         expiryDate: item.expiryDate || "",
         hsnNo: item.hsnNo || "",
-       
-   
+        consultationFee: consultationFee,
+        consultationGST: consultationGST,
       })),
       total: totalAmount,
       paid: true,
@@ -282,8 +295,18 @@ const AddInvoice = () => {
     console.log("Invoice saved and marked as paid");
   };
 
+  // Calculate consultation GST amount
+  const consultationGSTAmount = (consultationFee * consultationGST) / 100;
+  // Calculate total consultation charge (fee + GST)
+  const totalConsultationCharge = Number(consultationFee) + Number(consultationGSTAmount);
+
+  // Calculate coupon discount from percent if available
+  const couponPercent = couponData?.couponPercent || 0;
+  const couponDiscount = (totalAmt * couponPercent) / 100;
+
+  // Update grand total to include consultation charge
   const shippingCharges = totalAmt < 2000 ? 200 : 0;
-  const grandTotal = totalAmt + shippingCharges;
+  const grandTotal = totalAmt - couponDiscount + shippingCharges + totalConsultationCharge;
 
   const totalGST = invoiceItems.reduce((sum, item) => {
     // Calculate GST for each item: (rate - discount) * quantity * (gst / 100)
@@ -316,6 +339,57 @@ const AddInvoice = () => {
   }, 0);
 
   const totalSavings = totalProductDiscount + couponDiscount;
+
+  // In the component, before rendering invoiceItems, create a consultation row object
+  const consultationRow = {
+    id: 'consultation-row',
+    description: 'Consultation',
+    batchNo: '',
+    expiryDate: '',
+    hsnNo: '',
+    rate: consultationFee,
+    discount: 0,
+    quantity: 1,
+    gst: consultationGST,
+    total: (Number(consultationFee) + (Number(consultationFee) * Number(consultationGST) / 100)).toFixed(2),
+    isConsultation: true,
+  };
+
+  const handleCheckDiscount = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/admin/check-coupon?orderId=${orderid}`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        setCouponData(data.data);
+        if (data.data.address) setAddress(data.data.address);
+        if (data.data.couponPercent) {
+          const discount = (totalAmt * data.data.couponPercent) / 100;
+          // setCouponDiscount(discount);
+        } else {
+          // setCouponDiscount(0);
+        }
+      } else {
+        setError(data.message || 'Failed to fetch coupon data');
+        setCouponData(null);
+        // setCouponDiscount(0);
+      }
+    } catch (err) {
+      setError('Error fetching coupon data');
+      setCouponData(null);
+      // setCouponDiscount(0);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -364,45 +438,35 @@ const AddInvoice = () => {
                   }}
                 />
               </div>
-              <div >
               <div>
-                <Label htmlFor="address">Address</Label>
-                <Input
-                  id="address"
-                  placeholder="Enter address"
-                  value={address}
+                <div>
+                  <Label htmlFor="address">Address</Label>
+                  <Input
+                    id="address"
+                    placeholder="Enter address"
+                    value={address}
                     onChange={e => setAddress(e.target.value)}
-                    
-                />
-              </div>
-              <div>
-                <Label htmlFor="paymentMethod">Payment Method</Label>
-                <Select
-                  value={paymentMethod}
-                  onValueChange={setPaymentMethod}
-                >
-                  <SelectTrigger id="paymentMethod">
-                    <SelectValue placeholder="Select payment method" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="cash">Cash</SelectItem>
-                    <SelectItem value="online">Online</SelectItem>
-                  </SelectContent>
-                </Select>
+                  />
                 </div>
               </div>
               <div>
-                 <Label htmlFor="address">Order ID</Label>
+                <Label htmlFor="address">Order ID</Label>
                 <Input
                   id="orderid"
                   placeholder="Enter order ID"
                   value={orderid}
                   onChange={e => setOrderid(e.target.value)}
                 />
+                <Button onClick={handleCheckDiscount} className="mt-4">Check Discount</Button>
+                {loading && <p>Loading...</p>}
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {couponData && (
+                  <div>
+                    <p><strong>Coupon Percent:</strong> {couponData.couponPercent ?? '0'}%</p>
+                    <p><strong>Address:</strong> {couponData.address}</p>
+                  </div>
+                )}
               </div>
-              
-
-              
             </div>
             <div className="space-y-4">
               <div>
@@ -412,6 +476,18 @@ const AddInvoice = () => {
                   type="date"
                   defaultValue={new Date().toISOString().split("T")[0]}
                 />
+              </div>
+              <div>
+                <Label htmlFor="paymentMethod">Payment Method</Label>
+                <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                  <SelectTrigger id="paymentMethod">
+                    <SelectValue placeholder="Select payment method" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="cash">Cash</SelectItem>
+                    <SelectItem value="online">Online</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label htmlFor="doctor">Doctor</Label>
@@ -431,6 +507,7 @@ const AddInvoice = () => {
                   </SelectContent>
                 </Select>
               </div>
+             
             </div>
           </div>
 
@@ -438,26 +515,85 @@ const AddInvoice = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="2 py-1 border font-semibold">PARTICULARS</TableHead>
-                 
-                  <TableHead className="2 py-1 border font-semibold">BATCH NO</TableHead>
-                  <TableHead className="2 py-1 border font-semibold">EXPIRY DATE</TableHead>
-                  <TableHead className="2 py-1 border font-semibold">HSN/SAC CODE</TableHead>
-                  <TableHead className="2 py-1 border font-semibold">MRP( ₹)</TableHead>
-                  <TableHead className="2 py-1 border font-semibold">DISCOUNT(%)</TableHead>
-                  <TableHead className="2 py-1 border font-semibold">AFTER DISCOUNT AMT.( ₹)</TableHead>
-                   <TableHead className="2 py-1 border font-semibold">QTY</TableHead>
-                  <TableHead className="2 py-1 border font-semibold">TAXABLE AMOUNT( ₹)</TableHead>
-                  <TableHead className="2 py-1 border font-semibold">GST RATE(%)</TableHead>
-                  <TableHead className="2 py-1 border font-semibold">GST AMT( ₹)</TableHead>
-                  <TableHead className="2 py-1 border font-semibold">TOTAL AMT.( ₹)</TableHead>
-                   <TableHead className="2 py-1 border font-semibold">DELETE</TableHead>
+                  <TableHead className="2 py-1 border font-semibold">
+                    PARTICULARS
+                  </TableHead>
+
+                  <TableHead className="2 py-1 border font-semibold">
+                    BATCH NO
+                  </TableHead>
+                  <TableHead className="2 py-1 border font-semibold">
+                    EXPIRY DATE
+                  </TableHead>
+                  <TableHead className="2 py-1 border font-semibold">
+                    HSN/SAC CODE
+                  </TableHead>
+                  <TableHead className="2 py-1 border font-semibold">
+                    MRP( ₹)
+                  </TableHead>
+                  <TableHead className="2 py-1 border font-semibold">
+                    DISCOUNT(%)
+                  </TableHead>
+                  <TableHead className="2 py-1 border font-semibold">
+                    AFTER DISCOUNT AMT.( ₹)
+                  </TableHead>
+                  <TableHead className="2 py-1 border font-semibold">
+                    QTY
+                  </TableHead>
+                  <TableHead className="2 py-1 border font-semibold">
+                    TAXABLE AMOUNT( ₹)
+                  </TableHead>
+                  <TableHead className="2 py-1 border font-semibold">
+                    GST RATE(%)
+                  </TableHead>
+                  <TableHead className="2 py-1 border font-semibold">
+                    GST AMT( ₹)
+                  </TableHead>
+                  <TableHead className="2 py-1 border font-semibold">
+                    TOTAL AMT.( ₹)
+                  </TableHead>
+                  <TableHead className="2 py-1 border font-semibold">
+                    DELETE
+                  </TableHead>
                 </TableRow>
-                
               </TableHeader>
               <TableBody>
-
-             
+                {/* Always show consultation row at the top */}
+                <TableRow key={consultationRow.id}>
+                  <TableCell>Consultation</TableCell>
+                  <TableCell></TableCell>
+                  <TableCell></TableCell>
+                  <TableCell></TableCell>
+                  <TableCell>
+                    <Input
+                      type="number"
+                      value={consultationFee}
+                      onChange={e => setConsultationFee(Number(e.target.value))}
+                      min="0"
+                      placeholder="Consultation Fee"
+                      className="w-auto"
+                    />
+                  </TableCell>
+                  <TableCell></TableCell>
+                  <TableCell></TableCell>
+                  <TableCell></TableCell>
+                  <TableCell></TableCell>
+                  <TableCell>
+                    <Input
+                      type="number"
+                      value={consultationGST}
+                      onChange={e => setConsultationGST(Number(e.target.value))}
+                      min="0"
+                      max="100"
+                      placeholder="Consultation GST %"
+                      className="w-auto"
+                    />
+                  </TableCell>
+                  <TableCell>{((consultationFee * consultationGST) / 100).toFixed(2)}</TableCell>
+                  <TableCell>{(Number(consultationFee) + (Number(consultationFee) * Number(consultationGST) / 100)).toFixed(2)}</TableCell>
+                  <TableCell></TableCell>
+                </TableRow>
+                {/* Then render the rest of the invoice items as before */}
                 {invoiceItems.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={14} className="text-center py-4">
@@ -465,8 +601,7 @@ const AddInvoice = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                    invoiceItems.map((item, index) => (
-                    
+                  invoiceItems.map((item, index) => (
                     <TableRow key={item.id}>
                       <TableCell>
                         <Select
@@ -480,14 +615,14 @@ const AddInvoice = () => {
                           </SelectTrigger>
                           <SelectContent className="bg-white max-h-60 overflow-y-auto ">
                             {productList?.map(product => (
-                              <SelectItem key={product._id} value={product._id} >
+                              <SelectItem key={product._id} value={product._id}>
                                 {product.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                       </TableCell>
-                     
+
                       <TableCell>
                         <Input
                           type="text"
@@ -500,7 +635,18 @@ const AddInvoice = () => {
                       </TableCell>
                       <TableCell>
                         {item.expiryDate
-                          ? new Date(item.expiryDate).toLocaleDateString()
+                          ? (() => {
+                              const date = new Date(item.expiryDate);
+                              const day = date.getDate();
+                              const month = date.toLocaleString("default", {
+                                month: "short",
+                              });
+                              const year = date
+                                .getFullYear()
+                                .toString()
+                                .slice(-2);
+                              return `${day} ${month}/${year}`;
+                            })()
                           : ""}
                       </TableCell>
                       <TableCell>
@@ -514,27 +660,31 @@ const AddInvoice = () => {
                           className="w-auto"
                         />
                       </TableCell>
-                     <TableCell>
-  <Input
-    type="number"
-    value={item.rate}
-    onChange={e =>
-      handleItemChange(index, e.target.value, "rate")
-    }
-                            min="0"
-   max="100"
-    className="w-auto"
-  />
-</TableCell>
-<TableCell>
-  {parseFloat(item.discount || 0).toFixed(2)}%
-</TableCell>
-<TableCell>
-  {(parseFloat(item.rate || 0) - (parseFloat(item.rate || 0) * parseFloat(item.discount || 0) / 100)).toFixed(2)}
-</TableCell>
-              
-                    
-                    <TableCell>
+                      <TableCell>
+                        <Input
+                          type="number"
+                          value={item.rate}
+                          onChange={e =>
+                            handleItemChange(index, e.target.value, "rate")
+                          }
+                          min="0"
+                          max="100"
+                          className="w-auto"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        {parseFloat(item.discount || 0).toFixed(2)}%
+                      </TableCell>
+                      <TableCell>
+                        {(
+                          parseFloat(item.rate || 0) -
+                          (parseFloat(item.rate || 0) *
+                            parseFloat(item.discount || 0)) /
+                            100
+                        ).toFixed(2)}
+                      </TableCell>
+
+                      <TableCell>
                         <Input
                           type="number"
                           value={item.quantity}
@@ -544,12 +694,18 @@ const AddInvoice = () => {
                           min="1"
                           className="w-auto"
                         />
-                        </TableCell>
-                        <TableCell>
-                          {((parseFloat(item.rate || 0) - (parseFloat(item.rate || 0) * parseFloat(item.discount || 0) / 100)) * parseFloat(item.quantity || 0)).toFixed(2)}
-                        </TableCell>
-                       
-                        <TableCell>
+                      </TableCell>
+                      <TableCell>
+                        {(
+                          (parseFloat(item.rate || 0) -
+                            (parseFloat(item.rate || 0) *
+                              parseFloat(item.discount || 0)) /
+                              100) *
+                          parseFloat(item.quantity || 0)
+                        ).toFixed(2)}
+                      </TableCell>
+
+                      <TableCell>
                         <Input
                           type="number"
                           value={item.gst}
@@ -560,25 +716,34 @@ const AddInvoice = () => {
                           max="100"
                         />
                       </TableCell>
-                     <TableCell>
-                          {(
-                            ((parseFloat(item.rate || 0) - (parseFloat(item.rate || 0) * parseFloat(item.discount || 0) / 100)) *
-                              parseFloat(item.quantity || 0) *
-                              parseFloat(item.gst || 0)) /
-                            100
-                          ).toFixed(2)}
-                        </TableCell>
                       <TableCell>
                         {(
-                          ((parseFloat(item.rate || 0) - (parseFloat(item.rate || 0) * parseFloat(item.discount || 0) / 100)) *
-                            parseFloat(item.quantity || 0)) +
-                          (((parseFloat(item.rate || 0) - (parseFloat(item.rate || 0) * parseFloat(item.discount || 0) / 100)) *
+                          ((parseFloat(item.rate || 0) -
+                            (parseFloat(item.rate || 0) *
+                              parseFloat(item.discount || 0)) /
+                              100) *
                             parseFloat(item.quantity || 0) *
                             parseFloat(item.gst || 0)) /
-                            100)
+                          100
                         ).toFixed(2)}
                       </TableCell>
-                    
+                      <TableCell>
+                        {(
+                          (parseFloat(item.rate || 0) -
+                            (parseFloat(item.rate || 0) *
+                              parseFloat(item.discount || 0)) /
+                              100) *
+                            parseFloat(item.quantity || 0) +
+                          ((parseFloat(item.rate || 0) -
+                            (parseFloat(item.rate || 0) *
+                              parseFloat(item.discount || 0)) /
+                              100) *
+                            parseFloat(item.quantity || 0) *
+                            parseFloat(item.gst || 0)) /
+                            100
+                        ).toFixed(2)}
+                      </TableCell>
+
                       <TableCell>
                         <Button
                           variant="ghost"
@@ -609,38 +774,54 @@ const AddInvoice = () => {
                 <span className="font-medium">Total MRP:</span>
                 <span className="font-bold ms-10">{totalMRP.toFixed(2)}</span>
               </div>
-           
+
+              {/* <div className="flex justify-between py-2">
+                <span className="font-medium">
+                  Subtotal(After Product Discounts):
+                </span>
+              </div> */}
               <div className="flex justify-between py-2">
-                <span className="font-medium">Subtotal(After Product Discounts):</span>
-           
-               
-              </div>
-               <div className="flex justify-between py-2">
                 <span className="font-medium">Coupon Code Discount:</span>
                 <span className="font-bold">₹{couponDiscount.toFixed(2)}</span>
               </div>
-               <div className="flex justify-between py-2">
-                <span className="font-medium">Total After Coupon Discount:</span>
-                <span className="font-bold">₹{totalAfterCoupon.toFixed(2)}</span>
+              <div className="flex justify-between py-2">
+                <span className="font-medium">
+                  Total After Coupon Discount:
+                </span>
+                <span className="font-bold">
+                  ₹{totalAfterCoupon.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between py-2">
                 <span className="font-medium">Taxable Amount:</span>
-                 <span className="font-bold ms-10">{totalAmt.toFixed(2)}</span>
+                <span className="font-bold ms-10">{totalAmt.toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-2">
                 <span className="font-medium">GST</span>
                 <span className="font-bold">{totalGST.toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-2">
-                <span className="font-medium">Shipping Charges:</span>
-                <span className="font-bold">{shippingCharges > 0 ? `₹${shippingCharges}` : "Free"}</span>
+                <span className="font-medium">
+                  Consultation Fee (incl. GST):
+                </span>
+                <span className="font-bold">
+                  ₹{totalConsultationCharge.toFixed(2)}
+                </span>
               </div>
-               <div className="flex justify-between py-2">
+              <div className="flex justify-between py-2">
+                <span className="font-medium">Shipping Charges:</span>
+                <span className="font-bold">
+                  {shippingCharges > 0 ? `₹${shippingCharges}` : "Free"}
+                </span>
+              </div>
+              <div className="flex justify-between py-2">
                 <span className="font-medium">Grand Total (Payable):</span>
                 <span className="font-bold">₹{grandTotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-2">
-                <span className="font-medium">Total Savings (Product  + Coupon ):</span>
+                <span className="font-medium">
+                  Total Savings (Product + Coupon ):
+                </span>
                 <span className="font-bold">{totalSavings.toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-2 border-t border-gray-200 mt-2 pt-2">

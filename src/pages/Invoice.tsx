@@ -10,7 +10,7 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table";
-import { Eye, FileText, Trash2 } from "lucide-react";
+import { Bold, Eye, FileText, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -62,30 +62,34 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
           className="bg-white p-8 rounded shadow text-xs md:text-sm border"
         >
           {/* Header */}
+          <div className="mt-2">
+            <img
+              src="/lovable-uploads/logo.png"
+              alt="Logo"
+              className="h-12 inline-block mr-2"
+            />
+          </div>
+          <div className="font-bold text-lg py-2">
+            Hairncares Wellness Center
+          </div>
+          {/* <div className="font-bold text-lg py-2  ">
+            Tax Invoice/Bill of Supply/Cash Memo
+          </div> */}
           <div className="flex flex-col md:flex-row justify-between mb-2 gap-2 ">
-            <div>
-              <div>
-                
-              </div>
-              <div className="font-bold text-sm py-2">TAX INVOICE</div>
-              <div className="mt-1 space-y-0.5 leading-relaxed">
-                <div className="text-xs">INVOICE No. {invoice.invoiceNo}</div>
-                <div className="text-xs">Order ID: {invoice.orderNumber}</div>
-                <div className="text-xs">
-                  Invoice Date: {new Date(invoice.date).toLocaleDateString()}
-                </div>
-                <div className="text-xs"> Patient Name: {invoice.name}</div>
-                <div className="text-xs">
-                  Shipping Address: {invoice.address}
-                </div>
-                <div className="text-xs">
-                  GST NO: 27AOVPA1 631 G2Z1
-                </div>
-              </div>
-            </div>
-            <div className="text-right ">
+            <div className="text-left ">
+              <div className="font-bold text-sm py-2">SOLD BY:</div>
               <div className="font-bold text-sm py-2">VPLANT CHEMIST</div>
               <div className="max-w-xs text-xs leading-relaxed">
+                <b>Email :</b> infor@hairsncares.com
+                <br />
+                <b>Website:</b> www.hairsncares.com
+                <br />
+                <b>LICENSE No. :</b> MH-MZ6-537527
+                <br />
+                <b>Doctor Name:</b> {invoice.doctor?.name || "-"}
+              </div>
+              <div>
+                <div className="font-bold text-sm py-2">Registered Adress:</div>
                 OFFICE NO. 101/A (PART 1), FIRST FLOOR, KANE PLAZA,
                 <br />
                 MIND SPACE OFF. MALAD LINK ROAD,
@@ -93,16 +97,43 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                 MALAD WEST, Tal : MALAD WEST ( MUMBAI -ZONE6 )<br />
                 Pin : 400064
                 <br />
-                Email : infor@hairsncares.com
-                <br />
-                Website: www.hairsncares.com
-                <br />
-                LICENSE No. : MH-MZ6-537527
-                <br />
-                Doctor Name: {invoice.doctor?.name || "-"}
+              </div>
+            </div>
+
+            <div>
+              <div className="font-bold text-sm py-2 pb-11">SOLD TO: </div>
+              <div className="text-xs">
+                {" "}
+                <b>Patient Name:</b> {invoice.name}
+              </div>
+              <div className="text-xs">
+                <b>Shipping Address:</b> {invoice.address}
+              </div>
+            </div>
+            <div>
+              <div className="font-bold text-sm py-2">TAX INVOICE</div>
+              <div className="mt-1 space-y-0.5 leading-relaxed pt-7">
+                <div className="text-xs">
+                  <b>INVOICE No.</b> {invoice.invoiceNo}
+                </div>
+                <div className="text-xs">
+                  <b>Order ID:</b> {invoice.orderNumber}
+                </div>
+                <div className="text-xs">
+                  <b>Invoice Date:</b>{" "}
+                  {new Date(invoice.date).toLocaleDateString()}
+                </div>
+                <div className="text-xs">
+                  <b>GST NO:</b> 27AOVPA1 631 G2Z1
+                </div>
+                <div className="text-xs">
+                  <b>Payment Type:</b>{" "}
+                  <span className="font-semibold">{invoice.paymentMode}</span>
+                </div>
               </div>
             </div>
           </div>
+
           {/* Table */}
           <div className="border rounded overflow-x-auto mt-6  ">
             <table className="min-w-full text-xs md:text-xs">
@@ -115,15 +146,20 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                   <th className="2 py-1 border font-semibold">EXPIRY DATE</th>
                   <th className="2 py-1 border font-semibold">HSN/SAC CODE</th>
                   <th className="2 py-1 border font-semibold">MRP(R)</th>
-                  <th className="2 py-1 border font-semibold">DISCOUNT AMOUNT(%)</th>
-                  <th className="2 py-1 border font-semibold">AFTER DISCOUNT AMT.(R)</th>                  
-                
+                  <th className="2 py-1 border font-semibold">
+                    DISCOUNT AMOUNT(%)
+                  </th>
+                  <th className="2 py-1 border font-semibold">
+                    AFTER DISCOUNT AMT.(R)
+                  </th>
+
                   <th className="2 py-1 border font-semibold">GST RATE(%)</th>
-                
+
                   <th className="2 py-1 border font-semibold">TOTAL AMT.(R)</th>
                 </tr>
               </thead>
               <tbody>
+               
                 {invoiceItems.map((item, idx) => (
                   <tr
                     key={item._id || idx}
@@ -135,7 +171,7 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                     <td className="border px-2 py-2">
                       {item.item?.name || ""}
                     </td>
-                     <td className="border px-2 py-2">{item.quantity}</td>
+                    <td className="border px-2 py-2">{item.quantity}</td>
                     <td className="border px-2 py-2">{item.batchNo || ""}</td>
                     <td className="border px-2 py-2">
                       {item.expiryDate
@@ -143,17 +179,24 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                         : ""}
                     </td>
                     <td className="border px-2 py-2">{item.hsnCode || ""}</td>
-                   
-                  
+
                     <td className="border px-2 py-2">₹ {item.rate}</td>
                     <td className="border px-2 py-2"> {item.discount || 0}%</td>
                     <td>
-                      ₹ {(parseFloat(item.rate || 0) - (parseFloat(item.rate || 0) * parseFloat(item.discount || 0) / 100)).toFixed(2)}
+                      ₹{" "}
+                      {(
+                        parseFloat(item.rate || 0) -
+                        (parseFloat(item.rate || 0) *
+                          parseFloat(item.discount || 0)) /
+                          100
+                      ).toFixed(2)}
                     </td>
-                 
+
                     <td className="border px-2 py-2">{item.gst || 0}%</td>
-                  
-                    <td className="border px-2 py-2"> { item.total}</td>
+
+                    <td className="border px-2 py-2">
+                      {Number(item.total).toFixed(2)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -162,17 +205,17 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
           {/* Payment Type and Note */}
           <div className="flex flex-col md:flex-row justify-between mt-10 gap-2">
             <div>
-              <div className="text-xs">
-                Payment Type:{" "}
-                <span className="font-semibold">{invoice.paymentMode}</span>
+              <div className="mt-1 text-sm">
+                <b>Note:</b> Inclusive of all Taxes
               </div>
-              <div className="mt-1 text-xs">Note: Inclusive of all Taxes</div>
-              <div className="mt-2">
-                <img
-                  src="/lovable-uploads/logo.png"
-                  alt="Logo"
-                  className="h-12 inline-block mr-2"
-                />
+
+              <div className="mt-10 text-sm">
+                <p className="text-sm">
+                  * All Disputes related to this order are subject to the    
+                  jurisdication <br />
+                      of courts at Mumbai,Maharashtra
+                </p>
+                <p className="text-sm">For Support Contact : info@hairncares.com</p>
               </div>
             </div>
             <div className="bg-gray-50 p-2 rounded-md w-full md:w-64 mt-2 md:mt-0 text-xs">
@@ -196,19 +239,18 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
               </div>
               <div className="flex justify-between py-1 border-t border-gray-200 mt-1 pt-1">
                 <span className="font-medium">Total Invoice Amount</span>
-                 <span className="font-bold">
+                <span className="font-bold">
                   ₹ {Number(invoice.total || 0).toFixed(2)}
                 </span>
               </div>
             </div>
           </div>
           {/* Thank you note */}
-         
 
           <div className="text-right mt-16">
-            <h3 className="">Pharmacist Signature</h3>
+            <h1>Pharmacist Signature</h1>
           </div>
-           <div className="mt-4 text-center font-semibold text-xs md:text-sm">
+          <div className="mt-4 text-center font-semibold text-xs md:text-sm">
             Thank you very much for choosing us.
           </div>
         </div>
@@ -245,8 +287,9 @@ const InvoiceDetailsModal = ({ isOpen, selectedItems, onClose }) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {selectedItems?.length > 0 ? (
-                selectedItems?.map(item => (
+             
+              {selectedItems?.length > 0 &&
+                selectedItems.map(item => (
                   <TableRow key={item._id}>
                     <TableCell>{item.item?.name}</TableCell>
                     <TableCell>{item.quantity}</TableCell>
@@ -254,14 +297,9 @@ const InvoiceDetailsModal = ({ isOpen, selectedItems, onClose }) => {
                     <TableCell>{item.discount}</TableCell>
                     <TableCell>{item.discountPercent}</TableCell>
                     <TableCell>{item.gst}</TableCell>
-                    <TableCell>{item.quantity * item.rate}</TableCell>
+                    <TableCell>{(item.quantity * item.rate).toFixed(2)}</TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={4}>No items available.</TableCell>
-                </TableRow>
-              )}
+                ))}
             </TableBody>
           </Table>
         </div>
@@ -394,14 +432,14 @@ const Invoice = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody className="bg-white divide-y divide-gray-200">
-                    {invoices.length === 0 ? (
+                    {Array.isArray(invoices) && invoices.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={12} className="text-center py-8 text-gray-500">
                           No invoices found.
                         </TableCell>
                       </TableRow>
                     ) : (
-                      invoices?.map(invoice => (
+                      Array.isArray(invoices) && invoices.map(invoice => (
                         <TableRow key={invoice._id} className="hover:bg-gray-50">
                           <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
                             {invoice.invoiceNo}
