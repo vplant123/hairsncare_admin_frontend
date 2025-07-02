@@ -193,7 +193,7 @@ const App = () => (
               }
             />
             <Route
-              path="/Generate-Prescription-for-Orders"
+              path="/prescription-orders"
               element={
                 <ProtectedRoute requiredRoles={["admin", "doctor"]}>
                   <DoctorOrdeerReport />

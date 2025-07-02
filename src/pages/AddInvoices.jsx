@@ -45,7 +45,7 @@ const AddInvoice = () => {
   const [payeeName, setPayeeName] = useState(""); // Initially empty, to be set based on product
   const [mobile, setMobile] = useState("");
   const [address, setAddress] = useState("");
-  const[orderid,setOrderid] = useState("");
+  const [orderid, setOrderid] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState("");
   const [productList, setProductList] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState(""); // Add payment method state
@@ -58,7 +58,7 @@ const AddInvoice = () => {
   // New coupon discount state
   const [couponData, setCouponData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const [consultationFee, setConsultationFee] = useState(0);
   const [consultationGST, setConsultationGST] = useState(0);
@@ -84,7 +84,7 @@ const AddInvoice = () => {
         { method: "GET" }
       );
       const data = await response.json();
-      console.log("products",data)
+      console.log("products", data);
       setProductList(data?.message); // Set the fetched product list
     } catch (error) {
       console.log("Error while fetching product data", error);
@@ -119,8 +119,8 @@ const AddInvoice = () => {
       if (selectedProduct) {
         currentItem["description"] = selectedProduct._id; // Store the product ID
         currentItem["rate"] = parseFloat(selectedProduct.price || 0);
-       currentItem["batchNo"] = selectedProduct.batchNo || ""; // Set batchNo
-    currentItem["expiryDate"] = selectedProduct.expiryDate || "";
+        currentItem["batchNo"] = selectedProduct.batchNo || ""; // Set batchNo
+        currentItem["expiryDate"] = selectedProduct.expiryDate || "";
         currentItem["gst"] = parseFloat(selectedProduct.gst || 0);
         // Assuming product discount from API is an amount. Adjust if it's a percentage.
         currentItem["discount"] = parseFloat(selectedProduct.discount || 0);
@@ -134,8 +134,8 @@ const AddInvoice = () => {
       } else {
         // Reset values if product not found or selection cleared
         currentItem["description"] = "";
-          currentItem["batchNo"] = "";
-    currentItem["expiryDate"] = "";
+        currentItem["batchNo"] = "";
+        currentItem["expiryDate"] = "";
         currentItem["rate"] = 0;
         currentItem["gst"] = 0;
         currentItem["discount"] = 0;
@@ -240,7 +240,7 @@ const AddInvoice = () => {
         rate: item.rate?.toString() || "",
         gst: item.gst?.toString() || "",
         discount: item.discount?.toString() || "",
-       
+
         total: item.total?.toString() || "",
         batchNo: item.batchNo || "",
         expiryDate: item.expiryDate || "",
@@ -298,7 +298,8 @@ const AddInvoice = () => {
   // Calculate consultation GST amount
   const consultationGSTAmount = (consultationFee * consultationGST) / 100;
   // Calculate total consultation charge (fee + GST)
-  const totalConsultationCharge = Number(consultationFee) + Number(consultationGSTAmount);
+  const totalConsultationCharge =
+    Number(consultationFee) + Number(consultationGSTAmount);
 
   // Calculate coupon discount from percent if available
   const couponPercent = couponData?.couponPercent || 0;
@@ -306,7 +307,8 @@ const AddInvoice = () => {
 
   // Update grand total to include consultation charge
   const shippingCharges = totalAmt < 2000 ? 200 : 0;
-  const grandTotal = totalAmt - couponDiscount + shippingCharges + totalConsultationCharge;
+  const grandTotal =
+    totalAmt - couponDiscount + shippingCharges + totalConsultationCharge;
 
   const totalGST = invoiceItems.reduce((sum, item) => {
     // Calculate GST for each item: (rate - discount) * quantity * (gst / 100)
@@ -328,8 +330,6 @@ const AddInvoice = () => {
     return sum + rate * quantity;
   }, 0);
 
-
-
   const totalProductDiscount = invoiceItems.reduce((sum, item) => {
     const rate = parseFloat(item.rate || 0);
     const discountPercent = parseFloat(item.discount || 0);
@@ -342,27 +342,30 @@ const AddInvoice = () => {
 
   // In the component, before rendering invoiceItems, create a consultation row object
   const consultationRow = {
-    id: 'consultation-row',
-    description: 'Consultation',
-    batchNo: '',
-    expiryDate: '',
-    hsnNo: '',
+    id: "consultation-row",
+    description: "Consultation",
+    batchNo: "",
+    expiryDate: "",
+    hsnNo: "",
     rate: consultationFee,
     discount: 0,
     quantity: 1,
     gst: consultationGST,
-    total: (Number(consultationFee) + (Number(consultationFee) * Number(consultationGST) / 100)).toFixed(2),
+    total: (
+      Number(consultationFee) +
+      (Number(consultationFee) * Number(consultationGST)) / 100
+    ).toFixed(2),
     isConsultation: true,
   };
 
   const handleCheckDiscount = async () => {
     setLoading(true);
-    setError('');
+    setError("");
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/v1/admin/check-coupon?orderId=${orderid}`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -379,12 +382,12 @@ const AddInvoice = () => {
           // setCouponDiscount(0);
         }
       } else {
-        setError(data.message || 'Failed to fetch coupon data');
+        setError(data.message || "Failed to fetch coupon data");
         setCouponData(null);
         // setCouponDiscount(0);
       }
     } catch (err) {
-      setError('Error fetching coupon data');
+      setError("Error fetching coupon data");
       setCouponData(null);
       // setCouponDiscount(0);
     }
@@ -457,13 +460,20 @@ const AddInvoice = () => {
                   value={orderid}
                   onChange={e => setOrderid(e.target.value)}
                 />
-                <Button onClick={handleCheckDiscount} className="mt-4">Check Discount</Button>
+                <Button onClick={handleCheckDiscount} className="mt-4">
+                  Check Discount
+                </Button>
                 {loading && <p>Loading...</p>}
-                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {error && <p style={{ color: "red" }}>{error}</p>}
                 {couponData && (
                   <div>
-                    <p><strong>Coupon Percent:</strong> {couponData.couponPercent ?? '0'}%</p>
-                    <p><strong>Address:</strong> {couponData.address}</p>
+                    <p>
+                      <strong>Coupon Percent:</strong>{" "}
+                      {couponData.couponPercent ?? "0"}%
+                    </p>
+                    <p>
+                      <strong>Address:</strong> {couponData.address}
+                    </p>
                   </div>
                 )}
               </div>
@@ -507,7 +517,6 @@ const AddInvoice = () => {
                   </SelectContent>
                 </Select>
               </div>
-             
             </div>
           </div>
 
@@ -589,8 +598,15 @@ const AddInvoice = () => {
                       className="w-auto"
                     />
                   </TableCell>
-                  <TableCell>{((consultationFee * consultationGST) / 100).toFixed(2)}</TableCell>
-                  <TableCell>{(Number(consultationFee) + (Number(consultationFee) * Number(consultationGST) / 100)).toFixed(2)}</TableCell>
+                  <TableCell>
+                    {((consultationFee * consultationGST) / 100).toFixed(2)}
+                  </TableCell>
+                  <TableCell>
+                    {(
+                      Number(consultationFee) +
+                      (Number(consultationFee) * Number(consultationGST)) / 100
+                    ).toFixed(2)}
+                  </TableCell>
                   <TableCell></TableCell>
                 </TableRow>
                 {/* Then render the rest of the invoice items as before */}

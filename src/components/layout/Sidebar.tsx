@@ -63,7 +63,7 @@ const routesByRole = {
     { path: "/hair-test", label: "Hair Tests", permissionKey: "hairTest" },
     { path: "/reviews", label: "Reviews", permissionKey: "reviews" },
     { path: "/doctor-followup", label: "Follow Up" },
-    { path: "/Generate-Prescription-for-Orders", label: "Orders" },
+    { path: "/prescription-orders", label: "Orders" },
     { path: "/appointments", label: "Appointments" },
   ],
   subadmin: [
