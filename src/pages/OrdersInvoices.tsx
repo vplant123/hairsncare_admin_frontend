@@ -72,13 +72,15 @@ const OrdersInvoices = () => {
   const year = date.getUTCFullYear();
 
   // Convert to IST (Indian Standard Time)
-  const options = {
+  const options: Intl.DateTimeFormatOptions = {
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
-    timeZone: "Asia/Kolkata", // IST timezone
+    timeZone: "Asia/Kolkata",
   };
- const time = date.toLocaleTimeString("en-US", options);
+
+  const time = date.toLocaleTimeString("en-US", options);
+
 
   return `${day} ${month} ${year}, ${time}`;
 }

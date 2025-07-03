@@ -586,6 +586,7 @@ const HairTestsCopy = () => {
         }
       );
       const data = await response.json();
+      console.log("haie test data",data)
       if (data.success) {
         const test = data.data?.find(t => t?._id === testId);
         if (test) {
