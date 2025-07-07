@@ -121,7 +121,8 @@ const EditProduct = () => {
       height: "Height",
       width: "Width",
       stock: "Stock",
-      hsnNo: "HSN number",
+      hsn: "HSN number",
+
     };
 
     // Check each required field
@@ -264,14 +265,14 @@ const EditProduct = () => {
         gst: product.gst ? Number(product.gst) : undefined,
         expiryDate: product.expiryDate,
         batchNo: product.batchNo,
-        hsnNo: product.hsnNo,
+        hsn: product.hsn,
         mfgName: product.mfgName,
         weight: product.weight ? Number(product.weight) : undefined,
         height: product.height ? Number(product.height) : undefined,
         width: product.width ? Number(product.width) : undefined,
         metaTitle: product.seoMetaTitle,
         metaDesc: product.seoMetaDesc,
-        metaSlug: product.slug,
+        metaSlug: product.metaSlug,
         metaCanonical: product.canonical,
         productDisplay: product.productDisplay,
         benefits: benefits.filter((b) => b.title || b.desc),
@@ -403,7 +404,7 @@ const EditProduct = () => {
                 <Label>Category</Label>
                 <Select
                   value={product?.category}
-                  onValueChange={(value) =>
+                  onValueChange={value =>
                     setProduct({ ...product, category: value })
                   }
                 >
@@ -424,7 +425,7 @@ const EditProduct = () => {
                 <Label>Product Name</Label>
                 <Input
                   value={product?.name || ""}
-                  onChange={(e) =>
+                  onChange={e =>
                     setProduct({ ...product, name: e.target.value })
                   }
                   className="hover:border-primary transition-colors"
@@ -439,7 +440,7 @@ const EditProduct = () => {
                   type="number"
                   min="0"
                   value={product?.price || ""}
-                  onChange={(e) =>
+                  onChange={e =>
                     setProduct({ ...product, price: e.target.value })
                   }
                   className="hover:border-primary transition-colors"
@@ -450,7 +451,7 @@ const EditProduct = () => {
                 <Label>Sub Category</Label>
                 <Select
                   value={product?.subCategory}
-                  onValueChange={(value) =>
+                  onValueChange={value =>
                     setProduct({ ...product, subCategory: value })
                   }
                 >
@@ -484,10 +485,12 @@ const EditProduct = () => {
                 <Input
                   type="date"
                   value={formatDateForInput(product?.expiryDate)}
-                  onChange={(e) =>
+                  onChange={e =>
                     setProduct({ ...product, expiryDate: e.target.value })
                   }
-                  min={formatDateForInput(new Date(new Date().setDate(new Date().getDate() + 1)))}
+                  min={formatDateForInput(
+                    new Date(new Date().setDate(new Date().getDate() + 1))
+                  )}
                   className="hover:border-primary transition-colors"
                 />
               </div>
@@ -496,7 +499,7 @@ const EditProduct = () => {
                 <Label>Batch No</Label>
                 <Input
                   value={product?.batchNo || ""}
-                  onChange={(e) =>
+                  onChange={e =>
                     setProduct({ ...product, batchNo: e.target.value })
                   }
                   className="hover:border-primary transition-colors"
@@ -508,9 +511,9 @@ const EditProduct = () => {
               <div className="space-y-2">
                 <Label>HSN Number</Label>
                 <Input
-                  value={product?.hsnNo || ""}
-                  onChange={(e) =>
-                    setProduct({ ...product, hsnNo: e.target.value })
+                  value={product?.hsn || ""}
+                  onChange={e =>
+                    setProduct({ ...product, hsn: e.target.value })
                   }
                   placeholder="Enter HSN number"
                   required
@@ -525,7 +528,7 @@ const EditProduct = () => {
                 <Label>Manufacturer Name</Label>
                 <Input
                   value={product?.mfgName || ""}
-                  onChange={(e) =>
+                  onChange={e =>
                     setProduct({ ...product, mfgName: e.target.value })
                   }
                   className="hover:border-primary transition-colors"
@@ -540,7 +543,7 @@ const EditProduct = () => {
                   type="number"
                   min="0"
                   value={product?.weight || ""}
-                  onChange={(e) =>
+                  onChange={e =>
                     setProduct({ ...product, weight: e.target.value })
                   }
                   className="hover:border-primary transition-colors"
@@ -553,7 +556,7 @@ const EditProduct = () => {
                   type="number"
                   min="0"
                   value={product?.height || ""}
-                  onChange={(e) =>
+                  onChange={e =>
                     setProduct({ ...product, height: e.target.value })
                   }
                   className="hover:border-primary transition-colors"
@@ -568,7 +571,7 @@ const EditProduct = () => {
                   type="number"
                   min="0"
                   value={product?.width || ""}
-                  onChange={(e) =>
+                  onChange={e =>
                     setProduct({ ...product, width: e.target.value })
                   }
                   className="hover:border-primary transition-colors"
@@ -579,8 +582,8 @@ const EditProduct = () => {
                 <Label>Slug</Label>
                 <Input
                   value={product?.metaSlug || ""}
-                  onChange={(e) =>
-                    setProduct({ ...product, slug: e.target.value })
+                  onChange={e =>
+                    setProduct({ ...product, metaSlug: e.target.value })
                   }
                   className="hover:border-primary transition-colors"
                 />
@@ -589,13 +592,13 @@ const EditProduct = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Discount (Rs)</Label>
+                <Label>Discount (%)</Label>
                 <Input
                   type="number"
                   min="0"
                   max="100"
                   value={product?.discount || ""}
-                  onChange={(e) =>
+                  onChange={e =>
                     setProduct({ ...product, discount: e.target.value })
                   }
                   className="hover:border-primary transition-colors"
@@ -608,8 +611,19 @@ const EditProduct = () => {
                   type="number"
                   min="0"
                   value={product?.stock || ""}
-                  onChange={(e) =>
+                  onChange={e =>
                     setProduct({ ...product, stock: e.target.value })
+                  }
+                  className="hover:border-primary transition-colors"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Meta Canonical URL</Label>
+                <Input
+                  type="text"
+                  value={product?.metaCanonical || ""}
+                  onChange={e =>
+                    setProduct({ ...product, metaCanonical: e.target.value })
                   }
                   className="hover:border-primary transition-colors"
                 />
@@ -622,9 +636,7 @@ const EditProduct = () => {
                 type="number"
                 min="0"
                 value={product?.gst || ""}
-                onChange={(e) =>
-                  setProduct({ ...product, gst: e.target.value })
-                }
+                onChange={e => setProduct({ ...product, gst: e.target.value })}
                 className="hover:border-primary transition-colors"
               />
             </div>
@@ -633,7 +645,7 @@ const EditProduct = () => {
               <Label>SEO Meta Title</Label>
               <Input
                 value={product?.metaTitle || ""}
-                onChange={(e) =>
+                onChange={e =>
                   setProduct({ ...product, seoMetaTitle: e.target.value })
                 }
                 className="hover:border-primary transition-colors"
@@ -644,7 +656,7 @@ const EditProduct = () => {
               <Label>SEO Meta Description</Label>
               <Textarea
                 value={product?.metaDesc || ""}
-                onChange={(e) =>
+                onChange={e =>
                   setProduct({ ...product, seoMetaDesc: e.target.value })
                 }
                 className="hover:border-primary transition-colors"
@@ -656,7 +668,7 @@ const EditProduct = () => {
               <div className="mt-2">
                 <ReactQuill
                   value={product?.description || ""}
-                  onChange={(content) =>
+                  onChange={content =>
                     setProduct({ ...product, description: content })
                   }
                   theme="snow"
@@ -673,7 +685,7 @@ const EditProduct = () => {
               <div className="mt-2">
                 <ReactQuill
                   value={longDes}
-                  onChange={(content) => setLongDes(content)}
+                  onChange={content => setLongDes(content)}
                   theme="snow"
                   placeholder="Type long description here..."
                   modules={quillModules}
@@ -688,7 +700,7 @@ const EditProduct = () => {
               <div className="mt-2">
                 <ReactQuill
                   value={shortDes}
-                  onChange={(content) => setShortDes(content)}
+                  onChange={content => setShortDes(content)}
                   theme="snow"
                   placeholder="Type short description here..."
                   modules={quillModules}
@@ -703,7 +715,7 @@ const EditProduct = () => {
               <div className="mt-2">
                 <ReactQuill
                   value={benefitsMain}
-                  onChange={(content) => setBenefitsMain(content)}
+                  onChange={content => setBenefitsMain(content)}
                   theme="snow"
                   placeholder="Type main benefits here..."
                   modules={quillModules}
@@ -718,7 +730,7 @@ const EditProduct = () => {
               <div className="mt-2">
                 <ReactQuill
                   value={ingredientMain}
-                  onChange={(content) => setIngredientMain(content)}
+                  onChange={content => setIngredientMain(content)}
                   theme="snow"
                   placeholder="Type main ingredients here..."
                   modules={quillModules}
@@ -731,21 +743,18 @@ const EditProduct = () => {
             <div className="space-y-2">
               <Label>Benefits</Label>
               {benefits.map((benefit, index) => (
-                <div
-                  key={index}
-                  className="flex gap-2 items-start"
-                >
+                <div key={index} className="flex gap-2 items-start">
                   <div className="flex-1 space-y-2">
                     <Input
                       value={benefit.title}
-                      onChange={(e) =>
+                      onChange={e =>
                         updateBenefit(index, "title", e.target.value)
                       }
                       className="hover:border-primary transition-colors"
                     />
                     <ReactQuill
                       value={benefit.desc}
-                      onChange={(content) =>
+                      onChange={content =>
                         updateBenefit(index, "desc", content)
                       }
                       modules={quillModules}
@@ -769,21 +778,18 @@ const EditProduct = () => {
             <div className="space-y-2">
               <Label>Ingredients</Label>
               {ingredients.map((ingredient, index) => (
-                <div
-                  key={index}
-                  className="flex gap-2 items-start"
-                >
+                <div key={index} className="flex gap-2 items-start">
                   <div className="flex-1 space-y-2">
                     <Input
                       value={ingredient.title}
-                      onChange={(e) =>
+                      onChange={e =>
                         updateIngredient(index, "title", e.target.value)
                       }
                       className="hover:border-primary transition-colors"
                     />
                     <Textarea
                       value={ingredient.desc}
-                      onChange={(e) =>
+                      onChange={e =>
                         updateIngredient(index, "desc", e.target.value)
                       }
                       className="hover:border-primary transition-colors"
@@ -806,21 +812,16 @@ const EditProduct = () => {
             <div className="space-y-2">
               <Label>FAQ</Label>
               {faq.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex gap-2 items-start"
-                >
+                <div key={index} className="flex gap-2 items-start">
                   <div className="flex-1 space-y-2">
                     <Input
                       value={item.title}
-                      onChange={(e) =>
-                        updateFaq(index, "title", e.target.value)
-                      }
+                      onChange={e => updateFaq(index, "title", e.target.value)}
                       className="hover:border-primary transition-colors"
                     />
                     <Textarea
                       value={item.desc}
-                      onChange={(e) => updateFaq(index, "desc", e.target.value)}
+                      onChange={e => updateFaq(index, "desc", e.target.value)}
                       className="hover:border-primary transition-colors"
                     />
                   </div>
@@ -841,14 +842,11 @@ const EditProduct = () => {
             <div className="space-y-2">
               <Label>Kit Items</Label>
               {kit.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex gap-2 items-center"
-                >
+                <div key={index} className="flex gap-2 items-center">
                   <Input
                     className="flex-1 hover:border-primary transition-colors"
                     value={item}
-                    onChange={(e) => updateKit(index, e.target.value)}
+                    onChange={e => updateKit(index, e.target.value)}
                   />
                   <Button
                     variant="destructive"
@@ -880,7 +878,7 @@ const EditProduct = () => {
                   </Button>
                   <Input
                     value={item}
-                    onChange={(e) => updateFilter(index, e.target.value)}
+                    onChange={e => updateFilter(index, e.target.value)}
                     className="hover:border-primary transition-colors"
                   />
                 </div>
@@ -894,7 +892,7 @@ const EditProduct = () => {
               <Checkbox
                 id="productDisplay"
                 checked={product?.productDisplay || false}
-                onCheckedChange={(checked) =>
+                onCheckedChange={checked =>
                   setProduct({ ...product, productDisplay: checked })
                 }
                 className="hover:border-primary transition-colors"
@@ -933,7 +931,7 @@ const EditProduct = () => {
                           size="icon"
                           className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
                           onClick={() => {
-                            setImageFiles((prev) =>
+                            setImageFiles(prev =>
                               prev.filter((_, i) => i !== index)
                             );
                           }}
@@ -962,9 +960,7 @@ const EditProduct = () => {
                           size="icon"
                           className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
                           onClick={() => {
-                            setSrc((prev) =>
-                              prev.filter((_, i) => i !== index)
-                            );
+                            setSrc(prev => prev.filter((_, i) => i !== index));
                           }}
                         >
                           <X className="h-4 w-4" />

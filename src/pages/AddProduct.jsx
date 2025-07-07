@@ -122,7 +122,8 @@ function AddProduct() {
       height: "Height",
       width: "Width",
       stock: "Stock",
-      hsnNo: "HSN number",
+      hsn: "HSN number",
+      slug: "Slug",
     };
 
     // Check each required field
@@ -339,7 +340,7 @@ function AddProduct() {
         gst: formData.gst ? parseFloat(formData.gst) : 0, // Align with schema
         expiryDate: formData.expiryDate || undefined,
         batchNo: formData.batchNo,
-        hsnNo: formData.hsnNo,
+        hsn: formData.hsn,
         mfgName: formData.mfgName,
         width: formData.width ? parseFloat(formData.width) : 0, // Align with schema
         height: formData.height ? parseFloat(formData.height) : 0, // Align with schema
@@ -416,6 +417,7 @@ function AddProduct() {
           expiryDate: "",
           batchNo: "",
           mfgName: "",
+          hsn: "",
           weight: "",
           height: "",
           width: "",
@@ -592,14 +594,14 @@ function AddProduct() {
                 <div className="space-y-2">
                   <Label>HSN Number</Label>
                   <Input
-                    name="hsnNo"
-                    value={formData.hsnNo}
-                    onChange={(e) => handleChange(e, "hsnNo")}
+                    name="hsn"
+                    value={formData.hsn}
+                    onChange={(e) => handleChange(e, "hsn")}
                     placeholder="Enter HSN number"
                     required
                   />
-                  {errors.hsnNo && (
-                    <p className="text-red-500 text-sm">{errors.hsnNo}</p>
+                  {errors.hsn && (
+                    <p className="text-red-500 text-sm">{errors.hsn}</p>
                   )}
                 </div>
               </div>
@@ -682,7 +684,7 @@ function AddProduct() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Discount (Rs)</Label>
+                  <Label>Discount (%)</Label>
                   <Input
                     name="discount"
                     type="number"

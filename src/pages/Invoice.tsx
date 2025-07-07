@@ -90,13 +90,16 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
               </div>
               <div>
                 <div className="font-bold text-sm py-2">Registered Adress:</div>
-                OFFICE NO. 101/A (PART 1), FIRST FLOOR, KANE PLAZA,
-                <br />
-                MIND SPACE OFF. MALAD LINK ROAD,
-                <br />
-                MALAD WEST, Tal : MALAD WEST ( MUMBAI -ZONE6 )<br />
-                Pin : 400064
-                <br />
+                <div className="text-xs">
+                  OFFICE NO. 101/A (PART 1), FIRST FLOOR, KANE PLAZA,
+                  <br />
+                  MIND SPACE OFF. MALAD LINK ROAD,
+                  <br />
+                  MALAD WEST, Tal : MALAD WEST ( MUMBAI -ZONE6 )<br />
+                  Pin : 400064
+                  <br />
+                </div>
+                <div></div>
               </div>
             </div>
 
@@ -141,25 +144,57 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                 <tr>
                   <th className="2 py-1 border font-semibold">SR.NO</th>
                   <th className="2 py-1 border font-semibold">PARTICULARS</th>
-                  <th className="2 py-1 border font-semibold">QTY</th>
+
                   <th className="2 py-1 border font-semibold">BATCH NO</th>
                   <th className="2 py-1 border font-semibold">EXPIRY DATE</th>
                   <th className="2 py-1 border font-semibold">HSN/SAC CODE</th>
-                  <th className="2 py-1 border font-semibold">MRP(R)</th>
+                  <th className="2 py-1 border font-semibold">MRP(₹)</th>
+
                   <th className="2 py-1 border font-semibold">
                     DISCOUNT AMOUNT(%)
                   </th>
+
                   <th className="2 py-1 border font-semibold">
-                    AFTER DISCOUNT AMT.(R)
+                    TAXABLE AMT.(₹)
                   </th>
-
+                  <th className="2 py-1 border font-semibold">QTY</th>
                   <th className="2 py-1 border font-semibold">GST RATE(%)</th>
-
-                  <th className="2 py-1 border font-semibold">TOTAL AMT.(R)</th>
+                  <th className="2 py-1 border font-semibold">GST AMT.(₹)</th>
+                  <th className="2 py-1 border font-semibold">FINAL AMT.(₹)</th>
                 </tr>
               </thead>
               <tbody>
-               
+                {/* Only show consultation row if consultation fee exists and is not zero */}
+                {invoice.consultationFee > 0 && (
+                  <tr>
+                    <td className="border px-2 py-2 text-center">1</td>
+                    <td className="border px-2 py-2 font-semibold text-center">
+                      Consultation Fee
+                    </td>
+                    <td className="border px-2 py-2">-</td>
+                    <td className="border px-2 py-2">-</td>
+                    <td className="border px-2 py-2">-</td>
+                    <td className="border px-2 py-2">-</td>
+                    <td className="border px-2 py-2 text-center">
+                      {Number(invoice.consultationFee).toFixed(2)}
+                    </td>
+
+                    <td className="border px-2 py-2 text-center"></td>
+                    <td className="border px-2 py-2 text-center"></td>
+                    <td className="border px-2 py-2 text-center"></td>
+                    <td className="border px-2 py-2 text-center">
+                      {Number(invoice.consultationGST).toFixed(2)}%
+                    </td>
+                    <td className="border px-2 py-2 text-center">
+                      {(
+                        Number(invoice.consultationFee) +
+                        (Number(invoice.consultationFee) *
+                          Number(invoice.consultationGST)) /
+                          100
+                      ).toFixed(2)}
+                    </td>
+                  </tr>
+                )}
                 {invoiceItems.map((item, idx) => (
                   <tr
                     key={item._id || idx}
@@ -167,23 +202,27 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                       idx % 2 === 0 ? "bg-white" : "bg-gray-100"
                     }`}
                   >
-                    <td className="border px-2 py-2">{idx + 1}</td>
+                    <td className="border px-2 py-2">{invoice.consultationFee > 0 ? idx + 2 : idx + 1}</td>
                     <td className="border px-2 py-2">
                       {item.item?.name || ""}
                     </td>
-                    <td className="border px-2 py-2">{item.quantity}</td>
+
                     <td className="border px-2 py-2">{item.batchNo || ""}</td>
                     <td className="border px-2 py-2">
                       {item.expiryDate
                         ? new Date(item.expiryDate).toLocaleDateString()
                         : ""}
                     </td>
-                    <td className="border px-2 py-2">{item.hsnCode || ""}</td>
+                    <td className="border px-2 py-2">{item.hsn || ""}</td>
 
-                    <td className="border px-2 py-2">₹ {item.rate}</td>
-                    <td className="border px-2 py-2"> {item.discount || 0}%</td>
+                    <td className="border px-2 py-2">
+                      {Number(item.rate).toFixed(2)}
+                    </td>
+                    <td className="border px-2 py-2">
+                      {Number(item.discount || 0).toFixed(2)}%
+                    </td>
+
                     <td>
-                      ₹{" "}
                       {(
                         parseFloat(item.rate || 0) -
                         (parseFloat(item.rate || 0) *
@@ -191,9 +230,18 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                           100
                       ).toFixed(2)}
                     </td>
-
-                    <td className="border px-2 py-2">{item.gst || 0}%</td>
-
+                    <td className="border px-2 py-2">
+                      {Number(item.quantity)}
+                    </td>
+                    <td className="border px-2 py-2">
+                      {Number(item.gst || 0).toFixed(2)}%
+                    </td>
+                    <td className="border px-2 py-2">
+                      {(((parseFloat(item.rate || 0) - 
+                        (parseFloat(item.rate || 0) * parseFloat(item.discount || 0)) / 100) * 
+                        parseFloat(item.quantity || 0) * 
+                        parseFloat(item.gst || 0)) / 100).toFixed(2)}
+                    </td>
                     <td className="border px-2 py-2">
                       {Number(item.total).toFixed(2)}
                     </td>
@@ -211,46 +259,89 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
 
               <div className="mt-10 text-sm">
                 <p className="text-sm">
-                  * All Disputes related to this order are subject to the    
+                  * All Disputes related to this order are subject to the
                   jurisdication <br />
-                      of courts at Mumbai,Maharashtra
+                  of courts at Mumbai,Maharashtra
                 </p>
-                <p className="text-sm">For Support Contact : info@hairncares.com</p>
+                <p className="text-sm">
+                  For Support Contact : info@hairncares.com
+                </p>
               </div>
             </div>
             <div className="bg-gray-50 p-2 rounded-md w-full md:w-64 mt-2 md:mt-0 text-xs">
               <div className="flex justify-between py-1">
-                <span className="font-medium">Subtotal</span>
+                <span className="font-medium">
+                  Product Total (Final Amount)
+                </span>
                 <span className="font-bold">
-                  ₹ {Number(invoice.subtotal || 0).toFixed(2)}
+                  ₹ {Number(invoice.total || 0).toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="font-medium">Total Discount </span>
+                <span className="font-medium">Coupon Discount (₹)</span>
                 <span className="font-bold">
-                  ₹ {Number(invoice.totalDiscount || 0).toFixed(2)}
+                  ₹ {Number(invoice.couponDiscount || 0).toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="font-medium">Total GST </span>
+                <span className="font-medium">After Discount Amount</span>
                 <span className="font-bold">
-                  ₹ {Number(invoice.totalGST || 0).toFixed(2)}
+                  ₹{" "}
+                  {(
+                    Number(invoice.total || 0) -
+                    Number(invoice.couponDiscount || 0)
+                  ).toFixed(2)}
+                </span>
+              </div>{" "}
+              <div className="flex justify-between py-1">
+                <span className="font-medium">Shipping Charges</span>
+                <span className="font-bold">
+                  ₹{" "}
+                  {Number(invoice.total || 0) -
+                    Number(invoice.couponDiscount || 0) <
+                  2000
+                    ? "200.00"
+                    : "0.00"}
                 </span>
               </div>
+              {invoice.consultationFee > 0 && (
+                <div className="flex justify-between py-1">
+                  <span className="font-medium">
+                    Consultation Fee (Incl.{" "}
+                    {Number(invoice.consultationGST).toFixed(2)}% GST)
+                  </span>
+                  <span className="font-bold">
+                    ₹{" "}
+                    {(
+                      Number(invoice.consultationFee || 0) +
+                      (Number(invoice.consultationFee || 0) *
+                        Number(invoice.consultationGST || 0)) /
+                        100
+                    ).toFixed(2)}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between py-1 border-t border-gray-200 mt-1 pt-1">
                 <span className="font-medium">Total Invoice Amount</span>
                 <span className="font-bold">
-                  ₹ {Number(invoice.total || 0).toFixed(2)}
+                  ₹{" "}
+                  {(
+                    Number(invoice.total || 0) -
+                    Number(invoice.couponDiscount || 0) +
+                    (Number(invoice.total || 0) -
+                      Number(invoice.couponDiscount || 0) <
+                    2000
+                      ? 200
+                      : 0) +
+                    Number(invoice.consultationFee || 0)
+                  ).toFixed(2)}
                 </span>
               </div>
             </div>
           </div>
           {/* Thank you note */}
 
-          <div className="text-right mt-16">
-            <h1>Pharmacist Signature</h1>
-          </div>
-          <div className="mt-4 text-center font-semibold text-xs md:text-sm">
+          <div className="mt-20 text-center font-semibold text-xs md:text-sm">
             Thank you very much for choosing us.
           </div>
         </div>
@@ -287,7 +378,6 @@ const InvoiceDetailsModal = ({ isOpen, selectedItems, onClose }) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-             
               {selectedItems?.length > 0 &&
                 selectedItems.map(item => (
                   <TableRow key={item._id}>
@@ -297,7 +387,9 @@ const InvoiceDetailsModal = ({ isOpen, selectedItems, onClose }) => {
                     <TableCell>{item.discount}</TableCell>
                     <TableCell>{item.discountPercent}</TableCell>
                     <TableCell>{item.gst}</TableCell>
-                    <TableCell>{(item.quantity * item.rate).toFixed(2)}</TableCell>
+                    <TableCell>
+                      {(item.quantity * item.rate).toFixed(2)}
+                    </TableCell>
                   </TableRow>
                 ))}
             </TableBody>
@@ -330,7 +422,7 @@ const Invoice = () => {
         }
       );
       const data = await response.json();
-      console.log(data);
+      console.log("data", data);
       setInvoices(data?.data);
     } catch (error) {
       console.log("error while fetching invoices data", error);
@@ -434,13 +526,20 @@ const Invoice = () => {
                   <TableBody className="bg-white divide-y divide-gray-200">
                     {Array.isArray(invoices) && invoices.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={12} className="text-center py-8 text-gray-500">
+                        <TableCell
+                          colSpan={12}
+                          className="text-center py-8 text-gray-500"
+                        >
                           No invoices found.
                         </TableCell>
                       </TableRow>
                     ) : (
-                      Array.isArray(invoices) && invoices.map(invoice => (
-                        <TableRow key={invoice._id} className="hover:bg-gray-50">
+                      Array.isArray(invoices) &&
+                      invoices.map(invoice => (
+                        <TableRow
+                          key={invoice._id}
+                          className="hover:bg-gray-50"
+                        >
                           <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
                             {invoice.invoiceNo}
                           </TableCell>
@@ -482,7 +581,7 @@ const Invoice = () => {
                             </Button>
                           </TableCell>
                           <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <Button 
+                            <Button
                               onClick={() => handleViewInvoice(invoice)}
                               variant="outline"
                               size="sm"
