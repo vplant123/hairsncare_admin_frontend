@@ -661,7 +661,7 @@ const AddInvoice = () => {
               </TableHeader>
               <TableBody>
                 {/* Always show consultation row at the top */}
-                <TableRow key={consultationRow.id}>
+                {/* <TableRow key={consultationRow.id}>
                   <TableCell className="2 py-1 border font-semibold">
                     Consultation
                   </TableCell>
@@ -717,7 +717,7 @@ const AddInvoice = () => {
                   <TableCell className="2 py-1 border font-semibold">
                     -
                   </TableCell>
-                </TableRow>
+                </TableRow> */}
                 {/* Then render the rest of the invoice items as before */}
                 {invoiceItems.length === 0 ? (
                   <TableRow>
@@ -941,12 +941,12 @@ const AddInvoice = () => {
                   {shippingCharges > 0 ? `₹${shippingCharges}` : "Free"}
                 </span>
               </div>
-              <div className="flex justify-between py-2">
+              {/* <div className="flex justify-between py-2">
                 <span className="font-medium">Consultation Fee:</span>
                 <span className="font-bold">
                   ₹{totalConsultationCharge.toFixed(2)}
                 </span>
-              </div>
+              </div> */}
 
               <div className="flex justify-between py-2 border-t border-gray-300 pt-2 mt-2">
                 <span className="font-bold text-lg">Grand Total:</span>

@@ -165,9 +165,9 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
               </thead>
               <tbody>
                 {/* Only show consultation row if consultation fee exists and is not zero */}
-                {invoice.consultationFee > 0 && (
+                {/* {invoice.consultationFee > 0 && (
                   <tr>
-                    <td className="border px-2 py-2 text-center">1</td>
+                    <td></td>
                     <td className="border px-2 py-2 font-semibold text-center">
                       Consultation Fee
                     </td>
@@ -194,7 +194,7 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                       ).toFixed(2)}
                     </td>
                   </tr>
-                )}
+                )} */}
                 {invoiceItems.map((item, idx) => (
                   <tr
                     key={item._id || idx}
@@ -202,7 +202,7 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                       idx % 2 === 0 ? "bg-white" : "bg-gray-100"
                     }`}
                   >
-                    <td className="border px-2 py-2">{invoice.consultationFee > 0 ? idx + 2 : idx + 1}</td>
+                    <td className="border px-2 py-2">{idx + 1}</td>
                     <td className="border px-2 py-2">
                       {item.item?.name || ""}
                     </td>
@@ -304,7 +304,7 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                     : "0.00"}
                 </span>
               </div>
-              {invoice.consultationFee > 0 && (
+              {/* {invoice.consultationFee > 0 && (
                 <div className="flex justify-between py-1">
                   <span className="font-medium">
                     Consultation Fee (Incl.{" "}
@@ -320,7 +320,7 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                     ).toFixed(2)}
                   </span>
                 </div>
-              )}
+              )} */}
               <div className="flex justify-between py-1 border-t border-gray-200 mt-1 pt-1">
                 <span className="font-medium">Total Invoice Amount</span>
                 <span className="font-bold">
@@ -332,8 +332,7 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                       Number(invoice.couponDiscount || 0) <
                     2000
                       ? 200
-                      : 0) +
-                    Number(invoice.consultationFee || 0)
+                      : 0)
                   ).toFixed(2)}
                 </span>
               </div>
