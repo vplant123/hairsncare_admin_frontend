@@ -1015,18 +1015,28 @@ const HairTestsCopy = () => {
                             <Button
                               variant="outline"
                               size="sm"
-                              className="w-[180px] flex items-center justify-center gap-1 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-300 transition-colors"
+                              className={`w-[180px] flex items-center justify-center gap-1 ${
+                                test.appointments?.[0]?.appointmentDate && test.appointments?.[0]?.timeSlot
+                                  ? "bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 cursor-not-allowed opacity-70"
+                                  : "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-300"
+                              } transition-colors`}
                               onClick={() => {
-                                setSelectedTest(test);
-                                setScheduleAppointment(prev => ({
-                                  ...prev,
-                                  hairTestId: test._id,
-                                }));
-                                setIsModalOpen(true);
+                                if (!(test.appointments?.[0]?.appointmentDate && test.appointments?.[0]?.timeSlot)) {
+                                  setSelectedTest(test);
+                                  setScheduleAppointment(prev => ({
+                                    ...prev,
+                                    hairTestId: test._id,
+                                  }));
+                                  setIsModalOpen(true);
+                                }
                               }}
-                              // disabled={test.appointments?.length > 0}
+                              disabled={test.appointments?.[0]?.appointmentDate && test.appointments?.[0]?.timeSlot}
                             >
-                              <span>Schedule Appointment</span>
+                              <span>
+                                {test.appointments?.[0]?.appointmentDate && test.appointments?.[0]?.timeSlot
+                                  ? "Scheduled"
+                                  : "Schedule Appointment"}
+                              </span>
                             </Button>
                           )}
                         </div>
