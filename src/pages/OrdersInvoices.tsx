@@ -425,7 +425,9 @@ const OrdersInvoices = () => {
                 {paginatedOrders.length > 0 ? (
                   paginatedOrders.map(order => (
                     <TableRow key={order._id}>
-                      <TableCell className="font-medium">{order.orderNumber}</TableCell>
+                      <TableCell className="font-medium">
+                        {order.orderNumber}
+                      </TableCell>
                       <TableCell>{order.orderType}</TableCell>
                       <TableCell>{order.userId?.fullname}</TableCell>
                       <TableCell>{order.amount.toFixed(2)}</TableCell>
@@ -505,13 +507,16 @@ const OrdersInvoices = () => {
                       <TableCell>
                         <TableCell></TableCell>
                         <TableCell>
-                          {order.prescriptionDetails?.[0]?.appointment?.status === "completed" ? (
+                          {order.prescriptionDetails?.[0]?.appointment
+                            ?.status === "completed" ? (
                             <Button
                               variant="outline"
                               size="sm"
                               className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-green-500 text-white hover:bg-green-600 transition-colors"
                               onClick={() => {
-                                const appointmentId = order.prescriptionDetails[0]?.appointment?._id;
+                                const appointmentId =
+                                  order.prescriptionDetails[0]?.appointment
+                                    ?._id;
                                 window.open(
                                   `${import.meta.env.VITE_FRONTEND_URL}/order-prescription/${appointmentId}`,
                                   "_blank"
@@ -521,14 +526,16 @@ const OrdersInvoices = () => {
                               <Eye className="h-3.5 w-5" />
                               <span>View Prescription</span>
                             </Button>
-                          ) : order.prescriptionDetails?.[0]?.appointment?.status === "assigned" && order.prescriptionDetails?.[0]?.appointment?.appointmentDate ? (
+                          ) : order.prescriptionDetails?.[0]?.appointment
+                              ?.status === "assigned" &&
+                            order.prescriptionDetails?.[0]?.appointment
+                              ?.appointmentDate ? (
                             <Button
                               variant="outline"
                               size="sm"
                               className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-yellow-500 text-white hover:bg-yellow-600 transition-colors"
                               disabled
                             >
-                              
                               <span>Assigned</span>
                             </Button>
                           ) : (
@@ -543,8 +550,10 @@ const OrdersInvoices = () => {
                             </Button>
                           )}
 
-                          {order.prescriptionDetails?.[0]?.appointment?.status === "completed" &&
-                            order.prescriptionDetails?.[0]?.appointment?.isReportSent === false && (
+                          {order.prescriptionDetails?.[0]?.appointment
+                            ?.status === "completed" &&
+                            order.prescriptionDetails?.[0]?.appointment
+                              ?.isReportSent === false && (
                               <Button
                                 variant="outline"
                                 size="sm"
@@ -554,7 +563,7 @@ const OrdersInvoices = () => {
                                   console.log(order);
                                 }}
                               >
-                                Report Sent
+                                 Sent
                               </Button>
                             )}
                         </TableCell>
@@ -587,7 +596,11 @@ const OrdersInvoices = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {[5, 10, 25, 50].map(num => (
-                      <SelectItem key={num} value={num.toString()} className="bg-white">
+                      <SelectItem
+                        key={num}
+                        value={num.toString()}
+                        className="bg-white"
+                      >
                         {num}
                       </SelectItem>
                     ))}
@@ -663,7 +676,13 @@ const OrdersInvoices = () => {
                   <div>
                     <p className="text-sm text-gray-500">Customer Name</p>
                     <p className="font-medium">
-                      {selectedOrder.userId?.fullname}
+                      {selectedOrder.addressId?.name}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Contact Number</p>
+                    <p className="font-medium">
+                      {selectedOrder.addressId?.phone}
                     </p>
                   </div>
                   <div>
