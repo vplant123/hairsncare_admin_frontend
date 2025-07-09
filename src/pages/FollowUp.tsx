@@ -1001,8 +1001,8 @@ const FollowUp = () => {
 
                         <TableCell className="text-right whitespace-nowrap">
                           <div className="flex flex-row gap-2 items-end">
-                            {test.status?.toLowerCase() === "completed" && test.followUpDate && (
-                              new Date(test.followUpDate) <= new Date() ? (
+                            {test.status?.toLowerCase() === "completed" && (
+                              test.followUpDate ? (
                                 <Button
                                   variant="outline"
                                   size="sm"

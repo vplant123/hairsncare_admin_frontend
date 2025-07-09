@@ -1109,7 +1109,7 @@ const HairTestsCopy = () => {
                                   viewReport(test._id, test.status)
                                 }
                               >
-                                Report sent
+                                View Report
                               </span>
                             </>
                           ) : (
