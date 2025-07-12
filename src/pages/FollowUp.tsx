@@ -80,6 +80,7 @@ interface FollowUp {
 const FollowUp = () => {
   // const [activeTab, setActiveTab] = useState("all");
   const [selectedTest, setSelectedTest] = useState(null);
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCompletedModalOpen, setIsCompletedModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -132,6 +133,7 @@ const FollowUp = () => {
     (test) => test.status?.toLowerCase() === "pending"
   );
 
+  
   const completedTests = hairTests.filter(
     (test) => test.status?.toLowerCase() === "completed"
   );
@@ -233,6 +235,8 @@ const FollowUp = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedTestForEdit, setSelectedTestForEdit] = useState(null);
   const [editFollowUpDate, setEditFollowUpDate] = useState("");
+  const [isViewReportModalOpen, setIsViewReportModalOpen] = useState(false);
+  const [selectedTestForView, setSelectedTestForView] = useState(null);
 
   const handleFetchData = async () => {
     try {
@@ -244,6 +248,7 @@ const FollowUp = () => {
       );
       const data = await response.json();
       console.log("FollowUP", data);
+      
       let filterdata = data.data?.filter((item) => {
         return (
           (item.followupOf !== null && item.followupOf !== undefined) ||
@@ -836,7 +841,7 @@ const FollowUp = () => {
                       placeholder="Search completed tests..."
                       className="px-10"
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={e => setSearchQuery(e.target.value)}
                     />
                   </div>
                 </div>
@@ -848,13 +853,13 @@ const FollowUp = () => {
                   <span className="text-sm font-medium">Rows per page:</span>
                   <select
                     value={completedRowsPerPage}
-                    onChange={(e) => {
+                    onChange={e => {
                       setCompletedRowsPerPage(Number(e.target.value));
                       setCompletedCurrentPage(1); // Reset to first page
                     }}
                     className="border rounded px-2 py-1 text-sm"
                   >
-                    {[5, 10, 25, 50].map((num) => (
+                    {[5, 10, 25, 50].map(num => (
                       <option key={num} value={num}>
                         {num}
                       </option>
@@ -987,7 +992,7 @@ const FollowUp = () => {
                                 }
                               )
                             : ""}
-                          <Button 
+                          <Button
                             className="ms-2 p-1 h-7 bg-yellow-100 text-orange-500 hover:bg-yellow-200 "
                             onClick={() => {
                               setSelectedTestForEdit(test);
@@ -1001,8 +1006,8 @@ const FollowUp = () => {
 
                         <TableCell className="text-right whitespace-nowrap">
                           <div className="flex flex-row gap-2 items-end">
-                            {test.status?.toLowerCase() === "completed" && (
-                              test.followUpDate ? (
+                            {test.status?.toLowerCase() === "completed" &&
+                              (test.followUpDate ? (
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -1020,8 +1025,7 @@ const FollowUp = () => {
                                 >
                                   <span>Schedule Follow Up</span>
                                 </Button>
-                              )
-                            )}
+                              ))}
                             {test.status?.toLowerCase() === "pending" && (
                               <Button
                                 variant="outline"
@@ -1076,12 +1080,10 @@ const FollowUp = () => {
                         <TableCell className="whitespace-nowrap">
                           {test?.status?.toLowerCase() === "completed" && (
                             <button
-                              onClick={() =>
-                                window.open(
-                                  `${import.meta.env.VITE_FRONTEND_URL}/doctor-analyse-report/${test._id}`,
-                                  "_blank"
-                                )
-                              }
+                              onClick={() => {
+                                setSelectedTestForView(test);
+                                setIsViewReportModalOpen(true);
+                              }}
                               className="text-blue-600 hover:text-blue-800 underline hover:no-underline transition-all duration-150 ease-in-out font-medium text-sm"
                             >
                               View Report
@@ -1114,7 +1116,7 @@ const FollowUp = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setCompletedCurrentPage((prev) => Math.max(prev - 1, 1))
+                      setCompletedCurrentPage(prev => Math.max(prev - 1, 1))
                     }
                     disabled={
                       completedCurrentPage === 1 || totalCompletedPages === 0
@@ -1126,7 +1128,7 @@ const FollowUp = () => {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setCompletedCurrentPage((prev) =>
+                      setCompletedCurrentPage(prev =>
                         Math.min(prev + 1, totalCompletedPages)
                       )
                     }
@@ -1402,9 +1404,9 @@ const FollowUp = () => {
               <label className="text-sm font-medium">Doctor *</label>
               <Select
                 value={scheduleAppointment.doctorId}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   console.log("Doctor selected:", value);
-                  setScheduleAppointment((prev) => ({
+                  setScheduleAppointment(prev => ({
                     ...prev,
                     doctorId: value,
                   }));
@@ -1414,7 +1416,7 @@ const FollowUp = () => {
                   <SelectValue placeholder="Select Doctor" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  {doctorsList?.map((doctor) => (
+                  {doctorsList?.map(doctor => (
                     <SelectItem key={doctor._id} value={doctor._id}>
                       {doctor.name}
                     </SelectItem>
@@ -1428,9 +1430,9 @@ const FollowUp = () => {
               <Input
                 type="date"
                 value={scheduleAppointment.appointmentDate}
-                onChange={(e) => {
+                onChange={e => {
                   console.log("Date selected:", e.target.value);
-                  setScheduleAppointment((prev) => ({
+                  setScheduleAppointment(prev => ({
                     ...prev,
                     appointmentDate: e.target.value,
                   }));
@@ -1442,9 +1444,9 @@ const FollowUp = () => {
               <label className="text-sm font-medium">Time Slot *</label>
               <Select
                 value={scheduleAppointment.timeSlot}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   console.log("Time slot selected:", value);
-                  setScheduleAppointment((prev) => ({
+                  setScheduleAppointment(prev => ({
                     ...prev,
                     timeSlot: value,
                   }));
@@ -1611,13 +1613,13 @@ const FollowUp = () => {
                   <label className="text-sm font-medium">Select Doctor</label>
                   <Select
                     value={selectedDoctor}
-                    onValueChange={(value) => setSelectedDoctor(value)}
+                    onValueChange={value => setSelectedDoctor(value)}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select Doctor" />
                     </SelectTrigger>
                     <SelectContent className="bg-white">
-                      {doctorsList.map((doctor) => (
+                      {doctorsList.map(doctor => (
                         <SelectItem key={doctor._id} value={doctor._id}>
                           {doctor.name}
                         </SelectItem>
@@ -1674,8 +1676,8 @@ const FollowUp = () => {
               <label className="text-sm font-medium">Doctor *</label>
               <Select
                 value={followUpData.doctorId}
-                onValueChange={(value) =>
-                  setFollowUpData((prev) => ({
+                onValueChange={value =>
+                  setFollowUpData(prev => ({
                     ...prev,
                     doctorId: value,
                   }))
@@ -1685,7 +1687,7 @@ const FollowUp = () => {
                   <SelectValue placeholder="Select Doctor" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  {doctorsList?.map((doctor) => (
+                  {doctorsList?.map(doctor => (
                     <SelectItem key={doctor._id} value={doctor._id}>
                       {doctor.name}
                     </SelectItem>
@@ -1699,8 +1701,8 @@ const FollowUp = () => {
               <Input
                 type="date"
                 value={followUpData.appointmentDate}
-                onChange={(e) =>
-                  setFollowUpData((prev) => ({
+                onChange={e =>
+                  setFollowUpData(prev => ({
                     ...prev,
                     appointmentDate: e.target.value,
                   }))
@@ -1712,8 +1714,8 @@ const FollowUp = () => {
               <label className="text-sm font-medium">Time Slot *</label>
               <Select
                 value={followUpData.timeSlot}
-                onValueChange={(value) =>
-                  setFollowUpData((prev) => ({
+                onValueChange={value =>
+                  setFollowUpData(prev => ({
                     ...prev,
                     timeSlot: value,
                   }))
@@ -1734,8 +1736,8 @@ const FollowUp = () => {
               <label className="text-sm font-medium">Doctor Notes</label>
               <textarea
                 value={followUpData.doctorNotes}
-                onChange={(e) =>
-                  setFollowUpData((prev) => ({
+                onChange={e =>
+                  setFollowUpData(prev => ({
                     ...prev,
                     doctorNotes: e.target.value,
                   }))
@@ -1782,7 +1784,7 @@ const FollowUp = () => {
                 id="followUpDate"
                 type="date"
                 value={editFollowUpDate}
-                onChange={(e) => setEditFollowUpDate(e.target.value)}
+                onChange={e => setEditFollowUpDate(e.target.value)}
                 className="col-span-3"
                 min={new Date().toISOString().split("T")[0]}
               />
@@ -1792,10 +1794,342 @@ const FollowUp = () => {
             <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleUpdateFollowUpDate}>
-              Update Date
-            </Button>
+            <Button onClick={handleUpdateFollowUpDate}>Update Date</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      
+      {/* Viewv report Date Modal */}
+      <Dialog
+        open={isCompletedModalOpen}
+        onOpenChange={setIsCompletedModalOpen}
+      >
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+          {selectedTest && (
+            <div className="space-y-6 overflow-y-auto">
+              <DialogHeader className="sticky top-0 z-10 pb-4">
+                <DialogTitle>Completed Test Report</DialogTitle>
+                <DialogDescription>
+                  View and manage completed test report
+                </DialogDescription>
+              </DialogHeader>
+
+              {/* Appointment Details Section */}
+              <div>
+                <h3 className="text-lg font-semibold mb-3">
+                  Appointment Details
+                </h3>
+                {selectedTest.appointments &&
+                selectedTest.appointments.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Appointment ID
+                      </label>
+                      <div className="p-2 border rounded-md bg-gray-50">
+                        {selectedTest.appointments[0]._id || "-"}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Status</label>
+                      <div className="p-2 border rounded-md bg-gray-50">
+                        <span
+                          className={`${
+                            selectedTest.appointments[0].status?.toLowerCase() ===
+                            "pending"
+                              ? "text-yellow-600"
+                              : selectedTest.appointments[0].status?.toLowerCase() ===
+                                  "completed"
+                                ? "text-green-600"
+                                : "text-blue-600"
+                          }`}
+                        >
+                          {selectedTest.appointments[0].status || "Unknown"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Time Slot</label>
+                      <div className="p-2 border rounded-md bg-gray-50">
+                        {selectedTest.appointments[0].timeSlot || "-"}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Doctor</label>
+                      <div className="p-2 border rounded-md bg-gray-50">
+                        {selectedTest.appointments[0].doctorId?.fullname || "-"}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Appointment Date
+                      </label>
+                      <div className="p-2 border rounded-md bg-gray-50">
+                        {selectedTest.appointments[0].appointmentDate
+                          ? new Date(
+                              selectedTest.appointments[0].appointmentDate
+                            ).toLocaleDateString("en-GB", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })
+                          : ""}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Created At</label>
+                      <div className="p-2 border rounded-md bg-gray-50">
+                        {selectedTest.appointments[0].createdAt
+                          ? new Date(
+                              selectedTest.appointments[0].createdAt
+                            ).toLocaleDateString("en-GB", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })
+                          : ""}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-3 border rounded-md bg-gray-50">
+                    <p className="text-gray-500 text-sm">
+                      No appointment details available
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="border-t pt-4">
+                {selectedTest.status === "completed" ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Button
+                      variant="outline"
+                      className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
+                      onClick={() =>
+                        window.open(
+                          `${import.meta.env.VITE_FRONTEND_URL}/doctor-analyse-report/${selectedTest.appointments[0]._id}`,
+                          "_blank"
+                        )
+                      }
+                    >
+                      <FileText className="h-4 w-4" />
+                      Assessment Report
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
+                      onClick={() =>
+                        window.open(
+                          `${import.meta.env.VITE_FRONTEND_URL}/management-report/${selectedTest.appointments[0]._id}`,
+                          "_blank"
+                        )
+                      }
+                    >
+                      <FileText className="h-4 w-4" />
+                      Management Report
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
+                      onClick={() =>
+                        window.open(
+                          `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${selectedTest.appointments[0]._id}`,
+                          "_blank"
+                        )
+                      }
+                    >
+                      <FileText className="h-4 w-4" />
+                      Prescription
+                    </Button>
+
+                    {/* The following button is removed as per user request */}
+                    {/*
+                    <Button
+                      variant="outline"
+                      className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
+                    >
+                      <CheckCircle className="h-4 w-4" />
+                      Report Send Complete
+                    </Button>
+                    */}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                )}
+                <div className="flex flex-col sm:flex-row justify-end gap-3  mt-4 sticky bottom-0  ">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsCompletedModalOpen(false)}
+                    className="w-full sm:w-auto px-6 hover:bg-gray-50 hover:text-gray-600 transition-colors duration-200"
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    className="w-full sm:w-auto bg-primary hover:bg-health-primary/90 text-white px-6 transition-colors duration-200 flex items-center justify-center gap-2"
+                    onClick={() => {
+                      const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
+                      const path = "test-results";
+                      const testId = selectedTest?._id;
+                      const userId = selectedTest?.userId?._id;
+                      console.log("userId", userId);
+                      console.log("testId", testId);
+                      // console.log("appointmentId", appointmentId);
+                      if (userId && testId) {
+                        console.log("path", `${baseUrl}/${path}/${testId}`);
+                        window.open(`${baseUrl}/${path}/${testId}`, "_blank");
+                      } else {
+                        toast.error("Missing required data for this report.");
+                      }
+                    }}
+                  >
+                    <Eye className="h-4 w-4" />
+                    View Hair Test
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* View Report Modal */}
+      <Dialog open={isViewReportModalOpen} onOpenChange={setIsViewReportModalOpen}>
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+          {selectedTestForView && (
+            <div className="space-y-6">
+              <DialogHeader>
+                <DialogTitle>View Report</DialogTitle>
+                <DialogDescription>
+                  View detailed report for the selected test
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Patient Name</label>
+                    <div className="p-2 border rounded-md bg-gray-50">
+                      {selectedTestForView.userId?.fullname || "N/A"}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Email</label>
+                    <div className="p-2 border rounded-md bg-gray-50">
+                      {selectedTestForView.userId?.email || "N/A"}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Phone Number</label>
+                    <div className="p-2 border rounded-md bg-gray-50">
+                      {selectedTestForView.userId?.mobile || "N/A"}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Status</label>
+                    <div className="p-2 border rounded-md bg-gray-50">
+                      <span className="text-green-600">
+                        {selectedTestForView.status || "Completed"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Created Date</label>
+                    <div className="p-2 border rounded-md bg-gray-50">
+                      {selectedTestForView.createdAt
+                        ? new Date(selectedTestForView.createdAt).toLocaleDateString(
+                            "en-GB",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )
+                        : "N/A"}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Follow Up Date</label>
+                    <div className="p-2 border rounded-md bg-gray-50">
+                      {selectedTestForView.followUpDate
+                        ? new Date(selectedTestForView.followUpDate).toLocaleDateString(
+                            "en-GB",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )
+                        : "Not Scheduled"}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <Button
+                      variant="outline"
+                      className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
+                      onClick={() =>
+                        window.open(
+                          `${import.meta.env.VITE_FRONTEND_URL}/doctor-analyse-report/${selectedTestForView._id}`,
+                          "_blank"
+                        )
+                      }
+                    >
+                      <FileText className="h-4 w-4" />
+                      View Analysis Report
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
+                      onClick={() =>
+                        window.open(
+                          `${import.meta.env.VITE_FRONTEND_URL}/management-report/${selectedTestForView._id}`,
+                          "_blank"
+                        )
+                      }
+                    >
+                      <FileText className="h-4 w-4" />
+                      View Management Report
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className={`w-full flex items-center justify-center gap-2 ${
+                        selectedTestForView.isReportSent 
+                          ? "bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 transition-colors"
+                          : "bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed"
+                      }`}
+                      onClick={() => {
+                        if (selectedTestForView.isReportSent) {
+                          window.open(
+                            `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${selectedTestForView._id}`,
+                            "_blank"
+                          );
+                        }
+                      }}
+                      disabled={!selectedTestForView.isReportSent}
+                    >
+                      <Pill className="h-4 w-4" />
+                      {selectedTestForView.isReportSent ? "View Prescription" : "Prescription Not Available"}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="flex justify-end mt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsViewReportModalOpen(false)}
+                    className="px-6"
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </DashboardLayout>

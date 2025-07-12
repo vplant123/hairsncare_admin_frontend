@@ -430,7 +430,7 @@ const OrdersInvoices = () => {
                       </TableCell>
                       <TableCell>{order.orderType}</TableCell>
                       <TableCell>{order.userId?.fullname}</TableCell>
-                      <TableCell>{order.amount.toFixed(2)}</TableCell>
+                      <TableCell>{order.totalAmount.toFixed(2)}</TableCell>
                       <TableCell>{order.mode}</TableCell>
                       <TableCell>
                         <Select
@@ -563,7 +563,7 @@ const OrdersInvoices = () => {
                                   console.log(order);
                                 }}
                               >
-                                 Sent
+                                Sent
                               </Button>
                             )}
                         </TableCell>
@@ -692,6 +692,12 @@ const OrdersInvoices = () => {
                     </p>
                   </div>
                   <div>
+                    <p className="text-sm text-gray-500">Delivery Charge</p>
+                    <p className="font-medium">
+                      {selectedOrder.deliveryCharges}
+                    </p>
+                  </div>
+                  <div>
                     <p className="text-sm text-gray-500">Payment Mode</p>
                     <p className="font-medium">{selectedOrder.mode}</p>
                   </div>
@@ -703,6 +709,16 @@ const OrdersInvoices = () => {
                     <p className="text-sm text-gray-500">Order Status</p>
                     <p className="font-medium">
                       {selectedOrder.deliveryStatus}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Discount Details</p>
+                    <p className="font-medium">{selectedOrder.totalDiscount}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">SubTotal</p>
+                    <p className="font-medium">
+                      {selectedOrder.amount}
                     </p>
                   </div>
                 </div>

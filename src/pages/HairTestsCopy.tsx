@@ -19,7 +19,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Eye, Search, Filter, FileText, CheckCircle, ChevronDown } from "lucide-react";
+import {
+  Eye,
+  Search,
+  Filter,
+  FileText,
+  CheckCircle,
+  ChevronDown,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -586,7 +593,7 @@ const HairTestsCopy = () => {
         }
       );
       const data = await response.json();
-      console.log("haie test data",data)
+      console.log("haie test data", data);
       if (data.success) {
         const test = data.data?.find(t => t?._id === testId);
         if (test) {
@@ -708,7 +715,7 @@ const HairTestsCopy = () => {
   };
 
   const [isLoading, setIsLoading] = useState(false);
- 
+
   const handleSubmit = async () => {
     if (
       !paymentStatus ||
@@ -722,7 +729,7 @@ const HairTestsCopy = () => {
       console.log("Please fill in all fields.", hairTestId);
       return;
     }
- 
+
     const data = {
       userId,
       hairTestId,
@@ -732,15 +739,15 @@ const HairTestsCopy = () => {
       amount: parseFloat(amount),
     };
 
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
     try {
       setIsLoading(true); // Set loading to true while waiting for the response
- 
+
       const response = await fetch(`${BASE_URL}/payment/update-order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
       });
@@ -753,11 +760,9 @@ const HairTestsCopy = () => {
       } else {
         const errorData = await response.json();
         console.error("Error updating payment details:", errorData);
-       
       }
     } catch (error) {
       console.error("Error making the API request:", error);
-    
     } finally {
       setIsLoading(false); // Reset loading state
     }
@@ -908,14 +913,13 @@ const HairTestsCopy = () => {
                           test.orders.amount > 0 ? (
                             `₹ ${test.orders.amount}`
                           ) : (
-                           <button
-  onClick={() => handlepaymentstatus(test)}
-  className="w-full h-full transition-colors rounded-full flex items-center"
->
-  <span className="mr-2">Not Paid</span> 
-  <ChevronDown className="h-4 w-4" />
-</button>
-
+                            <button
+                              onClick={() => handlepaymentstatus(test)}
+                              className="w-full h-full transition-colors rounded-full flex items-center"
+                            >
+                              <span className="mr-2">Not Paid</span>
+                              <ChevronDown className="h-4 w-4" />
+                            </button>
                           )}
                         </span>
                       </TableCell>
@@ -1007,7 +1011,6 @@ const HairTestsCopy = () => {
                         })()}
                       </TableCell>
 
-
                       <TableCell className="text-right">
                         <div className="flex flex-col gap-2 items-end">
                           {test.appointments?.[0]?.status?.toLowerCase() !=
@@ -1016,12 +1019,18 @@ const HairTestsCopy = () => {
                               variant="outline"
                               size="sm"
                               className={`w-[180px] flex items-center justify-center gap-1 ${
-                                test.appointments?.[0]?.appointmentDate && test.appointments?.[0]?.timeSlot
+                                test.appointments?.[0]?.appointmentDate &&
+                                test.appointments?.[0]?.timeSlot
                                   ? "bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 cursor-not-allowed opacity-70"
                                   : "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-300"
                               } transition-colors`}
                               onClick={() => {
-                                if (!(test.appointments?.[0]?.appointmentDate && test.appointments?.[0]?.timeSlot)) {
+                                if (
+                                  !(
+                                    test.appointments?.[0]?.appointmentDate &&
+                                    test.appointments?.[0]?.timeSlot
+                                  )
+                                ) {
                                   setSelectedTest(test);
                                   setScheduleAppointment(prev => ({
                                     ...prev,
@@ -1030,10 +1039,14 @@ const HairTestsCopy = () => {
                                   setIsModalOpen(true);
                                 }
                               }}
-                              disabled={test.appointments?.[0]?.appointmentDate && test.appointments?.[0]?.timeSlot}
+                              disabled={
+                                test.appointments?.[0]?.appointmentDate &&
+                                test.appointments?.[0]?.timeSlot
+                              }
                             >
                               <span>
-                                {test.appointments?.[0]?.appointmentDate && test.appointments?.[0]?.timeSlot
+                                {test.appointments?.[0]?.appointmentDate &&
+                                test.appointments?.[0]?.timeSlot
                                   ? "Scheduled"
                                   : "Schedule Appointment"}
                               </span>
@@ -1308,9 +1321,7 @@ const HairTestsCopy = () => {
                         {test.personal?.name || ""}
                       </TableCell>
                       <TableCell>{test.personal?.email || ""}</TableCell>
-                      <TableCell>
-                        {test.personal?.phoneNumber || ""}
-                      </TableCell>
+                      <TableCell>{test.personal?.phoneNumber || ""}</TableCell>
                       <TableCell>
                         {test.personal?.ageRange ||
                           test.personal?.["Select your age group"] ||
@@ -2670,7 +2681,6 @@ const HairTestsCopy = () => {
             <Button
               onClick={() => {
                 if (!paymentStatus || !paymentMode || !planType || !amount) {
-               
                   return;
                 }
                 handleSubmit();

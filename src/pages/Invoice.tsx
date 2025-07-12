@@ -91,13 +91,9 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
               <div>
                 <div className="font-bold text-sm py-2">Registered Adress:</div>
                 <div className="text-xs">
-                  OFFICE NO. 101/A (PART 1), FIRST FLOOR, KANE PLAZA,
-                  <br />
-                  MIND SPACE OFF. MALAD LINK ROAD,
-                  <br />
-                  MALAD WEST, Tal : MALAD WEST ( MUMBAI -ZONE6 )<br />
-                  Pin : 400064
-                  <br />
+                  First Floor, Solitaire 1, A-102, New Link Rd,<br></br>{" "}
+                  Opposite Infinity Mall, ,Malad West,<br></br> Mumbai,
+                  Maharashtra 400064
                 </div>
                 <div></div>
               </div>
@@ -237,10 +233,15 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                       {Number(item.gst || 0).toFixed(2)}%
                     </td>
                     <td className="border px-2 py-2">
-                      {(((parseFloat(item.rate || 0) - 
-                        (parseFloat(item.rate || 0) * parseFloat(item.discount || 0)) / 100) * 
-                        parseFloat(item.quantity || 0) * 
-                        parseFloat(item.gst || 0)) / 100).toFixed(2)}
+                      {(
+                        ((parseFloat(item.rate || 0) -
+                          (parseFloat(item.rate || 0) *
+                            parseFloat(item.discount || 0)) /
+                            100) *
+                          parseFloat(item.quantity || 0) *
+                          parseFloat(item.gst || 0)) /
+                        100
+                      ).toFixed(2)}
                     </td>
                     <td className="border px-2 py-2">
                       {Number(item.total).toFixed(2)}

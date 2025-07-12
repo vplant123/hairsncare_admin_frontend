@@ -341,7 +341,7 @@ const Dashboard = () => {
         <StatCard
           className="bg-white"
           title="Today's Total Sales"
-          value={`₹ ${totalSales.toLocaleString()}`}
+          value={`₹ ${totalSales.toFixed(2)}`}
           icon={<IndianRupee className="h-6 w-6" />}
         />
       </div>
