@@ -57,6 +57,7 @@ const AddInvoice = () => {
 
   const [consultationFee, setConsultationFee] = useState(0);
   const [consultationGST, setConsultationGST] = useState(0);
+  const [discountAmount, setDiscountAmount] = useState(0);
 
   // Fetch Doctor Data
   const handleDoctorData = async () => {
@@ -213,7 +214,7 @@ const AddInvoice = () => {
 
     console.log("tempItems", tempItems);
     // Calculate total amount without applying coupon discount
-    let grandTotal = 0;
+    let total = 0;
     tempItems?.forEach(item => {
       const itemRate = parseFloat(item.rate || 0);
       const itemDiscount = parseFloat(item.discount || 0);
@@ -222,12 +223,12 @@ const AddInvoice = () => {
 
       const discountedRate = itemRate - (itemRate * itemDiscount) / 100;
       const subtotal = discountedRate * itemQuantity;
-      const gstAmount = subtotal * (itemGst / 100);
-      const totalFinalitemrate = subtotal + gstAmount;
+      // const gstAmount = subtotal * (itemGst / 100);
+      const totalFinalitemrate = subtotal;
 
-      grandTotal += totalFinalitemrate;
+      total += totalFinalitemrate;
     });
-    setTotalAmt(grandTotal);
+    setTotalAmt(total);
   };
 
   // New deleteItem logic based on user's code
@@ -242,19 +243,19 @@ const AddInvoice = () => {
 
     //
 
-    let grandTotal = 0;
+    let total = 0;
     temp?.forEach(item => {
       const discountedRate =
         parseFloat(item.rate || 0) -
         (parseFloat(item.rate || 0) * parseFloat(item.discount || 0)) / 100;
 
       const subtotal = discountedRate * parseFloat(item.quantity || 0);
-      const gstAmount = (subtotal * parseFloat(item.gst || 0)) / 100;
-      const totalFinalitemrate = subtotal + gstAmount;
+      // const gstAmount = (subtotal * parseFloat(item.gst || 0)) / 100;
+      const totalFinalitemrate = subtotal;
 
-      grandTotal += totalFinalitemrate;
+      total += totalFinalitemrate;
     });
-    setTotalAmt(grandTotal);
+    setTotalAmt(total);
 
     //
 
@@ -372,7 +373,6 @@ const AddInvoice = () => {
       name: name,
       mobile: mobile,
       address: address,
-      orderNumber: orderid,
       date: new Date().toISOString(),
       doctor: selectedDoctor,
       items: invoiceItems.map(item => ({
@@ -386,20 +386,10 @@ const AddInvoice = () => {
         expiryDate: item.expiryDate || "",
         hsn: item.hsn || "",
       })),
-      consultationFee: consultationFee,
-      consultationGST: consultationGST,
-      total: totalAmount,
-      paid: true,
-      paidAmt: grandTotal,
-      dues: 0,
-      orderId: orderId,
       orderDate: orderDate,
       paymentMode: paymentMethod || "cash",
-      totalDiscount: couponData?.couponPercent || 0,
-      couponDiscount: couponData?.couponPercent || 0,
-      couponCode: couponData?.couponCode || "",
-      originalOrderId: orderid || "",
-      totalAmount: grandTotal,
+      couponDiscount: discountAmount,
+      
       isActive: true,
     };
 
@@ -420,7 +410,7 @@ const AddInvoice = () => {
       const data = await response.json();
       if (response.ok) {
         console.log("Invoice created successfully and marked as paid", data);
-        setPaidAmount(grandTotal);
+        setPaidAmount(totalAmount);
         toast({
           title: "Success",
           description: "Invoice saved and marked as paid successfully.",
@@ -448,31 +438,22 @@ const AddInvoice = () => {
   };
 
   // Calculate consultation GST amount
-  const consultationGSTAmount = (consultationFee * consultationGST) / 100;
+
   // Calculate total consultation charge (fee + GST)
-  const totalConsultationCharge =
-    Number(consultationFee) + Number(consultationGSTAmount);
 
   // Update grand total to include consultation charge and coupon discount
-  const couponDiscount = couponData?.couponPercent
-    ? (totalAmt * couponData.couponPercent) / 100
-    : 0;
-  const amountAfterDiscount = totalAmt - couponDiscount;
-  const shippingCharges = amountAfterDiscount < 2000 ? 200 : 0;
-  const grandTotal =
-    amountAfterDiscount + shippingCharges + totalConsultationCharge;
 
-  const totalGST = invoiceItems.reduce((sum, item) => {
-    // Calculate GST for each item: (rate - discount) * quantity * (gst / 100)
-    const rate = parseFloat(item.rate || 0);
-    const discount = parseFloat(item.discount || 0);
-    const quantity = parseFloat(item.quantity || 0);
-    const gst = parseFloat(item.gst || 0);
+  // const totalGST = invoiceItems.reduce((sum, item) => {
+  //   // Calculate GST for each item: (rate - discount) * quantity * (gst / 100)
+  //   const rate = parseFloat(item.rate || 0);
+  //   const discount = parseFloat(item.discount || 0);
+  //   const quantity = parseFloat(item.quantity || 0);
+  //   const gst = parseFloat(item.gst || 0);
 
-    const taxableAmount = (rate - discount) * quantity;
-    const gstAmount = taxableAmount * (gst / 100);
-    return sum + gstAmount;
-  }, 0);
+  //   const taxableAmount = (rate - discount) * quantity;
+  //   const gstAmount = taxableAmount * (gst / 100);
+  //   return sum + gstAmount;
+  // }, 0);
 
   // In the component, before rendering invoiceItems, create a consultation row object
   const consultationRow = {
@@ -491,6 +472,24 @@ const AddInvoice = () => {
     ).toFixed(2),
     isConsultation: true,
   };
+
+  // Calculate total taxable amount for all items (before GST)
+  const totalTaxableAmount = invoiceItems.reduce((sum, item) => {
+    const rate = parseFloat(item.rate || 0);
+    const discount = parseFloat(item.discount || 0);
+    const quantity = parseFloat(item.quantity || 0);
+
+    const discountedRate = rate - (rate * discount) / 100;
+    const taxableAmount = discountedRate * quantity;
+    return sum + taxableAmount;
+  }, 0);
+
+  const discountedTaxableAmount = Math.max(
+    totalTaxableAmount - discountAmount,
+    0
+  );
+  const shippingCharges = discountedTaxableAmount < 2000 ? 200 : 0;
+  const grandTotal = discountedTaxableAmount + shippingCharges;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -550,7 +549,7 @@ const AddInvoice = () => {
                   />
                 </div>
               </div>
-              <div>
+              {/* <div>
                 <Label htmlFor="address">Order ID</Label>
                 <div className="relative">
                   <Input
@@ -566,7 +565,7 @@ const AddInvoice = () => {
                     </div>
                   )}
                 </div>
-              </div>
+              </div> */}
             </div>
             <div className="space-y-4">
               <div>
@@ -868,14 +867,7 @@ const AddInvoice = () => {
                             (parseFloat(item.rate || 0) *
                               parseFloat(item.discount || 0)) /
                               100) *
-                            parseFloat(item.quantity || 0) +
-                          ((parseFloat(item.rate || 0) -
-                            (parseFloat(item.rate || 0) *
-                              parseFloat(item.discount || 0)) /
-                              100) *
-                            parseFloat(item.quantity || 0) *
-                            parseFloat(item.gst || 0)) /
-                            100
+                          parseFloat(item.quantity || 0)
                         ).toFixed(2)}
                       </TableCell>
 
@@ -911,12 +903,30 @@ const AddInvoice = () => {
 
               <div className="flex justify-between py-2">
                 <span className="font-medium">
-                  Products Total (Final Amount):
+                  Products Total (Taxable Amount):
                 </span>
-                <span className="font-bold">₹{totalAmt.toFixed(2)}</span>
+                <span className="font-bold">
+                  ₹{totalTaxableAmount.toFixed(2)}
+                </span>
               </div>
-
-              {couponData?.couponPercent > 0 && (
+              <div className="flex justify-between py-2">
+                <span className="font-medium">Discount Amount:</span>
+                <input
+                  type="number"
+                  min="0"
+                  value={discountAmount}
+                  onChange={e => setDiscountAmount(Number(e.target.value))}
+                  className="border rounded px-2 py-1 w-24 text-right"
+                  placeholder="Enter discount"
+                />
+              </div>
+              <div className="flex justify-between py-2">
+                <span className="font-medium">Amount After Discount:</span>
+                <span className="font-bold">
+                  ₹{discountedTaxableAmount.toFixed(2)}
+                </span>
+              </div>
+              {/* {couponData?.couponPercent > 0 && (
                 <>
                   <div className="flex justify-between py-2">
                     <span className="font-medium">
@@ -934,12 +944,18 @@ const AddInvoice = () => {
                     </span>
                   </div>
                 </>
-              )}
+              )} */}
               <div className="flex justify-between py-2">
-                <span className="font-medium">Shipping Charges:</span>
+                <span className="font-medium">Delivery Charges:</span>
                 <span className="font-bold">
                   {shippingCharges > 0 ? `₹${shippingCharges}` : "Free"}
                 </span>
+              </div>
+              <div className="flex justify-between py-2">
+                <span className="font-medium">
+                  Total After Delivery Charges:
+                </span>
+                <span className="font-bold">₹{grandTotal.toFixed(2)}</span>
               </div>
               {/* <div className="flex justify-between py-2">
                 <span className="font-medium">Consultation Fee:</span>
@@ -948,18 +964,10 @@ const AddInvoice = () => {
                 </span>
               </div> */}
 
-              <div className="flex justify-between py-2 border-t border-gray-300 pt-2 mt-2">
-                <span className="font-bold text-lg">Grand Total:</span>
-                <span className="font-bold text-lg">
-                  ₹{grandTotal.toFixed(2)}
-                </span>
-              </div>
-
+              {/* Remove Grand Total row from summary */}
               <div className="flex justify-between py-2 border-t border-gray-300 pt-2 mt-2">
                 <span className="font-medium">Due Amount:</span>
-                <span className="font-bold">
-                  ₹{(grandTotal - paidAmount).toFixed(2)}
-                </span>
+                <span className="font-bold">₹0.00</span>
               </div>
             </div>
           </div>

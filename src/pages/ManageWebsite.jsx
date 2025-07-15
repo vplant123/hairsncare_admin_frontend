@@ -570,6 +570,8 @@ const ManageWebsite = () => {
           <ManagePrice 
             content={content?.plan} 
             content1={content?.config}
+            content2={content?.customerVideos}
+            
           />
         )}
         {selectedTab === "Contact Us" && (

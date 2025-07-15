@@ -47,6 +47,9 @@ interface CouponFormData {
   percent: number;
   validity: string;
   isActive: boolean;
+  discountType: 'percent' | 'fixed';
+  fixedAmount?: number;
+  minOrderAmount?: number;
 }
 
 const Coupons = () => {
@@ -73,6 +76,9 @@ const Coupons = () => {
     percent: 0,
     validity: "",
     isActive: true,
+    discountType: 'percent',
+    fixedAmount: 0,
+    minOrderAmount: 0,
   };
 
   const [formData, setFormData] = useState<CouponFormData>(initialFormData);
@@ -89,6 +95,9 @@ const Coupons = () => {
           ? new Date(selectedCoupon.validity).toISOString().split("T")[0]
           : "",
         isActive: selectedCoupon.isActive ?? true,
+        discountType: selectedCoupon.discountType || 'percent',
+        fixedAmount: selectedCoupon.fixedAmount || 0,
+        minOrderAmount: selectedCoupon.minOrderAmount || 0,
       });
     } else if (!createCouponOpen) {
       setFormData(initialFormData);
@@ -123,15 +132,28 @@ const Coupons = () => {
     }
 
     // Validate percent
-    if (formData.percent <= 0 || formData.percent > 100) {
-      toast({
-        title: "Validation Error",
-        description: "Percent must be between 0 and 100.",
-        className: "bg-red-50 border-red-200",
-        variant: "destructive",
-        duration: 5000,
-      });
-      return false;
+    if (formData.discountType === 'percent') {
+      if (formData.percent <= 0 || formData.percent > 100) {
+        toast({
+          title: "Validation Error",
+          description: "Percent must be between 0 and 100.",
+          className: "bg-red-50 border-red-200",
+          variant: "destructive",
+          duration: 5000,
+        });
+        return false;
+      }
+    } else if (formData.discountType === 'fixed') {
+      if (!formData.fixedAmount || formData.fixedAmount <= 0) {
+        toast({
+          title: "Validation Error",
+          description: "Fixed Amount must be greater than 0.",
+          className: "bg-red-50 border-red-200",
+          variant: "destructive",
+          duration: 5000,
+        });
+        return false;
+      }
     }
 
     // Validate validity date
@@ -175,6 +197,19 @@ const Coupons = () => {
         toast({
           title: "Validation Error",
           description: "Percent must be between 0 and 100.",
+          className: "bg-red-50 border-red-200",
+          variant: "destructive",
+          duration: 5000,
+        });
+        return;
+      }
+    }
+    if (field === "fixedAmount") {
+      const numValue = Number(value);
+      if (isNaN(numValue) || numValue < 0) {
+        toast({
+          title: "Validation Error",
+          description: "Fixed Amount must be 0 or greater.",
           className: "bg-red-50 border-red-200",
           variant: "destructive",
           duration: 5000,
@@ -260,7 +295,10 @@ const Coupons = () => {
         code: formData.code,
         _id: null,
         validity: formData.validity,
-        percent: formData.percent,
+        percent: formData.discountType === 'percent' ? formData.percent : undefined,
+        fixedAmount: formData.discountType === 'fixed' ? formData.fixedAmount : undefined,
+        discountType: formData.discountType,
+        minOrderAmount: formData.minOrderAmount,
         type: formData.type,
         isActive: formData.isActive ?? true,
       };
@@ -328,7 +366,10 @@ const Coupons = () => {
         code: formData.code,
         _id: formData._id,
         validity: formData.validity,
-        percent: formData.percent,
+        percent: formData.discountType === 'percent' ? formData.percent : undefined,
+        fixedAmount: formData.discountType === 'fixed' ? formData.fixedAmount : undefined,
+        discountType: formData.discountType,
+        minOrderAmount: formData.minOrderAmount,
         type: formData.type,
         isActive: formData.isActive,
       };
@@ -519,6 +560,15 @@ const Coupons = () => {
     return `${day} ${month} ${year}`;
   };
 
+  function formatDateDMY(dateString: string) {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = date.toLocaleString('default', { month: 'long' });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  }
+
   // Filter coupons by search, status, and expiry
   const filteredCoupons = coupons.filter((coupon) => {
     const now = new Date();
@@ -568,6 +618,17 @@ const Coupons = () => {
   const openEditModal = (coupon: any) => {
     setSelectedCoupon(coupon);
     setCreateCouponOpen(true);
+  };
+
+  const isFormValid = () => {
+    if (!formData.code || !formData.validity || !formData.type) return false;
+    if (formData.discountType === 'percent') {
+      if (!formData.percent || formData.percent <= 0 || formData.percent > 100) return false;
+    } else if (formData.discountType === 'fixed') {
+      if (!formData.fixedAmount || formData.fixedAmount <= 0) return false;
+    }
+    if (formData.minOrderAmount === undefined || formData.minOrderAmount === null || formData.minOrderAmount < 0) return false;
+    return true;
   };
 
   return (
@@ -631,86 +692,56 @@ const Coupons = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Coupon Code</TableHead>
-                      <TableHead>Discount</TableHead>
-                      <TableHead>Expiry Date</TableHead>
-                      <TableHead>Status</TableHead>
+                      <TableHead>Code</TableHead>
+                      <TableHead>Discount Type</TableHead>
+                      <TableHead>Discount Value</TableHead>
+                      <TableHead>Min Order Amount</TableHead>
                       <TableHead>Type</TableHead>
-                      <TableHead>Active</TableHead>
+                      <TableHead>Validity</TableHead>
+                      <TableHead>Status</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
-
                   <TableBody>
-                    {coupons.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8">
-                          No coupons found. Create a new coupon to get started.
+                    {currentCoupons.map((coupon) => (
+                      <TableRow key={coupon._id}>
+                        <TableCell>{coupon.code}</TableCell>
+                        <TableCell>{coupon.discountType === 'fixed' ? 'Fixed Amount' : 'Percent'}</TableCell>
+                        <TableCell>
+                          {coupon.discountType === 'fixed'
+                            ? `₹${coupon.fixedAmount}`
+                            : `${coupon.percent}%`}
+                        </TableCell>
+                        <TableCell>{coupon.minOrderAmount ? `₹${coupon.minOrderAmount}` : '-'}</TableCell>
+                        <TableCell>
+                          {coupon.type === '1' ? 'Hair Test' : coupon.type === '2' ? 'Order' : 'Both'}
+                        </TableCell>
+                        <TableCell>{coupon.validity ? formatDateDMY(coupon.validity) : '-'}</TableCell>
+                        <TableCell>
+                          {coupon.isActive ? (
+                            <Badge variant="default">Active</Badge>
+                          ) : (
+                            <Badge variant="destructive">Inactive</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => openEditModal(coupon)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteCoupon(coupon._id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </TableCell>
                       </TableRow>
-                    ) : currentCoupons.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8">
-                          No coupons found matching your filters.
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      currentCoupons.map((coupon) => {
-                        const expiry = new Date(coupon.validity);
-                        expiry.setHours(23, 59, 59, 999); // Set to end of the validity day
-                        const isExpired = expiry < new Date();
-                        return (
-                          <TableRow key={coupon._id}>
-                            <TableCell className="font-medium">
-                              {coupon.code}
-                            </TableCell>
-                            <TableCell>
-                              {`${coupon.percent}%`}
-                            </TableCell>
-                            <TableCell>{formatDate(coupon.validity)}</TableCell>
-                            <TableCell>
-                              <Badge
-                                className={`${
-                                  !isExpired && coupon.isActive
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-red-100 text-red-800"
-                                } px-3 py-1 text-sm rounded-full font-medium`}
-                              >
-                                {!isExpired && coupon.isActive ? "Active" : "Not Active"}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              {coupon.type === "1" ? "Hair Test" : 
-                               coupon.type === "2" ? "Order" : 
-                               coupon.type === "3" ? "Both" : "-"}
-                            </TableCell>
-                            <TableCell>
-                              <Switch
-                                checked={!isExpired && coupon.isActive}
-                                disabled={isExpired}
-                                onCheckedChange={() => handleToggleCouponStatus(coupon._id)}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => openEditModal(coupon)}
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleDeleteCoupon(coupon._id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })
-                    )}
+                    ))}
                   </TableBody>
                 </Table>
 
@@ -789,7 +820,68 @@ const Coupons = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <div className="flex items-center">
-                    <Percent className="h-4 w-4 mr-2 text-muted-foreground" />
+                  
+                    <span>Discount Type</span>
+                  </div>
+                  <Select
+                    value={formData.discountType}
+                    onValueChange={(value) => handleInputChange("discountType", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select discount type" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="percent">Percent</SelectItem>
+                      <SelectItem value="fixed">Fixed Amount</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {formData.discountType === 'percent' && (
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                   
+                      <span>Discount Percentage</span>
+                    </div>
+                    <Input
+                      type="number"
+                      value={formData.percent}
+                      onChange={(e) => handleInputChange("percent", Number(e.target.value))}
+                      placeholder="Enter discount percentage"
+                      min="0"
+                      max="100"
+                    />
+                  </div>
+                )}
+                {formData.discountType === 'fixed' && (
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                     
+                      <span>Fixed Amount</span>
+                    </div>
+                    <Input
+                      type="number"
+                      value={formData.fixedAmount}
+                      onChange={(e) => handleInputChange("fixedAmount", Number(e.target.value))}
+                      placeholder="Enter fixed amount"
+                      min="0"
+                    />
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                 
+                    <span>Minimum Order Amount</span>
+                  </div>
+                  <Input
+                    type="number"
+                    value={formData.minOrderAmount}
+                    onChange={(e) => handleInputChange("minOrderAmount", Number(e.target.value))}
+                    placeholder="Enter minimum order amount"
+                    min="0"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center">
                     <span>Type</span>
                   </div>
                   <Select
@@ -805,21 +897,6 @@ const Coupons = () => {
                       <SelectItem value="3">Both</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center">
-                    <Percent className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span>Discount Percentage</span>
-                  </div>
-                  <Input
-                    type="number"
-                    value={formData.percent}
-                    onChange={(e) => handleInputChange("percent", Number(e.target.value))}
-                    placeholder="Enter discount percentage"
-                    min="0"
-                    max="100"
-                  />
                 </div>
               </div>
 
@@ -860,9 +937,7 @@ const Coupons = () => {
                 onClick={() =>
                   selectedCoupon ? handleEditSubmit() : handleCreateCoupon()
                 }
-                disabled={
-                  !formData.code || !formData.percent || !formData.validity
-                }
+                disabled={!isFormValid()}
               >
                 {selectedCoupon ? "Update Coupon" : "Create New Coupon"}
               </Button>

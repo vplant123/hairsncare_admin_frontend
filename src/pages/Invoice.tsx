@@ -244,7 +244,12 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                       ).toFixed(2)}
                     </td>
                     <td className="border px-2 py-2">
-                      {Number(item.total).toFixed(2)}
+                      {(
+                        parseFloat(item.rate || 0) -
+                        (parseFloat(item.rate || 0) *
+                          parseFloat(item.discount || 0)) /
+                          100
+                      ).toFixed(2)}
                     </td>
                   </tr>
                 ))}
@@ -559,7 +564,7 @@ const Invoice = () => {
                             ₹ {formatNumberToTwoDecimals(invoice.paidAmt)}
                           </TableCell>
                           <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
-                            ₹ {formatNumberToTwoDecimals(invoice.dues)}
+                            ₹ {formatNumberToTwoDecimals(invoice.dues) || 0}
                           </TableCell>
                           <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
                             {invoice.paymentMode}

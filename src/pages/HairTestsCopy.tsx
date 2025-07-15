@@ -903,13 +903,12 @@ const HairTestsCopy = () => {
                       <TableCell>
                         <span
                           className={`inline-flex items-center justify-center w-24 h-6 rounded-full px-2.5 py-0.5 text-sm font-medium ${
-                            typeof test.orders?.amount === "number" &&
-                            test.orders.amount > 0
+                            test.orders?.amount > 0
                               ? "bg-green-100"
                               : "bg-yellow-100"
                           } text-gray-700`}
                         >
-                          {typeof test.orders?.amount === "number" &&
+                          { 
                           test.orders.amount > 0 ? (
                             `₹ ${test.orders.amount}`
                           ) : (
@@ -2668,6 +2667,7 @@ const HairTestsCopy = () => {
               value={amount}
               onChange={e => setAmount(e.target.value)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+              min={0}
             />
           </div>
 
