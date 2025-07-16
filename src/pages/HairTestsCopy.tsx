@@ -909,8 +909,8 @@ const HairTestsCopy = () => {
                           } text-gray-700`}
                         >
                           { 
-                          test.orders.amount > 0 ? (
-                            `₹ ${test.orders.amount}`
+                          test.orders?.amount > 0 ? (
+                            `₹ ${test.orders?.amount}`
                           ) : (
                             <button
                               onClick={() => handlepaymentstatus(test)}
