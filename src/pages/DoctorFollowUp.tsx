@@ -16,9 +16,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Eye, Search, FileText } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 
 const DoctorFollowUp = () => {
@@ -30,6 +39,7 @@ const DoctorFollowUp = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isCompletedModalOpen, setIsCompletedModalOpen] = useState(false);
 
   function formatDateArrowStyle(isoString) {
     const date = new Date(isoString);
@@ -141,7 +151,7 @@ const DoctorFollowUp = () => {
                   placeholder="Search appointments..."
                   className="px-10"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
@@ -153,13 +163,13 @@ const DoctorFollowUp = () => {
               <span>Rows per page&nbsp;</span>
               <select
                 value={rowsPerPage}
-                onChange={(e) => {
+                onChange={e => {
                   setRowsPerPage(Number(e.target.value));
                   setCurrentPage(1); // Reset to first page
                 }}
                 className="border rounded px-2 py-1"
               >
-                {[5, 10, 25, 50].map((num) => (
+                {[5, 10, 25, 50].map(num => (
                   <option key={num} value={num}>
                     {num}
                   </option>
@@ -184,7 +194,7 @@ const DoctorFollowUp = () => {
                 {"|<"}
               </button> */}
               <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 className="px-2"
               >
@@ -192,7 +202,7 @@ const DoctorFollowUp = () => {
               </button>
               <button
                 onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  setCurrentPage(prev => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
                 className="px-2"
@@ -223,6 +233,7 @@ const DoctorFollowUp = () => {
                   <TableHead>Type</TableHead>
                   <TableHead>FollowUp Date & Time</TableHead>
                   <TableHead>Action</TableHead>
+                  <TableHead>Report</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -245,7 +256,7 @@ const DoctorFollowUp = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paginatedAppointments.map((appointment) => (
+                  paginatedAppointments.map(appointment => (
                     <TableRow key={appointment._id}>
                       <TableCell>
                         {formatDateArrowStyle(appointment.createdAt)}
@@ -334,7 +345,7 @@ const DoctorFollowUp = () => {
                                 {/* View Prescription Button */}
                                 <Button
                                   variant="outline"
-                                  className= "h-8 mt-2 text-xs hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
+                                  className="h-8 mt-2 text-xs hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
                                   onClick={() =>
                                     window.open(
                                       `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${appointment._id}`,
@@ -388,12 +399,213 @@ const DoctorFollowUp = () => {
                           "N/A"
                         )}
                       </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center gap-1 text-health-primary"
+                          onClick={() => {
+                            setSelectedTest(appointment);
+                            setIsCompletedModalOpen(true);
+                          }}
+                        >
+                          View Report
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))
                 )}
               </TableBody>
             </Table>
           </div>
+
+          {/* Completed Test Report Modal */}
+          <Dialog
+            open={isCompletedModalOpen}
+            onOpenChange={setIsCompletedModalOpen}
+          >
+            <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+              {selectedTest && (
+                <div className="space-y-6 overflow-y-auto">
+                  <DialogHeader className="sticky top-0 z-10 pb-4">
+                    <DialogTitle>Completed Test Report</DialogTitle>
+                    <DialogDescription>
+                      View and manage completed test report
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  {/* Appointment Details Section */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">
+                      Appointment Details
+                    </h3>
+                    {selectedTest.appointments &&
+                    selectedTest.appointments.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">
+                            Appointment ID
+                          </label>
+                          <div className="p-2 border rounded-md bg-gray-50">
+                            {selectedTest.appointments[0]._id || "-"}
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Status</label>
+                          <div className="p-2 border rounded-md bg-gray-50">
+                            <span
+                              className={`${
+                                selectedTest.appointments[0].status?.toLowerCase() ===
+                                "pending"
+                                  ? "text-yellow-600"
+                                  : selectedTest.appointments[0].status?.toLowerCase() ===
+                                      "completed"
+                                    ? "text-green-600"
+                                    : "text-blue-600"
+                              }`}
+                            >
+                              {selectedTest.appointments[0].status || "Unknown"}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">
+                            Time Slot
+                          </label>
+                          <div className="p-2 border rounded-md bg-gray-50">
+                            {selectedTest.appointments[0].timeSlot || "-"}
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Doctor</label>
+                          <div className="p-2 border rounded-md bg-gray-50">
+                            {selectedTest.appointments[0].doctorId?.fullname ||
+                              "-"}
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">
+                            Appointment Date
+                          </label>
+                          <div className="p-2 border rounded-md bg-gray-50">
+                            {selectedTest.appointments[0].appointmentDate
+                              ? new Date(
+                                  selectedTest.appointments[0].appointmentDate
+                                ).toLocaleDateString("en-GB", {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                })
+                              : ""}
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">
+                            Created At
+                          </label>
+                          <div className="p-2 border rounded-md bg-gray-50">
+                            {selectedTest.appointments[0].createdAt
+                              ? new Date(
+                                  selectedTest.appointments[0].createdAt
+                                ).toLocaleDateString("en-GB", {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                })
+                              : ""}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      // <div className="p-3 border rounded-md bg-gray-50">
+                      //   <p className="text-gray-500 text-sm">
+                      //     No appointment details available
+                      //   </p>
+                      // </div>
+                      <div></div>
+                    )}
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Button
+                        variant="outline"
+                        className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
+                        onClick={() =>
+                          window.open(
+                            `${import.meta.env.VITE_FRONTEND_URL}/doctor-analyse-report/${selectedTest._id}`,
+                            "_blank"
+                          )
+                        }
+                      >
+                        <FileText className="h-4 w-4" />
+                        Assessment Report
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
+                        onClick={() =>
+                          window.open(
+                            `${import.meta.env.VITE_FRONTEND_URL}/management-report/${selectedTest._id}`,
+                            "_blank"
+                          )
+                        }
+                      >
+                        <FileText className="h-4 w-4" />
+                        Management Report
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
+                        onClick={() =>
+                          window.open(
+                            `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${selectedTest._id}`,
+                            "_blank"
+                          )
+                        }
+                      >
+                        <FileText className="h-4 w-4" />
+                        Prescription
+                      </Button>
+                    </div>
+                    <div className="flex flex-col sm:flex-row justify-end gap-3  mt-4 sticky bottom-0  ">
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsCompletedModalOpen(false)}
+                        className="w-full sm:w-auto px-6 hover:bg-gray-50 hover:text-gray-600 transition-colors duration-200"
+                      >
+                        Close
+                      </Button>
+                      <Button
+                        className="w-full sm:w-auto bg-primary hover:bg-health-primary/90 text-white px-6 transition-colors duration-200 flex items-center justify-center gap-2"
+                        onClick={() => {
+                          const baseUrl = `${import.meta.env.VITE_FRONTEND_URL}`;
+                          const path = "test-results";
+                          const testId = selectedTest?.followupOf || selectedTest?.hairTestId;
+                          if (testId) {
+                            window.open(
+                              `${baseUrl}/${path}/${testId}`,
+                              "_blank"
+                            );
+                          } else {
+                            toast({
+                              title: "Error",
+                              description: "Missing required data for this report.",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                      >
+                        <Eye className="h-4 w-4" />
+                        View Test Report
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
         </CardContent>
       </Card>
     </DashboardLayout>

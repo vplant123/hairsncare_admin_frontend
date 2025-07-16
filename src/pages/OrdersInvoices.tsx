@@ -688,7 +688,7 @@ const OrdersInvoices = () => {
                   <div>
                     <p className="text-sm text-gray-500">Total Amount</p>
                     <p className="font-medium">
-                      {selectedOrder.amount?.toFixed(2)} Rs
+                      {selectedOrder.totalAmount?.toFixed(2)} Rs
                     </p>
                   </div>
                   <div>
