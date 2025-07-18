@@ -1012,44 +1012,33 @@ const HairTestsCopy = () => {
 
                       <TableCell className="text-right">
                         <div className="flex flex-col gap-2 items-end">
-                          {test.appointments?.[0]?.status?.toLowerCase() !=
-                            "completed" && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className={`w-[180px] flex items-center justify-center gap-1 ${
-                                test.appointments?.[0]?.appointmentDate &&
-                                test.appointments?.[0]?.timeSlot
-                                  ? "bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 cursor-not-allowed opacity-70"
-                                  : "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-300"
-                              } transition-colors`}
-                              onClick={() => {
-                                if (
-                                  !(
-                                    test.appointments?.[0]?.appointmentDate &&
-                                    test.appointments?.[0]?.timeSlot
-                                  )
-                                ) {
+                          {test.appointments?.[0]?.status?.toLowerCase() !== "completed" && (
+                            test.appointments?.[0]?.doctorId ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-[180px] flex items-center justify-center gap-1 bg-green-50 text-green-600 border-green-200 cursor-not-allowed opacity-70"
+                                disabled
+                              >
+                                <span>Scheduled</span>
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-[180px] flex items-center justify-center gap-1 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-300"
+                                onClick={() => {
                                   setSelectedTest(test);
                                   setScheduleAppointment(prev => ({
                                     ...prev,
                                     hairTestId: test._id,
                                   }));
                                   setIsModalOpen(true);
-                                }
-                              }}
-                              disabled={
-                                test.appointments?.[0]?.appointmentDate &&
-                                test.appointments?.[0]?.timeSlot
-                              }
-                            >
-                              <span>
-                                {test.appointments?.[0]?.appointmentDate &&
-                                test.appointments?.[0]?.timeSlot
-                                  ? "Scheduled"
-                                  : "Schedule Appointment"}
-                              </span>
-                            </Button>
+                                }}
+                              >
+                                <span>Schedule Appointment</span>
+                              </Button>
+                            )
                           )}
                         </div>
                       </TableCell>
