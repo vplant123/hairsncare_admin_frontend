@@ -430,7 +430,7 @@ const OrdersInvoices = () => {
                       </TableCell>
                       <TableCell>{order.orderType}</TableCell>
                       <TableCell>{order.userId?.fullname}</TableCell>
-                      <TableCell>{order.totalAmount.toFixed(2)}</TableCell>
+                      <TableCell>{ Math.round(order.totalAmount)}</TableCell>
                       <TableCell>{order.mode}</TableCell>
                       <TableCell>
                         <Select
@@ -688,7 +688,7 @@ const OrdersInvoices = () => {
                   <div>
                     <p className="text-sm text-gray-500">Total Amount</p>
                     <p className="font-medium">
-                      {selectedOrder.totalAmount?.toFixed(2)} Rs
+                      { Math.round(selectedOrder.totalAmount) } Rs
                     </p>
                   </div>
                   <div>

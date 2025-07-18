@@ -211,25 +211,25 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                     <td className="border px-2 py-2">{item.hsn || ""}</td>
 
                     <td className="border px-2 py-2">
-                      {Number(item.rate).toFixed(2)}
+                      {Number( Math.round(item.rate))}
                     </td>
                     <td className="border px-2 py-2">
-                      {Number(item.discount || 0).toFixed(2)}%
+                      {Number( Math.round(item.discount || 0))}%
                     </td>
 
                     <td>
-                      {(
+                      { Math.round(
                         parseFloat(item.rate || 0) -
                         (parseFloat(item.rate || 0) *
                           parseFloat(item.discount || 0)) /
                           100
-                      ).toFixed(2)}
+                      )}
                     </td>
                     <td className="border px-2 py-2">
                       {Number(item.quantity)}
                     </td>
                     <td className="border px-2 py-2">
-                      {Number(item.gst || 0).toFixed(2)}%
+                      {Number( Math.round(item.gst || 0))}%
                     </td>
                     {/* <td className="border px-2 py-2">
                       {(
@@ -243,12 +243,12 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                       ).toFixed(2)}
                     </td> */}
                     <td className="border px-2 py-2">
-                      {(
+                      { Math.round(
                         parseFloat(item.rate || 0) -
                         (parseFloat(item.rate || 0) *
                           parseFloat(item.discount || 0)) /
                           100
-                      ).toFixed(2)}
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -279,23 +279,23 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                   Product Total (Final Amount)
                 </span>
                 <span className="font-bold">
-                  ₹ {Number(invoice.total || 0).toFixed(2)}
+                  ₹ {Number( Math.round(invoice.total || 0))}
                 </span>
               </div>
               <div className="flex justify-between py-1">
                 <span className="font-medium">Coupon Discount (₹)</span>
                 <span className="font-bold">
-                  ₹ {Number(invoice.couponDiscount || 0).toFixed(2)}
+                  ₹ {Number( Math.round(invoice.couponDiscount || 0))}
                 </span>
               </div>
               <div className="flex justify-between py-1">
                 <span className="font-medium">After Discount Amount</span>
                 <span className="font-bold">
                   ₹{" "}
-                  {(
+                  { Math.round(
                     Number(invoice.total || 0) -
                     Number(invoice.couponDiscount || 0)
-                  ).toFixed(2)}
+                      )}
                 </span>
               </div>{" "}
               <div className="flex justify-between py-1">
@@ -305,8 +305,8 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                   {Number(invoice.total || 0) -
                     Number(invoice.couponDiscount || 0) <
                   2000
-                    ? "200.00"
-                    : "0.00"}
+                    ? "200"
+                    : "0"}
                 </span>
               </div>
               {/* {invoice.consultationFee > 0 && (
@@ -330,7 +330,7 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                 <span className="font-medium">Total Invoice Amount</span>
                 <span className="font-bold">
                   ₹{" "}
-                  {(
+                  { Math.round(
                     Number(invoice.total || 0) -
                     Number(invoice.couponDiscount || 0) +
                     (Number(invoice.total || 0) -
@@ -338,7 +338,7 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                     2000
                       ? 200
                       : 0)
-                  ).toFixed(2)}
+                  )}
                 </span>
               </div>
             </div>
@@ -394,7 +394,7 @@ const InvoiceDetailsModal = ({ isOpen, selectedItems, onClose }) => {
                     {/* <TableCell>{item.discountPercent}</TableCell> */}
 
                     <TableCell>
-                      {(item.quantity * item.rate).toFixed(2)}
+                     { Math.round(item.quantity * item.rate)}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -473,7 +473,7 @@ const Invoice = () => {
   };
 
   function formatNumberToTwoDecimals(number) {
-    return Number(number).toFixed(2);
+    return Number ( Math.round(number));
   }
 
   return (

@@ -1006,26 +1006,26 @@ const FollowUp = () => {
 
                         <TableCell className="text-right whitespace-nowrap">
                           <div className="flex flex-row gap-2 items-end">
-                            {(test.status?.toLowerCase() === "completed" &&
-                              test.appointmentDate ? (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  disabled
-                                  className="w-[180px] flex items-center justify-center gap-1 bg-green-100 text-green-700 border-green-200"
-                                >
-                                  <span>Scheduled</span>
-                                </Button>
-                              ) : (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="w-[180px] flex items-center justify-center gap-1 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 transition-colors"
-                                  onClick={() => handleFollowUp(test)}
-                                >
-                                  <span>Schedule Follow Up</span>
-                                </Button>
-                              ))}
+                            {test.status?.toLowerCase() === "completed" &&
+                            test.appointmentDate ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                disabled
+                                className="w-[180px] flex items-center justify-center gap-1 bg-green-100 text-green-700 border-green-200"
+                              >
+                                <span>Scheduled</span>
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-[180px] flex items-center justify-center gap-1 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 transition-colors"
+                                onClick={() => handleFollowUp(test)}
+                              >
+                                <span>Schedule Follow Up</span>
+                              </Button>
+                            )}
                             {test.status?.toLowerCase() === "pending" && (
                               <Button
                                 variant="outline"
@@ -1799,7 +1799,6 @@ const FollowUp = () => {
         </DialogContent>
       </Dialog>
 
-      
       {/* Viewv report Date Modal */}
       <Dialog
         open={isCompletedModalOpen}
@@ -1945,8 +1944,6 @@ const FollowUp = () => {
                       Prescription
                     </Button>
 
-                    {/* The following button is removed as per user request */}
-                    {/*
                     <Button
                       variant="outline"
                       className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
@@ -1954,7 +1951,6 @@ const FollowUp = () => {
                       <CheckCircle className="h-4 w-4" />
                       Report Send Complete
                     </Button>
-                    */}
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
@@ -1996,7 +1992,10 @@ const FollowUp = () => {
       </Dialog>
 
       {/* View Report Modal */}
-      <Dialog open={isViewReportModalOpen} onOpenChange={setIsViewReportModalOpen}>
+      <Dialog
+        open={isViewReportModalOpen}
+        onOpenChange={setIsViewReportModalOpen}
+      >
         <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
           {selectedTestForView && (
             <div className="space-y-6">
@@ -2039,29 +2038,29 @@ const FollowUp = () => {
                     <label className="text-sm font-medium">Created Date</label>
                     <div className="p-2 border rounded-md bg-gray-50">
                       {selectedTestForView.createdAt
-                        ? new Date(selectedTestForView.createdAt).toLocaleDateString(
-                            "en-GB",
-                            {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            }
-                          )
+                        ? new Date(
+                            selectedTestForView.createdAt
+                          ).toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })
                         : "N/A"}
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Follow Up Date</label>
+                    <label className="text-sm font-medium">
+                      Follow Up Date
+                    </label>
                     <div className="p-2 border rounded-md bg-gray-50">
                       {selectedTestForView.followUpDate
-                        ? new Date(selectedTestForView.followUpDate).toLocaleDateString(
-                            "en-GB",
-                            {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            }
-                          )
+                        ? new Date(
+                            selectedTestForView.followUpDate
+                          ).toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })
                         : "Not Scheduled"}
                     </div>
                   </div>
@@ -2097,23 +2096,16 @@ const FollowUp = () => {
                     </Button>
                     <Button
                       variant="outline"
-                      className={`w-full flex items-center justify-center gap-2 ${
-                        selectedTestForView.isReportSent 
-                          ? "bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 transition-colors"
-                          : "bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed"
-                      }`}
+                      className="bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 transition-colors"
                       onClick={() => {
-                        if (selectedTestForView.isReportSent) {
-                          window.open(
-                            `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${selectedTestForView._id}`,
-                            "_blank"
-                          );
-                        }
+                        window.open(
+                          `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${selectedTestForView._id}`,
+                          "_blank"
+                        );
                       }}
-                      disabled={!selectedTestForView.isReportSent}
                     >
                       <Pill className="h-4 w-4" />
-                      {selectedTestForView.isReportSent ? "View Prescription" : "Prescription Not Available"}
+                      {"View Prescription"}
                     </Button>
                   </div>
                 </div>
