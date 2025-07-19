@@ -771,18 +771,18 @@ const OrdersInvoices = () => {
 
                         {/* New Fields: Category, SubCategory, GST, Expiry Date, Batch No, and Manufacturer */}
                         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                          <div>
+                          {/* <div>
                             <p className="text-sm text-gray-500">Category</p>
                             <p className="font-medium text-gray-800">
                               {product.item.category}
                             </p>
-                          </div>
-                          <div>
+                          </div> */}
+                          {/* <div>
                             <p className="text-sm text-gray-500">SubCategory</p>
                             <p className="font-medium text-gray-800">
                               {product.item.subCategory}
                             </p>
-                          </div>
+                          </div> */}
                           <div>
                             <p className="text-sm text-gray-500">GST</p>
                             <p className="font-medium text-gray-800">
@@ -803,14 +803,14 @@ const OrdersInvoices = () => {
                               {product.item.batchNo}
                             </p>
                           </div>
-                          <div>
+                          {/* <div>
                             <p className="text-sm text-gray-500">
                               Manufacturer
                             </p>
                             <p className="font-medium text-gray-800">
                               {product.item.mfgName}
                             </p>
-                          </div>
+                          </div> */}
                         </div>
 
                         <div className="mt-4">

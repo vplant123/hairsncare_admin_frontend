@@ -208,7 +208,7 @@ const AddInvoice = () => {
     const gstAmount = subtotal * (gst / 100);
     const totalForItem = subtotal + gstAmount;
 
-    currentItem["total"] = totalForItem.toFixed(2);
+    currentItem["total"] = totalForItem;
 
     setInvoiceItems(tempItems);
 
@@ -287,7 +287,7 @@ const AddInvoice = () => {
       return;
     }
 
-    const totalAmount = totalAmt;
+    const totalAmount = Number(totalAmt);
     const orderId = `ORD-${
       new Date().toISOString().split("T")[0]
     }-${Math.random().toString(36).substr(2, 9)}`;
@@ -302,11 +302,11 @@ const AddInvoice = () => {
       doctor: selectedDoctor,
       items: invoiceItems.map(item => ({
         item: item.description, // Store product's _id as item
-        quantity: item.quantity?.toString() || "",
-        rate: item.rate?.toString() || "",
-        discount: item.discount?.toString() || "",
-        gst: item.gst?.toString() || "",
-        total: item.total?.toString() || "",
+        quantity: Number(item.quantity) || "",
+        rate: Number(item.rate) || "",
+        discount: Number(item.discount) || "",
+        gst: Number(item.gst) || "",
+        total: Number(item.total) || "",
         batchNo: item.batchNo || "",
         expiryDate: item.expiryDate || "",
         hsn: item.hsn || "",
@@ -363,7 +363,7 @@ const AddInvoice = () => {
       return;
     }
 
-    const totalAmount = totalAmt;
+    const totalAmount = Number(totalAmt);
     const orderId = `ORD-${
       new Date().toISOString().split("T")[0]
     }-${Math.random().toString(36).substr(2, 9)}`;
@@ -377,19 +377,19 @@ const AddInvoice = () => {
       doctor: selectedDoctor,
       items: invoiceItems.map(item => ({
         item: item.description,
-        quantity: item.quantity?.toString() || "",
-        rate: item.rate?.toString() || "",
-        discount: item.discount?.toString() || "",
-        gst: item.gst?.toString() || "",
-        total: item.total?.toString() || "",
+        quantity: Number(item.quantity) || 0,
+        rate: Number(item.rate) || 0,
+        discount: Number(item.discount) || 0,
+        gst: Number(item.gst) || 0,
+        total: Number(item.total) || 0,
         batchNo: item.batchNo || "",
         expiryDate: item.expiryDate || "",
         hsn: item.hsn || "",
       })),
       orderDate: orderDate,
       paymentMode: paymentMethod || "cash",
-      couponDiscount: discountAmount,
-      
+      couponDiscount: Number(discountAmount) || 0,
+      totalAmount: Number(totalAmount),
       isActive: true,
     };
 
@@ -469,15 +469,15 @@ const AddInvoice = () => {
     total: (
       Number(consultationFee) +
       (Number(consultationFee) * Number(consultationGST)) / 100
-    ).toFixed(2),
+    ),
     isConsultation: true,
   };
 
   // Calculate total taxable amount for all items (before GST)
   const totalTaxableAmount = invoiceItems.reduce((sum, item) => {
-    const rate = parseFloat(item.rate || 0);
-    const discount = parseFloat(item.discount || 0);
-    const quantity = parseFloat(item.quantity || 0);
+    const rate = Number(item.rate) || 0;
+    const discount = Number(item.discount) || 0;
+    const quantity = Number(item.quantity) || 0;
 
     const discountedRate = rate - (rate * discount) / 100;
     const taxableAmount = discountedRate * quantity;
@@ -485,11 +485,11 @@ const AddInvoice = () => {
   }, 0);
 
   const discountedTaxableAmount = Math.max(
-    totalTaxableAmount - discountAmount,
+    Math.round(Number(totalTaxableAmount) - Number(discountAmount)),
     0
   );
-  const shippingCharges = discountedTaxableAmount < 2000 ? 200 : 0;
-  const grandTotal = discountedTaxableAmount + shippingCharges;
+  const shippingCharges = Math.round(Number(discountedTaxableAmount)) < 2000 ? 200 : 0;
+  const grandTotal = Math.round(Number(discountedTaxableAmount) + Number(shippingCharges));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -647,9 +647,9 @@ const AddInvoice = () => {
                   <TableHead className="2 py-1 border font-semibold">
                     GST RATE(%)
                   </TableHead>
-                  <TableHead className="2 py-1 border font-semibold">
+                  {/* <TableHead className="2 py-1 border font-semibold">
                     GST AMT( ₹)
-                  </TableHead>
+                  </TableHead> */}
                   <TableHead className="2 py-1 border font-semibold">
                     FINAL AMT.( ₹)
                   </TableHead>
@@ -810,12 +810,12 @@ const AddInvoice = () => {
                         />
                       </TableCell>
                       <TableCell className="2 py-1 border font-semibold">
-                        {(
-                          parseFloat(item.rate || 0) -
-                          (parseFloat(item.rate || 0) *
-                            parseFloat(item.discount || 0)) /
-                            100
-                        ).toFixed(2)}
+                        {Math.round(
+                          (Number(item.rate || 0) -
+                            (Number(item.rate || 0) *
+                              Number(item.discount || 0)) /
+                              100)
+                        )}
                       </TableCell>
 
                       <TableCell className="2 py-1 border font-semibold">
@@ -830,13 +830,13 @@ const AddInvoice = () => {
                         />
                       </TableCell>
                       <TableCell className="2 py-1 border font-semibold">
-                        {(
-                          (parseFloat(item.rate || 0) -
-                            (parseFloat(item.rate || 0) *
-                              parseFloat(item.discount || 0)) /
+                        {Math.round(
+                          (Number(item.rate || 0) -
+                            (Number(item.rate || 0) *
+                              Number(item.discount || 0)) /
                               100) *
-                          parseFloat(item.quantity || 0)
-                        ).toFixed(2)}
+                          Number(item.quantity || 0)
+                        )}
                       </TableCell>
 
                       <TableCell className="2 py-1 border font-semibold">
@@ -850,25 +850,25 @@ const AddInvoice = () => {
                           max="100"
                         />
                       </TableCell>
-                      <TableCell className="2 py-1 border font-semibold">
-                        {(
-                          ((parseFloat(item.rate || 0) -
-                            (parseFloat(item.rate || 0) *
-                              parseFloat(item.discount || 0)) /
+                      {/* <TableCell className="2 py-1 border font-semibold">
+                        {Math.round(
+                          ((Number(item.rate || 0) -
+                            (Number(item.rate || 0) *
+                              Number(item.discount || 0)) /
                               100) *
-                            parseFloat(item.quantity || 0) *
-                            parseFloat(item.gst || 0)) /
+                            Number(item.quantity || 0) *
+                            Number(item.gst || 0)) /
                           100
-                        ).toFixed(2)}
-                      </TableCell>
+                        )}
+                      </TableCell> */}
                       <TableCell className="2 py-1 border font-semibold">
-                        {(
-                          (parseFloat(item.rate || 0) -
-                            (parseFloat(item.rate || 0) *
-                              parseFloat(item.discount || 0)) /
+                        {Math.round(
+                          (Number(item.rate || 0) -
+                            (Number(item.rate || 0) *
+                              Number(item.discount || 0)) /
                               100) *
-                          parseFloat(item.quantity || 0)
-                        ).toFixed(2)}
+                          Number(item.quantity || 0)
+                        )}
                       </TableCell>
 
                       <TableCell className="2 py-1 border font-semibold">
@@ -906,7 +906,7 @@ const AddInvoice = () => {
                   Products Total (Taxable Amount):
                 </span>
                 <span className="font-bold">
-                  ₹{totalTaxableAmount.toFixed(2)}
+                  ₹{Math.round(totalTaxableAmount)}
                 </span>
               </div>
               <div className="flex justify-between py-2">
@@ -923,7 +923,7 @@ const AddInvoice = () => {
               <div className="flex justify-between py-2">
                 <span className="font-medium">Amount After Discount:</span>
                 <span className="font-bold">
-                  ₹{discountedTaxableAmount.toFixed(2)}
+                  ₹{discountedTaxableAmount}
                 </span>
               </div>
               {/* {couponData?.couponPercent > 0 && (
@@ -955,7 +955,7 @@ const AddInvoice = () => {
                 <span className="font-medium">
                   Total After Delivery Charges:
                 </span>
-                <span className="font-bold">₹{grandTotal.toFixed(2)}</span>
+                <span className="font-bold">₹{grandTotal}</span>
               </div>
               {/* <div className="flex justify-between py-2">
                 <span className="font-medium">Consultation Fee:</span>

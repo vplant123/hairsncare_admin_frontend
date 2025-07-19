@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import html2pdf from "html2pdf.js"; // Corrected import
+import { max } from "date-fns";
 
 // Modal Component for Invoice Form
 const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
@@ -75,62 +76,62 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
           {/* <div className="font-bold text-lg py-2  ">
             Tax Invoice/Bill of Supply/Cash Memo
           </div> */}
-        <div className="flex flex-col md:flex-row justify-between mb-2 gap-2">
- 
-  <div className="text-left max-w-full md:max-w-xs overflow-hidden">
-    <div className="font-bold text-sm py-2">SOLD BY:</div>
-    <div className="font-bold text-sm py-2">VPLANT CHEMIST</div>
-    <div className="max-w-xs text-xs leading-relaxed overflow-hidden">
-      <b>Email :</b> info@hairsncares.com
-      <br />
-      <b>Website:</b> www.hairsncares.com
-      <br />
-      <b>LICENSE No. :</b> MH-MZ6-537527
-      <br />
-      <b>Doctor Name:</b> {"Dr. Amit Agarkar"}
-    </div>
-    <div>
-      <div className="font-bold text-sm py-2">Registered Address:</div>
-      <div className="text-xs overflow-hidden">
-        First Floor, Solitaire 1, A-102, New Link Rd,<br />
-        Opposite Infinity Mall, Malad West,<br /> Mumbai,
-        Maharashtra 400064
-      </div>
-    </div>
-  </div>
+          <div className="flex flex-col md:flex-row justify-between mb-2 gap-2">
+            <div className="text-left max-w-full md:max-w-xs overflow-hidden">
+              <div className="font-bold text-sm py-2">SOLD BY:</div>
+              <div className="font-bold text-sm py-2">VPLANT CHEMIST</div>
+              <div className="max-w-xs text-xs leading-relaxed overflow-hidden">
+                <b>Email :</b> info@hairsncares.com
+                <br />
+                <b>Website:</b> www.hairsncares.com
+                <br />
+                <b>LICENSE No. :</b> MH-MZ6-537527
+                <br />
+                <b>Doctor Name:</b> {"Dr. Amit Agarkar"}
+              </div>
+              <div>
+                <div className="font-bold text-sm py-2">
+                  Registered Address:
+                </div>
+                <div className="text-xs overflow-hidden">
+                  First Floor, Solitaire 1, A-102, New Link Rd,
+                  <br />
+                  Opposite Infinity Mall, Malad West,
+                  <br /> Mumbai, Maharashtra 400064
+                </div>
+              </div>
+            </div>
 
+            <div className="text-left max-w-full md:max-w-xs overflow-hidden">
+              <div className="font-bold text-sm py-2 pb-11">SOLD TO: </div>
+              <div className="text-xs overflow-hidden">
+                <b>Patient Name:</b> {invoice.name}
+              </div>
+              <div className="text-xs overflow-hidden">
+                <b>Shipping Address:</b> {invoice.address}
+              </div>
+            </div>
 
-  <div className="text-left max-w-full md:max-w-xs overflow-hidden">
-    <div className="font-bold text-sm py-2 pb-11">SOLD TO: </div>
-    <div className="text-xs overflow-hidden">
-      <b>Patient Name:</b> {invoice.name}
-    </div>
-    <div className="text-xs overflow-hidden">
-      <b>Shipping Address:</b> {invoice.address}
-    </div>
-  </div>
-
- 
-  <div className="text-left max-w-full md:max-w-xs overflow-hidden">
-    <div className="font-bold text-sm py-2">TAX INVOICE</div>
-    <div className="mt-1 space-y-0.5 leading-relaxed pt-7">
-      <div className="text-xs overflow-hidden">
-        <b>Order ID:</b> {invoice.orderNumber}
-      </div>
-      <div className="text-xs overflow-hidden">
-        <b>Invoice Date:</b> {new Date(invoice.date).toLocaleDateString()}
-      </div>
-      <div className="text-xs overflow-hidden">
-        <b>GST NO:</b> 27AOVPA1 631 G2Z1
-      </div>
-      <div className="text-xs overflow-hidden">
-        <b>Payment Type:</b>
-        <span className="font-semibold">{invoice.paymentMode}</span>
-      </div>
-    </div>
-  </div>
-</div>
-
+            <div className="text-left max-w-full md:max-w-xs overflow-hidden">
+              <div className="font-bold text-sm py-2">TAX INVOICE</div>
+              <div className="mt-1 space-y-0.5 leading-relaxed pt-7">
+                <div className="text-xs overflow-hidden">
+                  <b>Order ID:</b> {invoice.orderNumber}
+                </div>
+                <div className="text-xs overflow-hidden">
+                  <b>Invoice Date:</b>{" "}
+                  {new Date(invoice.date).toLocaleDateString()}
+                </div>
+                <div className="text-xs overflow-hidden">
+                  <b>GST NO:</b> 27AOVPA1 631 G2Z1
+                </div>
+                <div className="text-xs overflow-hidden">
+                  <b>Payment Type:</b>
+                  <span className="font-semibold">{invoice.paymentMode}</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* Table */}
           <div className="border rounded overflow-x-auto mt-6  ">
@@ -211,25 +212,25 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                     <td className="border px-2 py-2">{item.hsn || ""}</td>
 
                     <td className="border px-2 py-2">
-                      {Number( Math.round(item.rate))}
+                      {Number(Math.round(item.rate))}
                     </td>
                     <td className="border px-2 py-2">
-                      {Number( Math.round(item.discount || 0))}%
+                      {Number(Math.round(item.discount || 0))}%
                     </td>
 
                     <td>
-                      { Math.round(
+                      {Math.round(
                         parseFloat(item.rate || 0) -
-                        (parseFloat(item.rate || 0) *
-                          parseFloat(item.discount || 0)) /
-                          100
+                          (parseFloat(item.rate || 0) *
+                            parseFloat(item.discount || 0)) /
+                            100
                       )}
                     </td>
                     <td className="border px-2 py-2">
                       {Number(item.quantity)}
                     </td>
                     <td className="border px-2 py-2">
-                      {Number( Math.round(item.gst || 0))}%
+                      {Number(Math.round(item.gst || 0))}%
                     </td>
                     {/* <td className="border px-2 py-2">
                       {(
@@ -243,12 +244,7 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                       ).toFixed(2)}
                     </td> */}
                     <td className="border px-2 py-2">
-                      { Math.round(
-                        parseFloat(item.rate || 0) -
-                        (parseFloat(item.rate || 0) *
-                          parseFloat(item.discount || 0)) /
-                          100
-                      )}
+                      {Number(Math.round(item.total || 0))}
                     </td>
                   </tr>
                 ))}
@@ -279,34 +275,27 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                   Product Total (Final Amount)
                 </span>
                 <span className="font-bold">
-                  ₹ {Number( Math.round(invoice.total || 0))}
+                  ₹ {Number(Math.round(invoice.subtotal || 0))}
                 </span>
               </div>
               <div className="flex justify-between py-1">
                 <span className="font-medium">Coupon Discount (₹)</span>
                 <span className="font-bold">
-                  ₹ {Number( Math.round(invoice.couponDiscount || 0))}
+                  ₹ {Number(Math.round(invoice.couponDiscount || 0))}
                 </span>
               </div>
               <div className="flex justify-between py-1">
                 <span className="font-medium">After Discount Amount</span>
                 <span className="font-bold">
                   ₹{" "}
-                  { Math.round(
-                    Number(invoice.total || 0) -
-                    Number(invoice.couponDiscount || 0)
-                      )}
-                </span>
-              </div>{" "}
+                {Math.round(invoice.total || 0)}
+                </span> 
+              </div>
+
               <div className="flex justify-between py-1">
                 <span className="font-medium">Shipping Charges</span>
                 <span className="font-bold">
-                  ₹{" "}
-                  {Number(invoice.total || 0) -
-                    Number(invoice.couponDiscount || 0) <
-                  2000
-                    ? "200"
-                    : "0"}
+                  ₹ {invoice.deliveryCharges || 0}
                 </span>
               </div>
               {/* {invoice.consultationFee > 0 && (
@@ -329,16 +318,7 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
               <div className="flex justify-between py-1 border-t border-gray-200 mt-1 pt-1">
                 <span className="font-medium">Total Invoice Amount</span>
                 <span className="font-bold">
-                  ₹{" "}
-                  { Math.round(
-                    Number(invoice.total || 0) -
-                    Number(invoice.couponDiscount || 0) +
-                    (Number(invoice.total || 0) -
-                      Number(invoice.couponDiscount || 0) <
-                    2000
-                      ? 200
-                      : 0)
-                  )}
+                  ₹ {Math.round(invoice.totalAmount || 0)}
                 </span>
               </div>
             </div>
@@ -375,10 +355,10 @@ const InvoiceDetailsModal = ({ isOpen, selectedItems, onClose }) => {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Quantity</TableHead>
-                <TableHead>Price</TableHead>
+                <TableHead> MRP</TableHead>
                 <TableHead>GST</TableHead>
                 <TableHead>Discount</TableHead>
-                {/* <TableHead>Discount %</TableHead> */}
+                <TableHead>Discount Price</TableHead>
                 <TableHead>Total</TableHead>
               </TableRow>
             </TableHeader>
@@ -389,12 +369,12 @@ const InvoiceDetailsModal = ({ isOpen, selectedItems, onClose }) => {
                     <TableCell>{item.item?.name}</TableCell>
                     <TableCell>{item.quantity}</TableCell>
                     <TableCell>{item.rate}</TableCell>
-                    <TableCell>{item.gst}</TableCell>
+                    <TableCell>{item.gst}%</TableCell>
                     <TableCell>{item.discount}%</TableCell>
-                    {/* <TableCell>{item.discountPercent}</TableCell> */}
+                    <TableCell>{item.discountedPrice}</TableCell>
 
                     <TableCell>
-                     { Math.round(item.quantity * item.rate)}
+                  {item.total}
                     </TableCell>
                   </TableRow>
                 ))}

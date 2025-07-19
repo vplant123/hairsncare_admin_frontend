@@ -7,10 +7,16 @@ import { toast } from "react-toastify";
 export default function ManagePrice({ content, content1, content2 }) {
   const [loader, setLoader] = useState(false);
   const dispatch = useDispatch();
+  console.log("content", content)
+  console.log("content1", content1)
+  console.log("content2", content2)
 
   // Initialize state with default values
   const [price1, setPrice1] = useState("");
   const [price2, setPrice2] = useState("");
+  const [price3, setPrice3] = useState("");
+  const [price4, setPrice4] = useState("");
+  
 
   // Add state for editable section1
   const [editableSection1, setEditableSection1] = useState([
@@ -32,14 +38,16 @@ export default function ManagePrice({ content, content1, content2 }) {
 
   // Update state when content changes
   useEffect(() => {
-    if (content && Array.isArray(content)) {
+    if (content && Array.isArray(content) ) {
       const p1 = content.find(e => e?.name === "Local Plan");
       const p2 = content.find(e => e?.name === "Premium Plan");
       
       setPrice1(p1?.price || "");
       setPrice2(p2?.price || "");
+     
     }
-
+  setPrice3(content1?.deliveryCharge || "");
+  setPrice4(content1?.deliveryAmt || "");
     // Set editable section1 from content2
     if (content2 && Array.isArray(content2.section1)) {
       setEditableSection1(content2.section1);
@@ -76,6 +84,8 @@ export default function ManagePrice({ content, content1, content2 }) {
       const data = {
         appPrice1: price1,
         appPrice2: price2,
+        appPrice3: price3,
+        appPrice4: price4,
         section1: editableSection1, // Send the section1 data
         plan: "1",
       };
@@ -95,6 +105,7 @@ export default function ManagePrice({ content, content1, content2 }) {
         dispatch(getUtilityContentData());
         toast.success("Content updated successfully");
         console.log("Price and section1 data updated successfully:", result);
+        
       } else {
         toast.error(`Failed to update: ${response.statusText}`);
         console.error("Failed to update price and section1 data:", response.statusText);
@@ -215,6 +226,9 @@ export default function ManagePrice({ content, content1, content2 }) {
         </table>
       </div>
       {/* Price Form */}
+      <div>
+       
+      </div>
       <div className="space-y-4">
         <div>
           <label className="block mb-1">Local Plan Price</label>
@@ -238,7 +252,7 @@ export default function ManagePrice({ content, content1, content2 }) {
           />
         </div>
 
-        {/* <div>
+        <div>
           <label className="block mb-1">Delivery Charge</label>
           <input
             type="text"
@@ -258,7 +272,7 @@ export default function ManagePrice({ content, content1, content2 }) {
             placeholder="Enter delivery amount threshold"
             className="w-full p-2 border rounded"
           />
-        </div> */}
+        </div>
 
         <div>
           <button

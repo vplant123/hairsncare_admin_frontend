@@ -7,9 +7,10 @@ import {
 export const getUtilityContentData = createAsyncThunk(
     'content/getUtilityContentData',
     async (thunkAPI) => {
-        console.log("koekjor")
         const response = await getUtilityData();
+        console.log("response", response)
         return response?.data;
+
     }
 );
 
