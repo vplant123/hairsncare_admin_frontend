@@ -287,9 +287,8 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
               <div className="flex justify-between py-1">
                 <span className="font-medium">After Discount Amount</span>
                 <span className="font-bold">
-                  ₹{" "}
-                {Math.round(invoice.total || 0)}
-                </span> 
+                  ₹ {Math.round(invoice.total || 0)}
+                </span>
               </div>
 
               <div className="flex justify-between py-1">
@@ -373,9 +372,7 @@ const InvoiceDetailsModal = ({ isOpen, selectedItems, onClose }) => {
                     <TableCell>{item.discount}%</TableCell>
                     <TableCell>{item.discountedPrice}</TableCell>
 
-                    <TableCell>
-                  {item.total}
-                    </TableCell>
+                    <TableCell>{item.total}</TableCell>
                   </TableRow>
                 ))}
             </TableBody>
@@ -453,7 +450,7 @@ const Invoice = () => {
   };
 
   function formatNumberToTwoDecimals(number) {
-    return Number ( Math.round(number));
+    return Number(Math.round(number));
   }
 
   return (
@@ -474,7 +471,6 @@ const Invoice = () => {
                 <Table className="min-w-full divide-y divide-gray-200">
                   <TableHeader>
                     <TableRow className="bg-gray-50">
-                     
                       <TableHead className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                         Invoice No
                       </TableHead>
@@ -530,7 +526,6 @@ const Invoice = () => {
                           key={invoice._id}
                           className="hover:bg-gray-50"
                         >
-                          
                           <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
                             {idx + 1}.
                           </TableCell>

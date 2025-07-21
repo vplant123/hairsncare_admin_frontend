@@ -713,7 +713,7 @@ const OrdersInvoices = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Discount Details</p>
-                    <p className="font-medium">{selectedOrder.totalDiscount}</p>
+                    <p className="font-medium">{selectedOrder.couponDiscount}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">SubTotal</p>
