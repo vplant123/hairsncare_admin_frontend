@@ -80,7 +80,7 @@ interface FollowUp {
 const FollowUp = () => {
   // const [activeTab, setActiveTab] = useState("all");
   const [selectedTest, setSelectedTest] = useState(null);
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCompletedModalOpen, setIsCompletedModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -103,12 +103,14 @@ const FollowUp = () => {
   });
 
   const [isFollowUpModalOpen, setIsFollowUpModalOpen] = useState(false);
+  const [appointmentid, setAppointmentid] = useState();
   const [selectedTestForFollowUp, setSelectedTestForFollowUp] =
     useState<FollowUp | null>(null);
   const [followUpData, setFollowUpData] = useState({
     followupOf: "",
     doctorId: "",
     appointmentDate: "",
+    appointmentId: "", // <-- add this line
     timeSlot: "",
     status: "pending",
     doctorNotes: "",
@@ -117,6 +119,7 @@ const FollowUp = () => {
   const [scheduleAppointment, setScheduleAppointment] = useState({
     doctorId: "",
     appointmentDate: "",
+    appointmentId: "",
     timeSlot: "",
     hairTestId: "",
   });
@@ -130,16 +133,15 @@ const FollowUp = () => {
   const [pendingRowsPerPage, setPendingRowsPerPage] = useState(10);
 
   const pendingTests = hairTests.filter(
-    (test) => test.status?.toLowerCase() === "pending"
+    test => test.status?.toLowerCase() === "pending"
   );
 
-  
   const completedTests = hairTests.filter(
-    (test) => test.status?.toLowerCase() === "completed"
+    test => test.status?.toLowerCase() === "completed"
   );
 
   // Filter hair tests based on search query for All tab
-  const filteredAllHairTests = hairTests.filter((test) => {
+  const filteredAllHairTests = hairTests.filter(test => {
     const query = searchQuery.toLowerCase();
     const name = test.personal?.name?.toLowerCase() || "";
     const email = test.personal?.email?.toLowerCase() || "";
@@ -153,7 +155,7 @@ const FollowUp = () => {
   });
 
   // Filter hair tests based on search query for Completed tab
-  const filteredCompletedHairTests = completedTests.filter((test) => {
+  const filteredCompletedHairTests = completedTests.filter(test => {
     const query = searchQuery.toLowerCase();
     const name = test.personal?.name?.toLowerCase() || "";
     const email = test.personal?.email?.toLowerCase() || "";
@@ -207,12 +209,12 @@ const FollowUp = () => {
   const [prescriptionRowsPerPage, setPrescriptionRowsPerPage] = useState(10);
 
   // Filter and paginate prescriptions
-  const filteredPrescriptions = Orders.filter((order) => {
+  const filteredPrescriptions = Orders.filter(order => {
     const query = searchQuery.toLowerCase();
     const name = order.personalId?.name?.toLowerCase() || "";
     const email = order.personalId?.email?.toLowerCase() || "";
     const productName =
-      order.productId?.map((p) => p.name.toLowerCase()).join(", ") || "";
+      order.productId?.map(p => p.name.toLowerCase()).join(", ") || "";
 
     return (
       name.includes(query) ||
@@ -248,8 +250,8 @@ const FollowUp = () => {
       );
       const data = await response.json();
       console.log("FollowUP", data);
-      
-      let filterdata = data.data?.filter((item) => {
+
+      let filterdata = data.data?.filter(item => {
         return (
           (item.followupOf !== null && item.followupOf !== undefined) ||
           item.status == "completed"
@@ -277,7 +279,7 @@ const FollowUp = () => {
     }
   };
 
-  const sendWhatsapp = async (userId) => {
+  const sendWhatsapp = async userId => {
     console.log("Starting WhatsApp send process for userId:", userId);
 
     try {
@@ -381,12 +383,13 @@ const FollowUp = () => {
     handleFetchDoctor();
   }, []);
 
-  const handleFollowUp = (test) => {
+  const handleFollowUp = test => {
     console.log("Starting follow-up process for test:", test);
     const hairTestid = test.hairTestId || test.followupOf;
     setSelectedTestForFollowUp(hairTestid);
+    setAppointmentid(test?._id);
     console.log("test id", hairTestid);
-    setFollowUpData((prev) => ({
+    setFollowUpData(prev => ({
       ...prev,
       followupOf: hairTestid,
     }));
@@ -438,6 +441,7 @@ const FollowUp = () => {
       const requestData = {
         doctorId: followUpData.doctorId,
         appointmentDate: followUpData.appointmentDate,
+        appointmentId: appointmentid,
         timeSlot: followUpData.timeSlot,
         status: "pending",
         doctorNotes: followUpData.doctorNotes || "",
@@ -477,6 +481,7 @@ const FollowUp = () => {
           followupOf: "",
           doctorId: "",
           appointmentDate: "",
+          appointmentId: "",
           timeSlot: "",
           status: "pending",
           doctorNotes: "",
@@ -550,6 +555,7 @@ const FollowUp = () => {
           body: JSON.stringify({
             doctorId: scheduleAppointment.doctorId,
             appointmentDate: scheduleAppointment.appointmentDate,
+            appointmentId: scheduleAppointment.appointmentId,
             timeSlot: scheduleAppointment.timeSlot,
             hairTestId: scheduleAppointment.hairTestId,
             followupOf: scheduleAppointment.hairTestId,
@@ -571,6 +577,7 @@ const FollowUp = () => {
         setScheduleAppointment({
           doctorId: "",
           appointmentDate: "",
+          appointmentId: "",
           timeSlot: "",
           hairTestId: "",
         });
@@ -608,7 +615,7 @@ const FollowUp = () => {
       );
       const data = await response.json();
       if (data.success) {
-        const test = data.message.find((t) => t._id === testId);
+        const test = data.message.find(t => t._id === testId);
         if (test) {
           setSelectedTest(test);
           setIsCompletedModalOpen(true);
@@ -619,7 +626,7 @@ const FollowUp = () => {
     }
   };
 
-  const viewOrderDetails = async (orderId) => {
+  const viewOrderDetails = async orderId => {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/v1/admin/order-details`,
@@ -716,7 +723,7 @@ const FollowUp = () => {
     }
   };
 
-  const handleViewPrescription = async (orderId) => {
+  const handleViewPrescription = async orderId => {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/v1/admin/order-details`,
@@ -740,7 +747,7 @@ const FollowUp = () => {
     }
   };
 
-  const sendPrescription = async (appointmentId) => {
+  const sendPrescription = async appointmentId => {
     console.log("Starting send report process for hairTestId:", appointmentId);
     try {
       const token = localStorage.getItem("token");
@@ -783,20 +790,22 @@ const FollowUp = () => {
 
   const handleUpdateFollowUpDate = async () => {
     if (!editFollowUpDate || !selectedTestForEdit) return;
-    
+
     try {
-     
-      const response = await fetch(`${BASE_URL}/admin/update-followup-date?appointmentId=${selectedTestForEdit._id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({
-          followUpDate: editFollowUpDate
-        })
-      });
-      
+      const response = await fetch(
+        `${BASE_URL}/admin/update-followup-date?appointmentId=${selectedTestForEdit._id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            followUpDate: editFollowUpDate,
+          }),
+        }
+      );
+
       if (response.ok) {
         // Update local state
         // Refresh data or update the specific test
@@ -811,7 +820,7 @@ const FollowUp = () => {
         toast.error(errorData.message || "Failed to update follow up date");
       }
     } catch (error) {
-      console.error('Error updating follow up date:', error);
+      console.error("Error updating follow up date:", error);
       toast.error("Error updating follow up date");
     }
   };
@@ -983,14 +992,11 @@ const FollowUp = () => {
 
                         <TableCell className="whitespace-nowrap">
                           {test.followUpDate
-                            ? new Date(test.followUpDate).toLocaleDateString(
-                                "en-GB",
-                                {
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                }
-                              )
+                            ? new Date(test.followUpDate).toLocaleDateString("en-GB", {
+                                year: "2-digit",
+                                month: "2-digit",
+                                day: "2-digit"
+                              })
                             : ""}
                           <Button
                             className="ms-2 p-1 h-7 bg-yellow-100 text-orange-500 hover:bg-yellow-200 "
@@ -1007,7 +1013,7 @@ const FollowUp = () => {
                         <TableCell className="text-right whitespace-nowrap">
                           <div className="flex flex-row gap-2 items-end">
                             {test.status?.toLowerCase() === "completed" &&
-                            test.appointmentDate ? (
+                            test.nextAppointment != null ? (
                               <Button
                                 variant="outline"
                                 size="sm"
@@ -1270,7 +1276,8 @@ const FollowUp = () => {
                             })
                           : ""}
                       </div>
-                    </div>
+                      </div>
+                      
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Created At</label>
                       <div className="p-2 border rounded-md bg-gray-50">
@@ -1432,6 +1439,7 @@ const FollowUp = () => {
                 value={scheduleAppointment.appointmentDate}
                 onChange={e => {
                   console.log("Date selected:", e.target.value);
+                  
                   setScheduleAppointment(prev => ({
                     ...prev,
                     appointmentDate: e.target.value,
@@ -1473,6 +1481,7 @@ const FollowUp = () => {
                   setScheduleAppointment({
                     doctorId: "",
                     appointmentDate: "",
+                    appointmentId: "",
                     timeSlot: "",
                     hairTestId: "",
                   });
@@ -1932,24 +1941,16 @@ const FollowUp = () => {
 
                     <Button
                       variant="outline"
-                      className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
-                      onClick={() =>
+                      className="bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700 hover:border-green-300 transition-colors"
+                      onClick={() => {
                         window.open(
                           `${import.meta.env.VITE_FRONTEND_URL}/doctor/report/${selectedTest.appointments[0]._id}`,
                           "_blank"
-                        )
-                      }
+                        );
+                      }}
                     >
-                      <FileText className="h-4 w-4" />
-                      Prescription
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
-                    >
-                      <CheckCircle className="h-4 w-4" />
-                      Report Send Complete
+                      <Pill className="h-4 w-4" />
+                      {"View Prescription"}
                     </Button>
                   </div>
                 ) : (
@@ -2054,12 +2055,10 @@ const FollowUp = () => {
                     </label>
                     <div className="p-2 border rounded-md bg-gray-50">
                       {selectedTestForView.followUpDate
-                        ? new Date(
-                            selectedTestForView.followUpDate
-                          ).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
+                        ? new Date(selectedTestForView.followUpDate).toLocaleDateString("en-GB", {
+                            year: "2-digit",
+                            month: "2-digit",
+                            day: "2-digit"
                           })
                         : "Not Scheduled"}
                     </div>

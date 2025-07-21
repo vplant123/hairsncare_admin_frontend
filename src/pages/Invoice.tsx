@@ -279,7 +279,7 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                   Product Total (Final Amount)
                 </span>
                 <span className="font-bold">
-                  ₹ {Number( Math.round(invoice.total || 0))}
+                  ₹ {Number( Math.round(invoice.subtotal || 0))}
                 </span>
               </div>
               <div className="flex justify-between py-1">
@@ -293,7 +293,7 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                 <span className="font-bold">
                   ₹{" "}
                   { Math.round(
-                    Number(invoice.total || 0) -
+                    Number(invoice.subtotal || 0) -
                     Number(invoice.couponDiscount || 0)
                       )}
                 </span>
@@ -302,11 +302,7 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                 <span className="font-medium">Shipping Charges</span>
                 <span className="font-bold">
                   ₹{" "}
-                  {Number(invoice.total || 0) -
-                    Number(invoice.couponDiscount || 0) <
-                  2000
-                    ? "200"
-                    : "0"}
+                  {Number(invoice.deliveryCharges || 0)}
                 </span>
               </div>
               {/* {invoice.consultationFee > 0 && (
@@ -331,13 +327,7 @@ const InvoiceFormModal = ({ isOpen, invoice, onClose }) => {
                 <span className="font-bold">
                   ₹{" "}
                   { Math.round(
-                    Number(invoice.total || 0) -
-                    Number(invoice.couponDiscount || 0) +
-                    (Number(invoice.total || 0) -
-                      Number(invoice.couponDiscount || 0) <
-                    2000
-                      ? 200
-                      : 0)
+                    Number(invoice.totalAmount || 0) 
                   )}
                 </span>
               </div>
