@@ -40,6 +40,7 @@ interface AdminData {
   password?: string;
   role: string;
   permission: {
+    dashboard: boolean;
     hairTest: boolean;
     doctor: boolean;
     patient: boolean;
@@ -50,6 +51,8 @@ interface AdminData {
     product: boolean;
     reviews: boolean;
     admin: boolean;
+    followUp: boolean;
+    invoices: boolean;
   };
 }
 
@@ -58,8 +61,12 @@ const Admins = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isConfirmDeleteDialogOpen, setIsConfirmDeleteDialogOpen] = useState(false);
-  const [adminToDelete, setAdminToDelete] = useState<{ _id: string; fullname: string } | null>(null);
+  const [isConfirmDeleteDialogOpen, setIsConfirmDeleteDialogOpen] =
+    useState(false);
+  const [adminToDelete, setAdminToDelete] = useState<{
+    _id: string;
+    fullname: string;
+  } | null>(null);
   const [newAdmin, setNewAdmin] = useState<AdminData>({
     fullname: "",
     email: "",
@@ -67,6 +74,7 @@ const Admins = () => {
     password: "",
     role: "",
     permission: {
+      dashboard: false,
       hairTest: false,
       doctor: false,
       patient: false,
@@ -77,6 +85,8 @@ const Admins = () => {
       product: false,
       reviews: false,
       admin: false,
+      followUp: false,
+      invoices: false,
     },
   });
   const [admin, setAdmin] = useState([]);
@@ -120,7 +130,7 @@ const Admins = () => {
     handleFetchData();
   }, []);
 
-  const handleInputChange = e => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
 
     // Special handling for mobile number input
@@ -131,18 +141,18 @@ const Admins = () => {
       const finalValue = cleanedValue.replace(/\+/g, (match, index) =>
         index === 0 ? "+" : ""
       );
-      setNewAdmin(prev => ({ ...prev, [name]: finalValue }));
+      setNewAdmin((prev) => ({ ...prev, [name]: finalValue }));
     } else {
-      setNewAdmin(prev => ({ ...prev, [name]: value }));
+      setNewAdmin((prev) => ({ ...prev, [name]: value }));
     }
 
-    setErrorMessages(prev =>
-      prev.filter(err => !err.field || err.field !== name)
+    setErrorMessages((prev) =>
+      prev.filter((err) => !err.field || err.field !== name)
     );
   };
 
   const handlePermissionChange = (permissionName: string, checked: boolean) => {
-    setNewAdmin(prev => ({
+    setNewAdmin((prev) => ({
       ...prev,
       permission: {
         ...prev.permission,
@@ -152,13 +162,14 @@ const Admins = () => {
   };
 
   const handleRoleChange = (role: string) => {
-    setNewAdmin(prev => ({
+    setNewAdmin((prev) => ({
       ...prev,
       role,
       // Reset permissions if switching to admin role
       permission:
         role === "admin"
           ? {
+              dashboard: true,
               hairTest: true,
               doctor: true,
               patient: true,
@@ -169,21 +180,26 @@ const Admins = () => {
               product: true,
               reviews: true,
               admin: true,
+              followUp: true,
+              invoices: true,
             }
           : prev.role === "subadmin"
-          ? prev.permission
-          : {
-              hairTest: false,
-              doctor: false,
-              patient: false,
-              website: false,
-              coupon: false,
-              orders: false,
-              contactus: false,
-              product: false,
-              reviews: false,
-              admin: false,
-            },
+            ? prev.permission
+            : {
+                dashboard: false,
+                hairTest: false,
+                doctor: false,
+                patient: false,
+                website: false,
+                coupon: false,
+                orders: false,
+                contactus: false,
+                product: false,
+                reviews: false,
+                admin: false,
+                followUp: false,
+                invoices: false,
+              },
     }));
   };
 
@@ -251,6 +267,7 @@ const Admins = () => {
       password: "",
       role: adminData.role || "",
       permission: adminData.permission || {
+        dashboard: false,
         hairTest: false,
         doctor: false,
         patient: false,
@@ -261,6 +278,8 @@ const Admins = () => {
         product: false,
         reviews: false,
         admin: false,
+        followUp: false,
+        invoices: false,
       },
     });
     setErrorMessages([]);
@@ -304,7 +323,7 @@ const Admins = () => {
       } else {
         // Handle API errors
         const errorMessage = data.isOperational || "Failed to add admin.";
-        console.log(errorMessage)
+        console.log(errorMessage);
         setErrorMessages([{ msg: errorMessage }]);
         toast({
           title: "Error",
@@ -317,9 +336,7 @@ const Admins = () => {
       // Handle network or unexpected errors
       console.error("Error while adding admin", error);
       const errorMessage = error.message || "An unexpected error occurred.";
-      setErrorMessages([
-        { msg: errorMessage },
-      ]);
+      setErrorMessages([{ msg: errorMessage }]);
       toast({
         title: "Error",
         description: errorMessage,
@@ -346,9 +363,7 @@ const Admins = () => {
       const token = localStorage.getItem("token");
       if (!token) {
         const errorMessage = "Authorization token not found for update.";
-        setErrorMessages([
-          { msg: errorMessage },
-        ]);
+        setErrorMessages([{ msg: errorMessage }]);
         toast({
           title: "Error",
           description: errorMessage,
@@ -394,10 +409,9 @@ const Admins = () => {
     } catch (error: any) {
       // Handle network or unexpected errors
       console.error("Error while updating admin", error);
-      const errorMessage = error.message || "An unexpected error occurred during update.";
-      setErrorMessages([
-        { msg: errorMessage },
-      ]);
+      const errorMessage =
+        error.message || "An unexpected error occurred during update.";
+      setErrorMessages([{ msg: errorMessage }]);
       toast({
         title: "Error",
         description: errorMessage,
@@ -417,6 +431,7 @@ const Admins = () => {
       password: "",
       role: "",
       permission: {
+        dashboard: false,
         hairTest: false,
         doctor: false,
         patient: false,
@@ -427,12 +442,17 @@ const Admins = () => {
         product: false,
         reviews: false,
         admin: false,
+        followUp: false,
+        invoices: false,
       },
     });
     setErrorMessages([]);
   };
 
-  const handleConfirmDelete = (adminItem: { _id: string; fullname: string }) => {
+  const handleConfirmDelete = (adminItem: {
+    _id: string;
+    fullname: string;
+  }) => {
     setAdminToDelete(adminItem);
     setIsConfirmDeleteDialogOpen(true);
   };
@@ -461,7 +481,7 @@ const Admins = () => {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({adminId: adminToDelete._id }),
+            body: JSON.stringify({ adminId: adminToDelete._id }),
           }
         );
 
@@ -477,7 +497,7 @@ const Admins = () => {
             className: "bg-green-200",
           });
         } else {
-           toast({
+          toast({
             title: "Error",
             description: data.message || "Failed to delete admin.",
             variant: "destructive",
@@ -504,7 +524,7 @@ const Admins = () => {
   };
 
   const filteredAdmins = admin.filter(
-    adminItem =>
+    (adminItem) =>
       adminItem.fullname.toLowerCase().includes(searchQuery.toLowerCase()) ||
       adminItem.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       adminItem.mobile.toLowerCase().includes(searchQuery.toLowerCase())
@@ -550,7 +570,7 @@ const Admins = () => {
                 placeholder="Search admins..."
                 className="px-8"
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
           </div>
@@ -560,13 +580,13 @@ const Admins = () => {
               <span>Rows per page&nbsp;</span>
               <select
                 value={rowsPerPage}
-                onChange={e => {
+                onChange={(e) => {
                   setRowsPerPage(Number(e.target.value));
                   setCurrentPage(1); // Reset to first page
                 }}
                 className="border rounded px-2 py-1"
               >
-                {[5, 10, 25, 50].map(num => (
+                {[5, 10, 25, 50].map((num) => (
                   <option key={num} value={num}>
                     {num}
                   </option>
@@ -583,10 +603,6 @@ const Admins = () => {
                     )}`}{" "}
                 of {totalAdmins}
               </span>
-            
-             
-             
-             
             </div>
           </div>
 
@@ -608,7 +624,7 @@ const Admins = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                paginatedAdmins.map(adminItem => (
+                paginatedAdmins.map((adminItem) => (
                   <TableRow key={adminItem._id}>
                     <TableCell className="font-medium">
                       {adminItem.fullname}
@@ -668,7 +684,7 @@ const Admins = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1 || totalPages === 0}
               >
                 Previous
@@ -676,7 +692,9 @@ const Admins = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages || totalPages === 0}
               >
                 Next
@@ -703,8 +721,7 @@ const Admins = () => {
             <DialogDescription>
               {isEditMode
                 ? "Update the administrator details."
-                : "Fill in the details to add a new administrator to the system."
-              }
+                : "Fill in the details to add a new administrator to the system."}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -719,10 +736,10 @@ const Admins = () => {
                 onChange={handleInputChange}
                 className="md:col-span-3"
               />
-              {errorMessages.find(err => err.field === "fullname") && (
+              {errorMessages.find((err) => err.field === "fullname") && (
                 <div className="col-start-1 md:col-start-2 col-span-4 text-red-600 text-sm -mt-2">
                   <i>
-                    {errorMessages.find(err => err.field === "fullname")?.msg}
+                    {errorMessages.find((err) => err.field === "fullname")?.msg}
                   </i>
                 </div>
               )}
@@ -738,10 +755,10 @@ const Admins = () => {
                 onChange={handleInputChange}
                 className="md:col-span-3"
               />
-              {errorMessages.find(err => err.field === "mobile") && (
+              {errorMessages.find((err) => err.field === "mobile") && (
                 <div className="col-start-1 md:col-start-2 col-span-4 text-red-600 text-sm -mt-2">
                   <i>
-                    {errorMessages.find(err => err.field === "mobile")?.msg}
+                    {errorMessages.find((err) => err.field === "mobile")?.msg}
                   </i>
                 </div>
               )}
@@ -758,9 +775,11 @@ const Admins = () => {
                 onChange={handleInputChange}
                 className="md:col-span-3"
               />
-              {errorMessages.find(err => err.field === "email") && (
+              {errorMessages.find((err) => err.field === "email") && (
                 <div className="col-start-1 md:col-start-2 col-span-4 text-red-600 text-sm -mt-2">
-                  <i>{errorMessages.find(err => err.field === "email")?.msg}</i>
+                  <i>
+                    {errorMessages.find((err) => err.field === "email")?.msg}
+                  </i>
                 </div>
               )}
             </div>
@@ -790,10 +809,10 @@ const Admins = () => {
                   )}
                 </button>
               </div>
-              {errorMessages.find(err => err.field === "password") && (
+              {errorMessages.find((err) => err.field === "password") && (
                 <div className="col-start-1 md:col-start-2 col-span-4 text-red-600 text-sm -mt-2">
                   <i>
-                    {errorMessages.find(err => err.field === "password")?.msg}
+                    {errorMessages.find((err) => err.field === "password")?.msg}
                   </i>
                 </div>
               )}
@@ -831,18 +850,22 @@ const Admins = () => {
                   </label>
                 </div>
               </div>
-              {errorMessages.find(err => err.field === "role") && (
+              {errorMessages.find((err) => err.field === "role") && (
                 <div className="col-start-1 md:col-start-2 col-span-4 text-red-600 text-sm -mt-2">
-                  <i>{errorMessages.find(err => err.field === "role")?.msg}</i>
+                  <i>
+                    {errorMessages.find((err) => err.field === "role")?.msg}
+                  </i>
                 </div>
               )}
             </div>
+            <hr className="my-2" />
 
             {newAdmin.role === "subadmin" && (
               <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4">
                 <Label className="md:text-right pt-2">Permissions</Label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:col-span-3">
                   {[
+                    { id: "dashboard", label: "Dashboard" },
                     { id: "hairTest", label: "Hair Test" },
                     { id: "doctor", label: "Doctor" },
                     { id: "patient", label: "Patient" },
@@ -853,6 +876,8 @@ const Admins = () => {
                     { id: "product", label: "Product" },
                     { id: "reviews", label: "Reviews" },
                     { id: "admin", label: "Admin Management" },
+                    { id: "followUp", label: "Follow Up" },
+                    { id: "invoices", label: "Invoices Access" },
                   ].map(({ id, label }) => (
                     <div
                       key={id}
@@ -861,7 +886,7 @@ const Admins = () => {
                       <Checkbox
                         id={`perm-${id}`}
                         checked={!!newAdmin.permission[id]}
-                        onCheckedChange={checked => {
+                        onCheckedChange={(checked) => {
                           handlePermissionChange(id, checked as boolean);
                         }}
                         className="h-5 w-5 border-2 border-gray-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
@@ -897,21 +922,27 @@ const Admins = () => {
       </Dialog>
 
       {/* Confirmation Dialog for Delete */}
-      <Dialog open={isConfirmDeleteDialogOpen} onOpenChange={setIsConfirmDeleteDialogOpen}>
+      <Dialog
+        open={isConfirmDeleteDialogOpen}
+        onOpenChange={setIsConfirmDeleteDialogOpen}
+      >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Confirm Deletion</DialogTitle>
             <DialogDescription>
               Are you sure you want to delete administrator{" "}
               <strong>{adminToDelete?.fullname}</strong>?
-            
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={handleCloseConfirmDeleteDialog}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleActualDelete} className="bg-red-400 text-white">
+            <Button
+              variant="destructive"
+              onClick={handleActualDelete}
+              className="bg-red-400 text-white"
+            >
               Confirm Delete
             </Button>
           </DialogFooter>

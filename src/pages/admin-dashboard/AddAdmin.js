@@ -66,6 +66,8 @@ export default function AddAdmin({ setDoctor, doctor }) {
     product: 0,
     reviews: 0,
     admin: 0,
+    followUp: 0,
+    invoices: 0,
   });
 
   const [addresses, setAddresses] = useState([]);
@@ -106,29 +108,28 @@ export default function AddAdmin({ setDoctor, doctor }) {
     console.log("moekrokf", awards);
 
     try {
-        let url = `${BASE_URL}/admin/addAdmin`
-        let method = "POST";
-        let input = {
-            fullname: name,
-            email,
-            mobile: phone,
-            // password: password,
-            role: isSpec,
-            permission: permissions,
-          }
-        if(edit){
-            url = `${BASE_URL}/admin/update-admin-profile`;
-            method = "PUT"
-        }
-        else{
-            input["password"] =  password;
-        }
+      let url = `${BASE_URL}/admin/addAdmin`;
+      let method = "POST";
+      let input = {
+        fullname: name,
+        email,
+        mobile: phone,
+        // password: password,
+        role: isSpec,
+        permission: permissions,
+      };
+      if (edit) {
+        url = `${BASE_URL}/admin/update-admin-profile`;
+        method = "PUT";
+      } else {
+        input["password"] = password;
+      }
       const response = await fetch(url, {
         method: method,
         headers: {
-            "Content-Type": "application/json",
-            Authorization: storedUserData?.logedInUser?.accessToken,
-          },
+          "Content-Type": "application/json",
+          Authorization: storedUserData?.logedInUser?.accessToken,
+        },
         body: JSON.stringify(input),
       });
 
@@ -138,15 +139,13 @@ export default function AddAdmin({ setDoctor, doctor }) {
         return;
       }
 
-      toast.success(
-        "Admin Added Successfully!"
-      );
+      toast.success("Admin Added Successfully!");
       setName("");
       setEmail("");
       setPhone("");
       setPassword("");
       setIsSpec(0);
-      // Perform actions after successful login, such as updating state or redirecting
+     
       fetch(`${BASE_URL}/admin/getAdmin`, {
         method: "POST",
         headers: {
@@ -211,7 +210,7 @@ export default function AddAdmin({ setDoctor, doctor }) {
                   Edit
                 </button>
                 <button
-                  style={{ margin: "0 0 0 5px", backgroundColor: "#e31e24"}}
+                  style={{ margin: "0 0 0 5px", backgroundColor: "#e31e24" }}
                   onClick={() => {}}
                   className={styles.button}
                 >
@@ -221,7 +220,7 @@ export default function AddAdmin({ setDoctor, doctor }) {
             ))}
           </ul>
         </div>
-        <div className="add-doctor-container admin-1" >
+        <div className="add-doctor-container admin-1">
           <h2>Add Admin</h2>
           <form onSubmit={handleSubmit}>
             <label htmlFor="name">Name:</label>
@@ -230,7 +229,7 @@ export default function AddAdmin({ setDoctor, doctor }) {
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-            //   required
+              //   required
             />
 
             <label htmlFor="phone">Phone:</label>
@@ -239,7 +238,7 @@ export default function AddAdmin({ setDoctor, doctor }) {
               id="phone"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-            //   required
+              //   required
             />
 
             <label htmlFor="email">Email:</label>
@@ -248,7 +247,7 @@ export default function AddAdmin({ setDoctor, doctor }) {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-            //   required
+              //   required
             />
 
             {!edit && (
@@ -258,7 +257,7 @@ export default function AddAdmin({ setDoctor, doctor }) {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                //   required
+                  //   required
                 />
               </>
             )}
@@ -376,6 +375,39 @@ export default function AddAdmin({ setDoctor, doctor }) {
                       // required
                     />
                   </div>{" "}
+                  {/* new update */}
+
+                  {/* <div className="d-flex">
+                    <label htmlFor="isSpec">Follow Up</label>
+                    <input
+                      type="checkbox"
+                      style={{ margin: "0 0 0 20px" }}
+                      id="isSpec"
+                      checked={permissions?.followUp == 1}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setPermissions({ ...permissions, followUp: 1 });
+                        } else setPermissions({ ...permissions, followUp: 0 });
+                      }}
+                      // required
+                    />
+                  </div>{" "}
+                  <div className="d-flex">
+                    <label htmlFor="isSpec">Invoices</label>
+                    <input
+                      type="checkbox"
+                      style={{ margin: "0 0 0 20px" }}
+                      id="isSpec"
+                      checked={permissions?.invoices == 1}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setPermissions({ ...permissions, invoices: 1 });
+                        } else setPermissions({ ...permissions, invoices: 0 });
+                      }}
+                      // required
+                    />
+                  </div>{" "} */}
+                      
                   <div className="d-flex">
                     <label htmlFor="isSpec">Orders</label>
                     <input

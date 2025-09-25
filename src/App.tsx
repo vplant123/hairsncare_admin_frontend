@@ -168,14 +168,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/followup"
-              element={
-                <ProtectedRoute requiredRoles={["admin", "doctor"]}>
-                  <FollowUp />
-                </ProtectedRoute>
-              }
-            />
+           
             <Route
               path="/appointment" // Note: Typo in path, should likely be /appointment
               element={
@@ -209,6 +202,14 @@ const App = () => (
                   requiredPermissionKey="hairTest"
                 >
                   <PatientTestResult />
+                </ProtectedRoute>
+              }
+            />
+             <Route
+              path="/followup"
+              element={
+                <ProtectedRoute requiredRoles={["admin", "doctor","subadmin"]}  requiredPermissionKey="followUp">
+                  <FollowUp />
                 </ProtectedRoute>
               }
             />
@@ -392,6 +393,17 @@ const App = () => (
               element={
                 <ProtectedRoute
                   requiredRoles={["admin", "subadmin"]}
+                  requiredPermissionKey="invoices"
+                >
+                  <Invoice />
+                </ProtectedRoute>
+              }
+            />
+             <Route
+              path="/invoice"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "subadmin"]}
                   requiredPermissionKey="orders"
                 >
                   <Invoice />
@@ -403,7 +415,7 @@ const App = () => (
               element={
                 <ProtectedRoute
                   requiredRoles={["admin", "subadmin"]}
-                  requiredPermissionKey="orders"
+                  requiredPermissionKey="invoices"
                 >
                   <AddInvoices />
                 </ProtectedRoute>
@@ -436,15 +448,6 @@ const App = () => (
               element={
                 <ProtectedRoute requiredRoles={["admin", "doctor"]}>
                   <Appointments />
-                </ProtectedRoute>
-              }
-            />
-            {/* New Route for Doctors to view Orders */}
-            <Route
-              path="/orders"
-              element={
-                <ProtectedRoute requiredRoles={["doctor"]}>
-                  <OrdersInvoices />
                 </ProtectedRoute>
               }
             />
