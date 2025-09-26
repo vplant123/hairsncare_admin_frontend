@@ -1,9 +1,10 @@
 {
+  "version": "1.0.0",
   "short_name": "React App",
   "name": "Create React App Sample",
   "icons": [
     {
-      "src": "D:/Fonix Tech/New folder/hairsncare_admin_frontend/public/logo.svg",
+      "src": "logo.svg",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
