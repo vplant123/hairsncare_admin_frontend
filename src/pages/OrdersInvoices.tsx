@@ -378,7 +378,7 @@ const OrdersInvoices = () => {
         {/* Orders Table */}
         <Card>
           <CardHeader>
-            <CardTitle>All Orders</CardTitle>
+            {/* <CardTitle>All Orders</CardTitle> */}
             <div className="flex flex-col md:flex-row gap-4 mt-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -406,9 +406,34 @@ const OrdersInvoices = () => {
             </div>
           </CardHeader>
           <CardContent>
+            {loading ? (
+              <div className="flex items-center justify-center py-20">
+                <svg
+                  className="animate-spin h-8 w-8 text-primary"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+                <span className="ml-3 text-sm text-muted-foreground">Loading orders...</span>
+              </div>
+            ) : (
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="whitespace-nowrap">
                   <TableHead>Order ID</TableHead>
                   <TableHead>Order Type</TableHead>
                   <TableHead>Customer Name</TableHead>
@@ -419,6 +444,7 @@ const OrdersInvoices = () => {
                   {/* <TableHead>Status</TableHead> */}
                   <TableHead>Action</TableHead>
                   <TableHead>Details</TableHead>
+                  <TableHead>Prescription</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -428,8 +454,8 @@ const OrdersInvoices = () => {
                       <TableCell className="font-medium">
                         {order.orderNumber}
                       </TableCell>
-                      <TableCell>{order.orderType}</TableCell>
-                      <TableCell>{order.userId?.fullname}</TableCell>
+                      <TableCell className="whitespace-nowrap">{order.orderType}</TableCell>
+                      <TableCell className="whitespace-nowrap">{order.addressId?.name || order.userId?.fullname || 'N/A'}</TableCell>
                       <TableCell>{ Math.round(order.totalAmount)}</TableCell>
                       <TableCell>{order.mode}</TableCell>
                       <TableCell>
@@ -504,69 +530,66 @@ const OrdersInvoices = () => {
                           <Eye className="h-4 w-4 mr-1" /> View
                         </Button>
                       </TableCell>
-                      <TableCell>
-                        <TableCell></TableCell>
-                        <TableCell>
-                          {order.prescriptionDetails?.[0]?.appointment
-                            ?.status === "completed" ? (
+                      <TableCell className="whitespace-nowrap">
+                        {order.prescriptionDetails?.[0]?.appointment
+                          ?.status === "completed" ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-green-500 text-white hover:bg-green-600 transition-colors"
+                            onClick={() => {
+                              const appointmentId =
+                                order.prescriptionDetails[0]?.appointment
+                                  ?._id;
+                              window.open(
+                                `${import.meta.env.VITE_FRONTEND_URL}/order-prescription/${appointmentId}`,
+                                "_blank"
+                              );
+                            }}
+                          >
+                            <Eye className="h-3.5 w-5" />
+                            <span>View Prescription</span>
+                          </Button>
+                        ) : order.prescriptionDetails?.[0]?.appointment
+                            ?.status === "assigned" &&
+                          order.prescriptionDetails?.[0]?.appointment
+                            ?.appointmentDate ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-yellow-500 text-white hover:bg-yellow-600 transition-colors"
+                            disabled
+                          >
+                            <span>Assigned</span>
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-yellow-500 text-white hover:bg-yellow-600 transition-colors"
+                            onClick={() => setAssignDoctor(order)}
+                          >
+                            <Eye className="h-3.5 w-5" />
+                            <span>Generate Prescription</span>
+                          </Button>
+                        )}
+
+                        {order.prescriptionDetails?.[0]?.appointment
+                          ?.status === "completed" &&
+                          order.prescriptionDetails?.[0]?.appointment
+                            ?.isReportSent === false && (
                             <Button
                               variant="outline"
                               size="sm"
-                              className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-green-500 text-white hover:bg-green-600 transition-colors"
+                              className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-blue-500 text-white hover:bg-blue-600 mt-2"
                               onClick={() => {
-                                const appointmentId =
-                                  order.prescriptionDetails[0]?.appointment
-                                    ?._id;
-                                window.open(
-                                  `${import.meta.env.VITE_FRONTEND_URL}/order-prescription/${appointmentId}`,
-                                  "_blank"
-                                );
+                                sendReport(order._id);
+                                console.log(order);
                               }}
                             >
-                              <Eye className="h-3.5 w-5" />
-                              <span>View Prescription</span>
-                            </Button>
-                          ) : order.prescriptionDetails?.[0]?.appointment
-                              ?.status === "assigned" &&
-                            order.prescriptionDetails?.[0]?.appointment
-                              ?.appointmentDate ? (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-yellow-500 text-white hover:bg-yellow-600 transition-colors"
-                              disabled
-                            >
-                              <span>Assigned</span>
-                            </Button>
-                          ) : (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-yellow-500 text-white hover:bg-yellow-600 transition-colors"
-                              onClick={() => setAssignDoctor(order)}
-                            >
-                              <Eye className="h-3.5 w-5" />
-                              <span>Generate Prescription</span>
+                              Sent
                             </Button>
                           )}
-
-                          {order.prescriptionDetails?.[0]?.appointment
-                            ?.status === "completed" &&
-                            order.prescriptionDetails?.[0]?.appointment
-                              ?.isReportSent === false && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="w-[170px] h-[32px] flex items-center justify-center gap-1 bg-blue-500 text-white hover:bg-blue-600 mt-2"
-                                onClick={() => {
-                                  sendReport(order._id);
-                                  console.log(order);
-                                }}
-                              >
-                                Sent
-                              </Button>
-                            )}
-                        </TableCell>
                       </TableCell>
                     </TableRow>
                   ))
@@ -579,6 +602,7 @@ const OrdersInvoices = () => {
                 )}
               </TableBody>
             </Table>
+            )}
 
             {/* Pagination Controls */}
             <div className="flex items-center justify-between my-4">
@@ -667,22 +691,22 @@ const OrdersInvoices = () => {
             </DialogHeader>
             {selectedOrder && (
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">Order ID</p>
-                    <p className="font-medium">{selectedOrder._id}</p>
+                    <p className="font-medium">{selectedOrder.orderNumber || 'N/A'}</p>
                   </div>
 
                   <div>
                     <p className="text-sm text-gray-500">Customer Name</p>
                     <p className="font-medium">
-                      {selectedOrder.addressId?.name}
+                      {selectedOrder.userId?.fullname || selectedOrder.addressId?.name || 'N/A'}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Contact Number</p>
                     <p className="font-medium">
-                      {selectedOrder.addressId?.phone}
+                      {selectedOrder.addressId?.phone || 'N/A'}
                     </p>
                   </div>
                   <div>
@@ -694,39 +718,76 @@ const OrdersInvoices = () => {
                   <div>
                     <p className="text-sm text-gray-500">Delivery Charge</p>
                     <p className="font-medium">
-                      {selectedOrder.deliveryCharges}
+                      Rs {selectedOrder.deliveryCharges || 0}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Payment Mode</p>
-                    <p className="font-medium">{selectedOrder.mode}</p>
+                    <p className="font-medium">{selectedOrder.mode || 'N/A'}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Payment Status</p>
-                    <p className="font-medium">{selectedOrder.status}</p>
+                    <p className="font-medium">{selectedOrder.status || 'N/A'}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Order Status</p>
                     <p className="font-medium">
-                      {selectedOrder.deliveryStatus}
+                      {selectedOrder.deliveryStatus || 'N/A'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Discount Details</p>
-                    <p className="font-medium">{selectedOrder.couponDiscount}</p>
+                    <p className="text-sm text-gray-500">Coupon Discount</p>
+                    <p className="font-medium">
+                      Rs {selectedOrder.couponDiscount ?? 0}
+                      {selectedOrder.coupon ? ` (${selectedOrder.coupon.code || ''})` : ''}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Total Discount</p>
+                    <p className="font-medium">Rs {selectedOrder.totalDiscount || 0}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">SubTotal</p>
                     <p className="font-medium">
-                      {selectedOrder.amount}
+                      Rs {selectedOrder.amount || 0}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Order Type</p>
+                    <p className="font-medium">
+                      {selectedOrder.orderType || 'N/A'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Currency</p>
+                    <p className="font-medium">
+                      {selectedOrder.currency || 'N/A'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Order Date</p>
+                    <p className="font-medium">
+                      {selectedOrder.createdAt ? formatDateArrowStyle(selectedOrder.createdAt) : 'N/A'}
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <p className="text-sm text-gray-500">Contact Information</p>
+                  <p className="text-sm text-gray-500">Shipping Address</p>
                   <div className="bg-muted/50 p-3 rounded-md mt-1">
-                    <p>{selectedOrder.addressId?.fullAdress}</p>
+                    {selectedOrder.addressId ? (
+                      <div className="space-y-1">
+                        <p><strong>Name:</strong> {selectedOrder.addressId.name || 'N/A'}</p>
+                        <p><strong>Phone:</strong> {selectedOrder.addressId.phone || 'N/A'}</p>
+                        <p><strong>Email:</strong> {selectedOrder.addressId.email || 'N/A'}</p>
+                        <p><strong>Address:</strong> {selectedOrder.addressId.fullAdress || 'N/A'}</p>
+                        <p><strong>City:</strong> {selectedOrder.addressId.city || 'N/A'}</p>
+                        <p><strong>State:</strong> {selectedOrder.addressId.state || 'N/A'}</p>
+                        <p><strong>PIN:</strong> {selectedOrder.addressId.pin || 'N/A'}</p>
+                      </div>
+                    ) : (
+                      <p>No shipping address available</p>
+                    )}
                   </div>
                 </div>
 
@@ -746,84 +807,92 @@ const OrdersInvoices = () => {
                               Product Name
                             </p>
                             <p className="font-medium text-gray-800">
-                              {product.item.name}
+                              {product.item?.name || 'N/A'}
                             </p>
                           </div>
                           <div>
                             <p className="text-sm text-gray-500">Price</p>
                             <p className="font-medium text-gray-800">
-                              {product.item.price} Rs
+                              Rs {product.item?.price || 0}
                             </p>
                           </div>
                           <div>
                             <p className="text-sm text-gray-500">Quantity</p>
                             <p className="font-medium text-gray-800">
-                              {product.quantity}
+                              {product.quantity || 0}
                             </p>
                           </div>
                           <div>
                             <p className="text-sm text-gray-500">Discount</p>
                             <p className="font-medium text-gray-800">
-                              {product.item.discount} %
+                              {product.item?.discount || 0}%
                             </p>
                           </div>
                         </div>
 
                         {/* New Fields: Category, SubCategory, GST, Expiry Date, Batch No, and Manufacturer */}
-                        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                          {/* <div>
-                            <p className="text-sm text-gray-500">Category</p>
-                            <p className="font-medium text-gray-800">
-                              {product.item.category}
-                            </p>
-                          </div> */}
-                          {/* <div>
-                            <p className="text-sm text-gray-500">SubCategory</p>
-                            <p className="font-medium text-gray-800">
-                              {product.item.subCategory}
-                            </p>
-                          </div> */}
+                        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
                           <div>
                             <p className="text-sm text-gray-500">GST</p>
                             <p className="font-medium text-gray-800">
-                              {product.item.gst}%
+                              {product.item?.gst || 0}%
                             </p>
                           </div>
                           <div>
                             <p className="text-sm text-gray-500">Expiry Date</p>
                             <p className="font-medium text-gray-800">
-                              {new Date(
+                              {product.item?.expiryDate ? new Date(
                                 product.item.expiryDate
-                              ).toLocaleDateString()}
+                              ).toLocaleDateString() : 'N/A'}
                             </p>
                           </div>
                           <div>
                             <p className="text-sm text-gray-500">Batch No</p>
                             <p className="font-medium text-gray-800">
-                              {product.item.batchNo}
+                              {product.item?.batchNo || 'N/A'}
                             </p>
                           </div>
-                          {/* <div>
-                            <p className="text-sm text-gray-500">
-                              Manufacturer
-                            </p>
+                          <div>
+                            <p className="text-sm text-gray-500">HSN Code</p>
                             <p className="font-medium text-gray-800">
-                              {product.item.mfgName}
+                              {product.item?.hsn || 'N/A'}
                             </p>
-                          </div> */}
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-500">Zoho Product ID</p>
+                            <p className="font-medium text-gray-800">
+                              {product.item?.zohoProductId || 'N/A'}
+                            </p>
+                          </div>
                         </div>
 
+                        {product.item?.description && (
+                          <div className="mt-4">
+                            <p className="text-sm text-gray-500">Description</p>
+                            <div className="bg-gray-50 p-3 rounded-md mt-1">
+                              <div dangerouslySetInnerHTML={{ __html: product.item.description }} />
+                            </div>
+                          </div>
+                        )}
+
                         <div className="mt-4">
-                          <p className="text-sm text-gray-500">Images</p>
-                          <div className="flex space-x-3 overflow-x-auto">
-                            {product.item.src.map((image, index) => (
-                              <img
-                                key={index}
-                                src={image}
-                                alt={product.item.name}
-                                className="w-24 h-24 object-cover rounded-lg border border-gray-200"
-                              />
-                            ))}
+                          <p className="text-sm text-gray-500">Product Images</p>
+                          <div className="flex space-x-3 overflow-x-auto mt-2">
+                            {product.item?.src && product.item.src.length > 0 ? (
+                              product.item.src.map((image, index) => (
+                                <img
+                                  key={index}
+                                  src={image}
+                                  alt={product.item?.name || 'Product image'}
+                                  className="w-24 h-24 object-cover rounded-lg border border-gray-200 flex-shrink-0"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).style.display = 'none';
+                                  }}
+                                />
+                              ))
+                            ) : (
+                              <p className="text-gray-500">No images available</p>
+                            )}
                           </div>
                         </div>
                       </div>
